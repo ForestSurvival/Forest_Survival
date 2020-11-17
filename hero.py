@@ -7,6 +7,8 @@ import pygame
 
 from pygame.draw import *
 
+from inventory import Inventory
+
 
 class Hero(object):
     """
@@ -16,8 +18,6 @@ class Hero(object):
     def __init__(self, game, screen):
         """
         Параметры
-
-        Координаты центров объектов
 
         game - объект игры
         screen - экран pygame
@@ -40,6 +40,7 @@ class Hero(object):
 
         # Объекты
         self.game = game
+        self.inventory = Inventory()  # Объект инвентаря
 
         # Графика
         self.color: tuple = (206, 181, 75)  # Цвет героя
@@ -214,6 +215,7 @@ class Hero(object):
 
         self.get_hungry()
         self.check_live_parameters()
+        self.inventory.process()
         self.update_keys_pressed()
         self.process_keys_action()
         self.process_keys_motion()

@@ -28,13 +28,16 @@ class Apple(object):
         self.y: float = y
 
     # --- Логика ---
-    @staticmethod
-    def process_action():
+    def process_action(self, forest, hero):
         """
         Описывает взаимодействие героя и яблака
+
+        forest - объект леса
+        hero - Объект героя
         """
 
-        print('Action')
+        hero.inventory.apples_amount += 1  # Добавить яблоко в инвентарь героя
+        forest.items_list.remove(self)
 
     # --- Графика ---
     def draw(self, x: int, y: int):
