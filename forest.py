@@ -101,7 +101,7 @@ class Forest(object):
                 distance: float = math.sqrt(distance_list[0] ** 2 + distance_list[1] ** 2)
 
                 if distance <= self.hero.action_radius:
-                    item.process_action()
+                    item.process_action(self, self.hero)
 
     def setup(self):
         """
