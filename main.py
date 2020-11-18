@@ -16,10 +16,10 @@ screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREE
 
 # Объекты
 game = Game(screen)  # Объект игры
+game.setup()
 hero = Hero(game, screen)  # Объект героя
 hero.setup()
-
-forest = Forest(hero, screen)  # Объект леса
+forest = Forest(game, hero, screen)  # Объект леса
 forest.setup()
 
 satiety_percent: float = 100 * hero.satiety / hero.satiety_max  # Сытость героя в [%]
@@ -27,8 +27,7 @@ satiety_percent: float = 100 * hero.satiety / hero.satiety_max  # Сытость
 indicator_satiety = Indicator('Сытость', screen, satiety_percent, 0, 0)  # Объект индикатора сытости
 
 while game.status != 'finished':  # Пока игра не завершена
-    game.update_logic()
-    game.update_graphics()
+    game.process()
     forest.process()
     hero.process()
 

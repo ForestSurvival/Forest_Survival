@@ -208,6 +208,21 @@ class Hero(object):
             print(self.status)
         print('--- Game cycle ---')
 
+    def manage_actions(self):
+        """
+        Определяет действия героя в зависимости от статуса игры
+        """
+
+        actions_dict: dict = {'forest': [self.process_keys_motion,  # Словарь действий героя
+                                         self.draw,
+                                         self.process_keys_action],
+                              'inventory': [self.inventory.process],
+                              'finished': [None]}
+        actions_list: list = actions_dict[self.game.status]  # Действие героя
+        for action in actions_list:
+            if action is not None:
+                action()
+
     def process(self):
         """
         Обрабатывает события героя
@@ -215,11 +230,8 @@ class Hero(object):
 
         self.get_hungry()
         self.check_live_parameters()
-        self.inventory.process()
         self.update_keys_pressed()
-        self.process_keys_action()
-        self.process_keys_motion()
-        self.draw()
+        self.manage_actions()
 
         # Отладка
         # self.log()

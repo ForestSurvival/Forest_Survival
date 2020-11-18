@@ -30,4 +30,4 @@ class Inventory(object):
         """
 
         # Отладка
-        self.log()
+        # self.log()
