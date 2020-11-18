@@ -15,13 +15,14 @@ class Forest(object):
     Описывает лес
     """
 
-    def __init__(self, hero, screen):
+    def __init__(self, game, hero, screen):
         """
         Параметры
 
         Координаты центров объектов
         Словарь прямой состоит из названия оси, которой она перпендикулярна, и её координаты
 
+        game - объект игры
         hero - объект героя
         screen - экран pygame
         """
@@ -43,6 +44,7 @@ class Forest(object):
         self.max_y_distance = None  # Вертикальный размер экрана в [м] определяется в forest.setup()
 
         # Объекты
+        self.game = game
         self.hero = hero
 
     # --- Логика ---
@@ -266,12 +268,25 @@ class Forest(object):
         line(self.screen, self.border_color, [x_1, line_coordinate], [x_2, line_coordinate], self.border_width)
 
     # --- Обработка ---
+    def manage_events(self):
+        """
+        Обрабатывает события, зависящие от статуса игры
+        """
+
+        actions_dict: dict = {'forest': [self.process_hero_actions,  # Словарь действий
+                                         self.draw_background,
+                                         self.draw_borders,
+                                         self.draw_items],
+                              'inventory': [None],
+                              'finished': [None]}
+        actions_list: list = actions_dict[self.game.status]  # Список действий
+        for action in actions_list:
+            if action is not None:
+                action()
+
     def process(self):
         """
         Обрабатывает события леса
         """
 
-        self.process_hero_actions()
-        self.draw_background()
-        self.draw_borders()
-        self.draw_items()
+        self.manage_events()
