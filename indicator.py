@@ -34,7 +34,7 @@ class Indicator(object):
         # Графика
         self.color_active: tuple = (27, 60, 24)  # Цвет активной части
         self.color_passive: tuple = (0, 0, 0)  # Цвет пассивной части - чёрный
-        self.height: int = 36  # Высота индикатора в [px]
+        self.height: int = 30  # Высота индикатора в [px]
         self.width_full: int = 100  # Полная длина индикатора в [px]
         self.x: int = x
         self.y: int = y

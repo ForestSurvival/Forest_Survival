@@ -277,7 +277,7 @@ class Forest(object):
                                          self.draw_background,
                                          self.draw_borders,
                                          self.draw_items],
-                              'inventory': [None],
+                              'inventory': [self.hero.inventory.process],
                               'finished': [None]}
         actions_list: list = actions_dict[self.game.status]  # Список действий
         for action in actions_list:
