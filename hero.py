@@ -40,7 +40,7 @@ class Hero(object):
 
         # Объекты
         self.game = game
-        self.inventory = Inventory()  # Объект инвентаря
+        self.inventory = Inventory(screen)  # Объект инвентаря
 
         # Графика
         self.color: tuple = (206, 181, 75)  # Цвет героя
@@ -133,6 +133,7 @@ class Hero(object):
 
         self.count_keys_amount()
         self.create_keys_lists()
+        self.inventory.setup()
 
     def update_keys_pressed(self):
         """
