@@ -23,6 +23,7 @@ class Apple(object):
 
         self.color: tuple = (5, 95, 23)  # Цвет яблока
         self.radius: int = 5  # Радиус яблока в [px]
+        self.satiety: float = 196.7796  # Пищевая энергетическая ценность в [Дж]
         self.screen = screen
         self.x: float = x
         self.y: float = y

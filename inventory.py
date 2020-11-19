@@ -5,6 +5,7 @@
 from pygame.font import *
 
 from apple import Apple
+from button import Button
 
 
 class Inventory(object):
@@ -12,11 +13,11 @@ class Inventory(object):
     Описывает инвентарь
     """
 
-    def __init__(self, screen):
+    def __init__(self, hero):
         """
         Параметры
 
-        screen - экран Pygame
+        hero - объект героя
         """
 
         # Логика
@@ -25,7 +26,7 @@ class Inventory(object):
         # Графика
         self.apple_x: int = 5  # Координата x запси о яблоке в [px]
         self.apple_y: int = 40  # Координата y записи о яблоке в [px]
-        self.screen = screen
+        self.screen = hero.game.screen
 
         # Текст
         self.font = None  # Шрифт определяется в inventory.setup()
@@ -34,7 +35,9 @@ class Inventory(object):
         self.text_space = 10  # Ширина пробела между изображением объекта и записью о количестве его копий в [px]
 
         # Объекты
-        self.apple = Apple(screen, 0, 0)  # Объект яблока
+        self.apple = Apple(self.screen, 0, 0)  # Объект яблока
+        self.button_apple = Button(hero.eat_apple, self, self.apple_x, self.apple_y)  # Объект кнопки яблока
+        self.hero = hero  # Объект героя
 
     # --- Логика ---
     def setup(self):
@@ -85,20 +88,11 @@ class Inventory(object):
         self.print_amount(self.apple, self.apples_amount, self.apple_y)
 
     # --- Обработка ---
-    def log(self):
-        """
-        Выводит данные в консоль для отладки
-        """
-
-        print('Hero inventory apples amount:', self.apples_amount)
-        print('--- Game cycle ---')
 
     def process(self):
         """
         Обрабатывает события инвентаря
         """
 
+        self.button_apple.process()
         self.show()
-
-        # Отладка
-        # self.log()
