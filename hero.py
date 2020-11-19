@@ -8,6 +8,7 @@ import pygame
 from pygame.draw import *
 
 from apple import Apple
+from indicator import Indicator
 from inventory import Inventory
 
 
@@ -41,6 +42,7 @@ class Hero(object):
 
         # Объекты
         self.game = game
+        self.indicator_satiety = None  # Объект индикатора сытости определяется в hero.setup()
         self.inventory = Inventory(self)  # Объект инвентаря
 
         # Графика
@@ -57,6 +59,7 @@ class Hero(object):
 
         self.inventory.setup()
         self.set_actions_dicts()
+        self.set_indicator_satiety()
 
     # --- Логика ---
     def act(self):
@@ -120,6 +123,16 @@ class Hero(object):
                                            pygame.K_s: self.move_down,
                                            pygame.K_w: self.move_up}  # Словарь продолжительных действий
 
+    def set_indicator_satiety(self):
+        """
+        Обновляет индикатор сытости
+        """
+
+        indicator_satiety_x: int = 0  # Координата x индикатора сытости
+        indicator_satiety_y: int = 0  # Координата y индикатора сытости
+        satiety_percent: float = 100 * self.satiety / self.satiety_max  # Сытость героя в [%]
+        self.indicator_satiety = Indicator('Сытость', self, satiety_percent, indicator_satiety_x, indicator_satiety_y)
+
     def walk(self):
         """
         Позволяет герою перемещаться
@@ -140,6 +153,14 @@ class Hero(object):
             self.draw_list: list = [self.draw]  # Рисовать героя
         else:
             self.draw_list: list = [None]  # Ничего не рисоваь
+
+    def update_indicator_satiety(self):
+        """
+        Обновляет значение индикатора сытости
+        """
+
+        satiety_percent: float = 100 * self.satiety / self.satiety_max  # Сытость героя в [%]
+        self.indicator_satiety.value = satiety_percent
 
     def update_status(self):
         """
@@ -241,9 +262,18 @@ class Hero(object):
                 if self.game.logic_engine.keys_moment_list[key_index] == 1:
                     self.actions_moment_dict[key_index]()
 
+    def manage_physics(self):
+        """
+        Обрабатывает физические события героя
+        """
+
+        self.update_indicator_satiety()
+
     def process(self):
         """
         Обрабатывает события героя
         """
 
+        self.manage_physics()
         self.manage_graphics()
+        self.indicator_satiety.process()
