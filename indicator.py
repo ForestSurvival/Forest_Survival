@@ -15,14 +15,14 @@ class Indicator(object):
     Описывает индикатор
     """
 
-    def __init__(self, name, screen, value: float, x: int, y: int):
+    def __init__(self, name, hero, value: float, x: int, y: int):
         """
         Параметры
 
         Координаты левого верхнего угла индикатора
 
         name - название индикатора
-        screen - экран pygame
+        hero - объект героя
         value - значение индицируемой величины в [%]
         x - координата x индикатора в [px]
         y - координата y индикатора в [px]
@@ -38,7 +38,7 @@ class Indicator(object):
         self.width_full: int = 100  # Полная длина индикатора в [px]
         self.x: int = x
         self.y: int = y
-        self.screen = screen
+        self.screen = hero.screen
 
         # Текст
         self.font_name = None  # Название шрифта
