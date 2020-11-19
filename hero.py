@@ -7,6 +7,7 @@ import pygame
 
 from pygame.draw import *
 
+from apple import Apple
 from inventory import Inventory
 
 
@@ -15,39 +16,56 @@ class Hero(object):
     Описывает героя
     """
 
-    def __init__(self, game, screen):
+    def __init__(self, game):
         """
         Параметры
 
         game - объект игры
-        screen - экран pygame
         """
 
         # Физика
+        self.speed_actual: float = 2  # Действительная скорость героя в [м/с]
         self.speed_max: float = 2  # Максимальная скорость героя в [м/с]
         self.x: float = 0  # Координата x героя в [м]
         self.y: float = 0  # Координата y героя в [м]
 
         # Логика
+        self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий определяется в hero.setup()
+        self.actions_current_dict: dict = {None: None}  # Словарь продолжительных действий определяется в hero.setup()
         self.action_radius: float = 0.5  # Расстояние, в пределах которого герой может действовать на объект в [м]
-        self.keys_amount = None  # Количество клавиш на клавиатуре определяется в hero.setup()
-        self.keys_pressed_list = None  # Список кнопок, которые обрабатываются определяется в hero.setup()
-        self.latest_keys_pressed_list = None  # Список клавиш, нажатых квант времени назад опеделяется в hero.setup()
-        self.satiety: float = 4186800  # Пищевая энергия в [Дж]
-        self.satiety_max: int = 8373600  # Максимальня пищевая энергия в [Дж]
+        self.satiety: float = 4186.8  # Пищевая энергия в [Дж]
+        self.satiety_max: float = 8373.6  # Максимальня пищевая энергия в [Дж]
         self.satiety_reduce: int = self.satiety_max // game.day_length  # Скорость голодания в [Дж/с]
-        self.status: str = 'alive'  # Герой жив
+        self.status_current: str = 'walk'  # Герой может перемещаться
+        self.status_last: str = 'walk'  # Статус героя в предыдущем цикле
 
         # Объекты
         self.game = game
-        self.inventory = Inventory(screen)  # Объект инвентаря
+        self.inventory = Inventory(self)  # Объект инвентаря
 
         # Графика
         self.color: tuple = (206, 181, 75)  # Цвет героя
+        self.draw_list: list = [None]  # Графический список
         self.radius: int = 5  # Радиус в [px]
-        self.screen = screen
+        self.screen = game.screen
+
+    # --- Инициализация ---
+    def setup(self):
+        """
+        Действия при создании героя
+        """
+
+        self.inventory.setup()
+        self.set_actions_dicts()
 
     # --- Логика ---
+    def act(self):
+        """
+        Герой производит действие
+        """
+
+        self.status_current: str = 'act'  # Герой производит действие
+
     @staticmethod
     def calculate_speed_reduce(directions_list: list):
         """
@@ -70,93 +88,68 @@ class Hero(object):
 
         if self.satiety == 0:  # Если герой смертельно голоден
             self.get_dead()
-        else:
-            self.status: str = 'alive'  # Герой жив
 
-    def count_keys_amount(self):
+    def eat_apple(self):
         """
-        Считает количесто клавиш на клавиатуре
+        Герой ест яблоко
         """
 
-        test_keys_list: list = pygame.key.get_pressed()  # Пробный список клавиш
-        self.keys_amount: int = len(test_keys_list)  # Количество клавиш на клавиатуре
-
-    def create_keys_lists(self):
-        """
-        Инициализирует списки обрабатываемых клавиш
-        """
-
-        self.keys_pressed_list: list = [0] * self.keys_amount  # Список обрабатываемых сейчас клавиш
-        self.latest_keys_pressed_list = [0] * self.keys_amount  # Изначально не одна клавиши не нажата
+        if self.inventory.apples_amount > 0 and self.satiety < self.satiety_max:  # Если есть яблоки и герой хочет есть
+            apple = Apple(self.game.screen, 0, 0)  # Тестовое яблоко
+            self.inventory.apples_amount -= 1  # Уменьшить количество яблок в инвентаре
+            self.satiety += apple.satiety
 
     def get_dead(self):
         """
         Убивает героя
         """
 
-        self.status: str = 'dead'  # Герой мёртв
+        self.status_current: str = 'dead'  # Герой мёртв
         self.game.finish()
 
-    def process_keys_action(self):
+    def set_actions_dicts(self):
         """
-        Обрабатывает информацию о нажатых клавишах действий
+        Создаёт словарь действий
         """
 
-        if self.keys_pressed_list[pygame.K_e] == 1:  # Если нажата клавиша E
-            self.status: str = 'acting'  # Герой выполняет действие
+        self.actions_moment_dict: dict = {pygame.K_e: self.act,  # Словарь мгновенных действий
+                                          pygame.K_ESCAPE: self.walk,
+                                          pygame.K_i: self.get_inventory}
+        self.actions_current_dict: dict = {pygame.K_a: self.move_left,
+                                           pygame.K_d: self.move_right,
+                                           pygame.K_s: self.move_down,
+                                           pygame.K_w: self.move_up}  # Словарь продолжительных действий
+
+    def walk(self):
+        """
+        Позволяет герою перемещаться
+        """
+
+        self.status_current: str = 'walk'
+
+    def update_draw_list(self):
+        """
+        Обновляет графический список
+        """
+
+        if self.status_current == 'act':  # Если герой выполняет действие
+            self.draw_list: list = [self.draw]  # Рисовать героя
+        elif self.status_current == 'inventory':  # Если герой просматривает инвентарь
+            self.draw_list: list = [None]  # Ничего не рисовать
+        elif self.status_current == 'walk':  # Если герой может перемещаться
+            self.draw_list: list = [self.draw]  # Рисовать героя
         else:
-            self.status: str = 'alive'  # Герой просто живёт
+            self.draw_list: list = [None]  # Ничего не рисоваь
 
-    def process_keys_motion(self):
+    def update_status(self):
         """
-        Обрабатывает информацию о нажатых клавишах перемещения
-        """
-
-        directions_dict: dict = {pygame.K_w: 'up',  # Словарь направлений
-                                 pygame.K_a: 'left',
-                                 pygame.K_s: 'down',
-                                 pygame.K_d: 'right'}
-        directions_list: list = []  # Список направлений, по которым сейчас идёт герой
-        for key in directions_dict:
-            if self.keys_pressed_list[key] == 1:  # Если нажата клавиша перемещения
-                directions_list.append(directions_dict[key])
-        speed_reduce: float = self.calculate_speed_reduce(directions_list)  # Фактор уменьшения скорости
-        actual_speed: float = self.speed_max / speed_reduce  # Действительая скорость героя в [м/с]
-
-        for direction in directions_list:
-            self.move(direction, actual_speed)
-
-    def setup(self):
-        """
-        Действия при создании героя
+        Обновляет статус героя
         """
 
-        self.count_keys_amount()
-        self.create_keys_lists()
-        self.inventory.setup()
-
-    def update_keys_pressed(self):
-        """
-        Обновляет информацию о нажатых клавишах
-        """
-
-        # Список клавиш, которые могут быть нажаты непрерывно
-        continuous_keys_list: list = [pygame.K_a, pygame.K_d, pygame.K_s, pygame.K_w]
-
-        current_keys_pressed_list: list = pygame.key.get_pressed()  # Список нажатых в текущий момент клавиш
-        for key_index in range(self.keys_amount):
-            if key_index not in continuous_keys_list:
-
-                # Если клавиша нажата только сейчас
-                if current_keys_pressed_list[key_index] == 1 and self.latest_keys_pressed_list[key_index] == 0:
-                    self.keys_pressed_list[key_index] = 1  # Кнопка нажата
-                else:
-                    self.keys_pressed_list[key_index] = 0  # Кнопка не нажата
-            else:
-                # Непрерывная обработка особых клавиш
-                self.keys_pressed_list[key_index] = current_keys_pressed_list[key_index]
-
-        self.latest_keys_pressed_list: list = current_keys_pressed_list  # Обновленеие списка нажатых клавиш
+        if self.status_current == 'act':  # Если герой выполнил действие
+            if self.status_last == 'act':  # Если герой выполнил действие в предыдущем цикле
+                self.status_current: str = 'walk'  # Герой может перемещаться
+        self.status_last: str = self.status_current  # Обновить статус
 
     # --- Физика ---
     def get_hungry(self):
@@ -169,24 +162,44 @@ class Hero(object):
         new_satiety_int: int = round(new_satiety)  # Округлённое значение новой пищевой энергии в [Дж]
         self.satiety = max(0, new_satiety_int)  # Пищевая энергия не может быть отрицательной
 
-    def move(self, direction: str, speed: float):
+    def get_inventory(self):
         """
-        Перемещает героя
-
-        direction - направление перемещения
-        speed - скорость героя
+        Отображает инвентарь
         """
 
-        delta_distance: float = speed * self.game.time_step  # Квант перемещения в [м]
+        self.status_current: str = 'inventory'  # Отобразить инвентарь
 
-        if direction == 'up':  # Если герой идёт вверх
-            self.y -= delta_distance  # Координата y героя в [м]
-        if direction == 'left':  # Если герой идёт влево
-            self.x -= delta_distance  # Координата x героя в [м]
-        if direction == 'down':  # Если герой идёт вниз
-            self.y += delta_distance  # Координата y героя в [м]
-        if direction == 'right':  # Если герой идёт вправо
-            self.x += delta_distance  # Координата x героя в [м]
+    def move_down(self):
+        """
+        Перемещает героя вниз
+        """
+
+        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        self.y += delta_distance  # Координата y героя в [м]
+
+    def move_left(self):
+        """
+        Перемещает героя влево
+        """
+
+        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        self.x -= delta_distance  # Координата y героя в [м]
+
+    def move_right(self):
+        """
+        Перемещает героя вправо
+        """
+
+        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        self.x += delta_distance  # Координата y героя в [м]
+
+    def move_up(self):
+        """
+        Перемещает героя вверх
+        """
+
+        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        self.y -= delta_distance  # Координата y героя в [м]
 
     # --- Графика ---
     def draw(self):
@@ -200,39 +213,37 @@ class Hero(object):
         circle(self.screen, self.color, (x, y), self.radius)
 
     # --- Обработка ---
-    def log(self):
+    def manage_graphics(self):
         """
-        Выводит информацию о герое в консоль для отладки
-        """
-
-        if self.status == 'acting':  # Если герой действует
-            print(self.status)
-        print('--- Game cycle ---')
-
-    def manage_actions(self):
-        """
-        Определяет действия героя в зависимости от статуса игры
+        Обрабатывает графические события героя
         """
 
-        actions_dict: dict = {'forest': [self.process_keys_motion,  # Словарь действий героя
-                                         self.draw,
-                                         self.process_keys_action],
-                              'inventory': [self.inventory.process],
-                              'finished': [None]}
-        actions_list: list = actions_dict[self.game.status]  # Действие героя
-        for action in actions_list:
-            if action is not None:
-                action()
+        self.update_draw_list()
+        for draw in self.draw_list:
+            if draw is not None:
+                draw()
+
+    def manage_logic(self):
+        """
+        Обрабатывает логические события героя
+        """
+
+        self.get_hungry()
+        self.check_live_parameters()
+        self.update_status()
+        for key_index in range(self.game.logic_engine.keys_amount):
+            if key_index in self.actions_current_dict:
+                if self.game.logic_engine.keys_current_list[key_index] == 1:  # Если клавиша нажата в текущем цикле
+                    self.actions_current_dict[key_index]()
+            if key_index in self.actions_moment_dict:
+
+                # Если клавиша нажата строго в текущем цикле
+                if self.game.logic_engine.keys_moment_list[key_index] == 1:
+                    self.actions_moment_dict[key_index]()
 
     def process(self):
         """
         Обрабатывает события героя
         """
 
-        self.get_hungry()
-        self.check_live_parameters()
-        self.update_keys_pressed()
-        self.manage_actions()
-
-        # Отладка
-        # self.log()
+        self.manage_graphics()

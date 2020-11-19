@@ -4,6 +4,10 @@
 
 import pygame
 
+from forest import Forest
+from hero import Hero
+from logic_engine import LogicEngine
+
 
 class Game(object):
     """
@@ -18,8 +22,10 @@ class Game(object):
         """
 
         # Логика
+        self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
+        self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
         self.clock = pygame.time.Clock()  # Часы pygame
-        self.status: str = 'created'  # Игра созднана
+        self.status: str = 'run'  # Игра запущена
 
         # Графика
         self.black: tuple = (0, 0, 0)  # Чёрный цвет
@@ -30,38 +36,68 @@ class Game(object):
         self.day_length: int = 600  # Длинна дня в [с]
         self.time_step: float = 1 / self.fps  # Квант времени в [с]
 
+        # Объекты
+        self.forest = None  # Объект леса определяется в game.setup()
+        self.graphic_engine = None  # Объект крафического движка определяется в game.setup()
+        self.hero = None  # Объект героя определяется в game.setup()
+        self.logic_engine = None  # Объект логического движка определяется в game.setup()
+
+    # --- Инициализация ---
+    def setup(self):
+        """
+        Инициализация игры
+        """
+
+        self.forest = Forest(self)  # Объект леса
+        self.hero = Hero(self)  # Объект героя
+        self.logic_engine = LogicEngine(self)  # Объект логического движка
+        self.forest.setup()
+        self.hero.setup()
+        self.logic_engine.setup()
+
     # --- Логика ---
     def finish(self):
         """
         Завершает игру
         """
 
-        self.status: str = 'finished'  # Игра завершена
+        self.status: str = 'exit'  # Игра завершена
 
-    def setup(self):
-        """
-        Действия при создании игры
-        """
-
-        self.status: str = 'forest'  # Маркер основного состояния игры
-
-    def update_logic(self):
+    def manage_logic(self):
         """
         Обрабатывает логические события
         """
 
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:  # Если нажата клавиша
-                if event.key == pygame.K_ESCAPE:  # Если нажат Esc
-                    if self.status == 'forest':  # Если игра находится в основном состоянии
-                        self.status: str = 'finished'  # Игра завершена
-                    else:
-                        self.status: str = 'forest'  # Основное состояние игры
-                if event.key == pygame.K_i:  # Если нажата I
-                    self.status: str = 'inventory'
+        self.update_actions_dicts()
+        for key_index in range(self.logic_engine.keys_amount):
+            if key_index in self.actions_moment_dict:
+                if self.logic_engine.keys_moment_list[key_index] == 1:  # Если кнопка нажата строго в текущем цикле
+                    self.actions_moment_dict[key_index]()
+
+    def update_actions_dicts(self):
+        """
+        Создаёт словарь действий
+        """
+
+        if self.hero.status_current == 'walk':  # Если герой может перемещаться
+            self.actions_moment_dict: dict = {pygame.K_ESCAPE: self.finish}  # Словарь мгновенных действий
+            self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
+        elif self.hero.status_current == 'inventory':  # Если герой просматривает инвентарь
+            self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
+            self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
+        else:
+            self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
+            self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
+
+    def switch_to_main_status(self):
+        """
+        Перевелит игру в основное состояние
+        """
+
+        self.status: str = 'main'  # Основное состояние игры
 
     # --- Графика ---
-    def update_graphics(self):
+    def manage_graphics(self):
         """
         Обновляет экран
         """
@@ -71,21 +107,11 @@ class Game(object):
         self.screen.fill(self.black)
 
     # --- Обработка ---
-    def log(self):
-        """
-        Выводит данные в консоль для отладки
-        """
-
-        print('Status:', self.status)
-        print('--- Game cycle ---')
-
     def process(self):
         """
         Обрабатывает события игры
         """
 
-        self.update_logic()
-        self.update_graphics()
-
-        # Отладка
-        # self.log()
+        self.manage_graphics()
+        self.logic_engine.process()
+        self.hero.process()

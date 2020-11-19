@@ -15,7 +15,7 @@ class Forest(object):
     Описывает лес
     """
 
-    def __init__(self, game, hero, screen):
+    def __init__(self, game):
         """
         Параметры
 
@@ -31,7 +31,6 @@ class Forest(object):
         self.border_color: tuple = (185, 250, 250)  # Цвет границ
         self.border_width: int = 1  # Толщина границ в [px]
         self.color: tuple = (193, 86, 217)  # Цвет леса
-        self.screen = screen
 
         # Логика
         self.scale: int = 35  # Масштаб в [px/м]
@@ -45,7 +44,6 @@ class Forest(object):
 
         # Объекты
         self.game = game
-        self.hero = hero
 
     # --- Логика ---
     def convert_horizontal_m_to_px(self, coordinate_m: float):
@@ -55,10 +53,10 @@ class Forest(object):
         coordinate_m - координата объекта в [м]
         """
 
-        distance_m: float = coordinate_m - self.hero.x  # Расстояние от героя до объекта в [м]
+        distance_m: float = coordinate_m - self.game.hero.x  # Расстояние от героя до объекта в [м]
         distance_raw: float = distance_m * self.scale  # Расстояние в [px]
         distance_px: int = round(distance_raw)  # Округлённое расстояние в [px]
-        distance_px_cooked: int = distance_px + self.screen.get_width() // 2  # Координата  объекта в [px]
+        distance_px_cooked: int = distance_px + self.game.screen.get_width() // 2  # Координата  объекта в [px]
         return distance_px_cooked
 
     def convert_vertical_m_to_px(self, coordinate_m: float):
@@ -68,10 +66,10 @@ class Forest(object):
         coordinate_m - координата объекта в [м]
         """
 
-        distance_m: float = coordinate_m - self.hero.y  # Расстояние от героя до объекта в [м]
+        distance_m: float = coordinate_m - self.game.hero.y  # Расстояние от героя до объекта в [м]
         distance_raw: float = distance_m * self.scale  # Расстояние в [px]
         distance_px: int = round(distance_raw)  # Округлённое расстояние в [px]
-        distance_px_cooked: int = distance_px + self.screen.get_height() // 2  # Координата  объекта в [px]
+        distance_px_cooked: int = distance_px + self.game.screen.get_height() // 2  # Координата  объекта в [px]
         return distance_px_cooked
 
     def count_draw_distance(self):
@@ -79,8 +77,8 @@ class Forest(object):
         Вычисляет расстояние прорисовки в [м]
         """
 
-        screen_height: int = self.screen.get_height()  # Высота экрана в [px]
-        screen_width: int = self.screen.get_width()  # Ширина экрана в [px]
+        screen_height: int = self.game.screen.get_height()  # Высота экрана в [px]
+        screen_width: int = self.game.screen.get_width()  # Ширина экрана в [px]
 
         # Максимальное расстояние на экране в [px]
         max_screen_distance: float = math.sqrt(screen_height ** 2 + screen_width ** 2)
@@ -93,7 +91,7 @@ class Forest(object):
         Обрабатывает действия героя
         """
 
-        if self.hero.status == 'acting':  # Если герой выполняет действие
+        if self.game.hero.status_current == 'act':  # Если герой выполняет действие
             for item in self.items_list:
 
                 # Список компонент расстояния до объекта в [м]
@@ -102,8 +100,8 @@ class Forest(object):
                 # Расстояние до объекта в [м]
                 distance: float = math.sqrt(distance_list[0] ** 2 + distance_list[1] ** 2)
 
-                if distance <= self.hero.action_radius:
-                    item.process_action(self, self.hero)
+                if distance <= self.game.hero.action_radius:
+                    item.process_action(self, self.game.hero)
 
     def setup(self):
         """
@@ -123,8 +121,8 @@ class Forest(object):
         line_dict - словарь прямой
         """
 
-        coordinate_dict: dict = {'x': self.hero.x,  # Словарь координат
-                                 'y': self.hero.y}
+        coordinate_dict: dict = {'x': self.game.hero.x,  # Словарь координат
+                                 'y': self.game.hero.y}
         coordinate: str = line_dict['coordinate']  # Координата, вдоль которой надо считать расстяние
         hero_coordinate: float = coordinate_dict[coordinate]  # Координата x героя в [м]
         distance: float = line_dict['value'] - hero_coordinate  # Расстояние от героя до прямой в [м]
@@ -138,8 +136,8 @@ class Forest(object):
         y - Координата y точки в [м]
         """
 
-        x_distance: float = x - self.hero.x  # Расстояние от героя до точки вдоль оси x в [м]
-        y_distance: float = y - self.hero.y  # Расстояние от героя до точки вдоль оси y в [м]
+        x_distance: float = x - self.game.hero.x  # Расстояние от героя до точки вдоль оси x в [м]
+        y_distance: float = y - self.game.hero.y  # Расстояние от героя до точки вдоль оси y в [м]
         distance_list: list = [x_distance, y_distance]  # Компоненты расстояния от героя до точки в [м]
         return distance_list
 
@@ -204,7 +202,7 @@ class Forest(object):
             # Координата y яблока в [м]
             y_apple: float = random() * self.max_y_distance + self.borders_dict['up']['value']
 
-            apple = Apple(self.screen, x_apple, y_apple)  # Объект яблока
+            apple = Apple(self.game.screen, x_apple, y_apple)  # Объект яблока
             self.items_list.append(apple)
 
     # --- Графика ---
@@ -213,7 +211,7 @@ class Forest(object):
         Рисует фон леса
         """
 
-        self.screen.fill(self.color)
+        self.game.screen.fill(self.color)
 
     def draw_borders(self):
         """
@@ -241,9 +239,9 @@ class Forest(object):
         """
 
         y_1: int = -1  # Верхняя точка выше экрана
-        y_2: int = self.screen.get_height() + 1  # Нижняя точка ниже экрана
+        y_2: int = self.game.screen.get_height() + 1  # Нижняя точка ниже экрана
 
-        line(self.screen, self.border_color, [line_coordinate, y_1], [line_coordinate, y_2], self.border_width)
+        line(self.game.screen, self.border_color, [line_coordinate, y_1], [line_coordinate, y_2], self.border_width)
 
     def draw_items(self):
         """
@@ -263,23 +261,27 @@ class Forest(object):
         """
 
         x_1: int = -1  # Левая точка левее экрана
-        x_2: int = self.screen.get_width() + 1  # Правая точка правее экрана
+        x_2: int = self.game.screen.get_width() + 1  # Правая точка правее экрана
 
-        line(self.screen, self.border_color, [x_1, line_coordinate], [x_2, line_coordinate], self.border_width)
+        line(self.game.screen, self.border_color, [x_1, line_coordinate], [x_2, line_coordinate], self.border_width)
 
     # --- Обработка ---
-    def manage_events(self):
+    def manage_logic(self):
         """
         Обрабатывает события, зависящие от статуса игры
         """
 
-        actions_dict: dict = {'forest': [self.process_hero_actions,  # Словарь действий
-                                         self.draw_background,
-                                         self.draw_borders,
-                                         self.draw_items],
-                              'inventory': [self.hero.inventory.process],
-                              'finished': [None]}
-        actions_list: list = actions_dict[self.game.status]  # Список действий
+        actions_dict: dict = {'walk': [self.process_hero_actions,  # Словарь действий
+                                       self.draw_background,
+                                       self.draw_borders,
+                                       self.draw_items],
+                              'act': [self.process_hero_actions,
+                                      self.draw_background,
+                                      self.draw_borders,
+                                      self.draw_items],
+                              'inventory': [self.game.hero.inventory.process],
+                              'exit': [None]}
+        actions_list: list = actions_dict[self.game.hero.status_current]  # Список действий
         for action in actions_list:
             if action is not None:
                 action()
@@ -289,4 +291,4 @@ class Forest(object):
         Обрабатывает события леса
         """
 
-        self.manage_events()
+        self.manage_logic()
