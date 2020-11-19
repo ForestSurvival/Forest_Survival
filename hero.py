@@ -178,7 +178,8 @@ class Hero(object):
         Уменьшает сытость
         """
 
-        delta_satiety: float = self.satiety_reduce * self.game.time_step  # Квант голодания в [Дж]
+        time_step: float = 1 / self.game.fps  # Квант времени в [с]
+        delta_satiety: float = self.satiety_reduce * time_step  # Квант голодания в [Дж]
         new_satiety: float = self.satiety - delta_satiety  # Новая пищевая энергия в [Дж]
         new_satiety_int: int = round(new_satiety)  # Округлённое значение новой пищевой энергии в [Дж]
         self.satiety = max(0, new_satiety_int)  # Пищевая энергия не может быть отрицательной
@@ -195,7 +196,8 @@ class Hero(object):
         Перемещает героя вниз
         """
 
-        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        time_step: float = 1 / self.game.fps  # Квант времени в [с]
+        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
         self.y += delta_distance  # Координата y героя в [м]
 
     def move_left(self):
@@ -203,7 +205,8 @@ class Hero(object):
         Перемещает героя влево
         """
 
-        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        time_step: float = 1 / self.game.fps  # Квант времени в [с]
+        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
         self.x -= delta_distance  # Координата y героя в [м]
 
     def move_right(self):
@@ -211,7 +214,8 @@ class Hero(object):
         Перемещает героя вправо
         """
 
-        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        time_step: float = 1 / self.game.fps  # Квант времени в [с]
+        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
         self.x += delta_distance  # Координата y героя в [м]
 
     def move_up(self):
@@ -219,7 +223,8 @@ class Hero(object):
         Перемещает героя вверх
         """
 
-        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        time_step: float = 1 / self.game.fps  # Квант времени в [с]
+        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
         self.y -= delta_distance  # Координата y героя в [м]
 
     # --- Графика ---
@@ -249,9 +254,6 @@ class Hero(object):
         Обрабатывает логические события героя
         """
 
-        self.get_hungry()
-        self.check_live_parameters()
-        self.update_status()
         for key_index in range(self.game.logic_engine.keys_amount):
             if key_index in self.actions_current_dict:
                 if self.game.logic_engine.keys_current_list[key_index] == 1:  # Если клавиша нажата в текущем цикле
@@ -267,13 +269,16 @@ class Hero(object):
         Обрабатывает физические события героя
         """
 
+        self.get_hungry()
+        self.check_live_parameters()
+        self.update_status()
         self.update_indicator_satiety()
 
     def process(self):
         """
         Обрабатывает события героя
         """
-
+        self.manage_logic()
         self.manage_physics()
         self.manage_graphics()
         self.indicator_satiety.process()

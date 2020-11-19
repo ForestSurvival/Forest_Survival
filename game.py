@@ -28,11 +28,9 @@ class Game(object):
         # Графика
         self.black: tuple = (0, 0, 0)  # Чёрный цвет
         self.fps: int = 60  # Частота обновления экарана в [Гц]
-        self.screen = None  # Объект экрана определяется в game.setup()
 
         # Физика
         self.day_length: int = 600  # Длинна дня в [с]
-        self.time_step: float = 1 / self.fps  # Квант времени в [с]
 
         # Объекты
         self.forest = None  # Объект леса определяется в game.setup()
@@ -58,7 +56,7 @@ class Game(object):
         self.logic_engine.setup()
 
     # --- Логика ---
-    def finish(self):
+    def exit(self):
         """
         Завершает игру
         """
@@ -80,10 +78,7 @@ class Game(object):
         """
 
         if self.hero.status_current == 'walk':  # Если герой может перемещаться
-            self.actions_moment_dict: dict = {pygame.K_ESCAPE: self.finish}  # Словарь мгновенных действий
-            self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
-        elif self.hero.status_current == 'inventory':  # Если герой просматривает инвентарь
-            self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
+            self.actions_moment_dict: dict = {pygame.K_ESCAPE: self.exit}  # Словарь мгновенных действий
             self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
         else:
             self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
@@ -115,6 +110,8 @@ class Game(object):
         Обрабатывает события игры
         """
 
-        self.manage_graphics()
         self.logic_engine.process()
+        self.manage_logic()
+        self.manage_graphics()
+        self.forest.process()
         self.hero.process()

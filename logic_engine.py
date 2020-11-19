@@ -83,6 +83,3 @@ class LogicEngine(object):
         """
 
         self.manage_logic()
-        self.game.manage_logic()
-        self.game.forest.manage_logic()
-        self.game.hero.manage_logic()
