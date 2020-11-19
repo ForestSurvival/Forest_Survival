@@ -14,11 +14,9 @@ class Game(object):
     Описывает игру
     """
 
-    def __init__(self, screen):
+    def __init__(self):
         """
         Параметры
-
-        screen - экран pygame
         """
 
         # Логика
@@ -30,7 +28,7 @@ class Game(object):
         # Графика
         self.black: tuple = (0, 0, 0)  # Чёрный цвет
         self.fps: int = 60  # Частота обновления экарана в [Гц]
-        self.screen = screen
+        self.screen = None  # Объект экрана определяется в game.setup()
 
         # Физика
         self.day_length: int = 600  # Длинна дня в [с]
@@ -38,9 +36,9 @@ class Game(object):
 
         # Объекты
         self.forest = None  # Объект леса определяется в game.setup()
-        self.graphic_engine = None  # Объект крафического движка определяется в game.setup()
         self.hero = None  # Объект героя определяется в game.setup()
         self.logic_engine = None  # Объект логического движка определяется в game.setup()
+        self.screen = None  # Определяется в game.setup()
 
     # --- Инициализация ---
     def setup(self):
@@ -48,11 +46,15 @@ class Game(object):
         Инициализация игры
         """
 
+        self.set_screen()
+
         self.forest = Forest(self)  # Объект леса
-        self.hero = Hero(self)  # Объект героя
-        self.logic_engine = LogicEngine(self)  # Объект логического движка
         self.forest.setup()
+
+        self.hero = Hero(self)  # Объект героя
         self.hero.setup()
+
+        self.logic_engine = LogicEngine(self)  # Объект логического движка
         self.logic_engine.setup()
 
     # --- Логика ---
@@ -63,16 +65,14 @@ class Game(object):
 
         self.status: str = 'exit'  # Игра завершена
 
-    def manage_logic(self):
+    def set_screen(self):
         """
-        Обрабатывает логические события
+        Создаёт объект экрана
         """
 
-        self.update_actions_dicts()
-        for key_index in range(self.logic_engine.keys_amount):
-            if key_index in self.actions_moment_dict:
-                if self.logic_engine.keys_moment_list[key_index] == 1:  # Если кнопка нажата строго в текущем цикле
-                    self.actions_moment_dict[key_index]()
+        screen_height: int = 700  # Высота экрана в пикселях
+        screen_width: int = 1200  # Ширина экрана в пикселях
+        self.screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)  # Объект экрана pygame
 
     def update_actions_dicts(self):
         """
@@ -89,14 +89,7 @@ class Game(object):
             self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
             self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
 
-    def switch_to_main_status(self):
-        """
-        Перевелит игру в основное состояние
-        """
-
-        self.status: str = 'main'  # Основное состояние игры
-
-    # --- Графика ---
+    # --- Обработка ---
     def manage_graphics(self):
         """
         Обновляет экран
@@ -106,7 +99,17 @@ class Game(object):
         self.clock.tick(self.fps)
         self.screen.fill(self.black)
 
-    # --- Обработка ---
+    def manage_logic(self):
+        """
+        Обрабатывает логические события
+        """
+
+        self.update_actions_dicts()
+        for key_index in range(self.logic_engine.keys_amount):
+            if key_index in self.actions_moment_dict:
+                if self.logic_engine.keys_moment_list[key_index] == 1:  # Если кнопка нажата строго в текущем цикле
+                    self.actions_moment_dict[key_index]()
+
     def process(self):
         """
         Обрабатывает события игры
