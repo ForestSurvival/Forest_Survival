@@ -8,6 +8,7 @@ from pygame.draw import *
 from random import *
 
 from apple import Apple
+from stick import Stick
 
 
 class Forest(object):
@@ -31,19 +32,137 @@ class Forest(object):
         self.border_color: tuple = (185, 250, 250)  # Цвет границ
         self.border_width: int = 1  # Толщина границ в [px]
         self.color: tuple = (193, 86, 217)  # Цвет леса
+        self.graphical_dict: dict = {'walk': [self.draw_background,  # Графический словарь
+                                              self.draw_borders,
+                                              self.draw_apples,
+                                              self.draw_sticks],
+                                     'act': [self.draw_background,
+                                             self.draw_borders,
+                                             self.draw_apples,
+                                             self.draw_sticks],
+                                     'inventory': [None]}
 
         # Логика
-        self.scale: int = 35  # Масштаб в [px/м]
+        self.logical_dict: dict = {None: None}  # Логический словарь определяется в forest.setup()
         self.max_draw_distance = None  # Максимальное расстояние прорисовки в [м] определяется в forest.setup()
-        self.items_list: list = []  # Список объектов
+        self.scale: int = 35  # Масштаб в [px/м]
 
         # Физика
         self.borders_dict = None  # Словари границ определяется в forest.setup()
-        self.max_x_distance = None  # Горизонтальный размер экрана в [м] определяется в forest.setup()
-        self.max_y_distance = None  # Вертикальный размер экрана в [м] определяется в forest.setup()
+
+        # Расстояние между границами леса по горизонтали в [м] определяется в forest.setup()
+        self.borders_distance_x = None
+
+        # Расстояние между границами леса по вертикали в [м] определяется в forest.setup()
+        self.borders_distance_y = None
 
         # Объекты
+        self.apples_list: list = []  # Список яблок
         self.game = game
+        self.sticks_list: list = []  # Список палок
+
+    # --- Инициализация ---
+    def count_max_distance(self):
+        """
+        Вычисляет размеры экрана в [м]
+        """
+
+        down_border_dict: dict = self.borders_dict['down']  # Словарь нижней границы
+        left_border_dict: dict = self.borders_dict['left']  # Словарь левой границы
+        right_border_dict: dict = self.borders_dict['right']  # Словарь правой границы
+        up_border_dict: dict = self.borders_dict['up']  # Словарь верхней границы
+        x_left: float = left_border_dict['value']  # Координата x левой границы в [м]
+        x_right: float = right_border_dict['value']  # Координата x правой границы в [м]
+        y_down: float = down_border_dict['value']  # Координата y нижней границы в [м]
+        y_up: float = up_border_dict['value']  # Координата y верхней границы в [м]
+        self.borders_distance_x: float = x_right - x_left  # Расстояние между границами вдоль оси x в [м]
+        self.borders_distance_y: float = y_down - y_up  # Расстояние между границами по y в [м]
+
+    def count_draw_distance(self):
+        """
+        Вычисляет расстояние прорисовки в [м]
+        """
+
+        screen_height: int = self.game.screen.get_height()  # Высота экрана в [px]
+        screen_width: int = self.game.screen.get_width()  # Ширина экрана в [px]
+
+        # Максимальное расстояние на экране в [px]
+        max_screen_distance: float = math.sqrt(screen_height ** 2 + screen_width ** 2)
+
+        max_distance: float = max_screen_distance / self.scale  # Максимальное расстояние до видимого объекта в [м]
+        self.max_draw_distance: int = math.ceil(max_distance)  # Максимальное расстояние прорисовки в []
+
+    def create_borders(self):
+        """
+        Создаёт словарь границ
+        """
+
+        down_border_dict: dict = {'coordinate': 'y',
+                                  'value': 10}  # Словарь нижней границы леса
+        left_border_dict: dict = {'coordinate': 'x',
+                                  'value': -10}  # Словаь левой границы леса
+        right_border_dict: dict = {'coordinate': 'x',
+                                   'value': 10}  # Словарь правой границы леса
+        up_border_dict: dict = {'coordinate': 'y',
+                                'value': -10}  # Словарь верхней границы леса
+        self.borders_dict: dict = {'down': down_border_dict,  # Словарь границ
+                                   'left': left_border_dict,
+                                   'right': right_border_dict,
+                                   'up': up_border_dict}
+
+    def generate_apples(self):
+        """
+        Создаёт яблоки
+        """
+
+        apples_amount: int = 5  # Количество яблок
+        for apple_number in range(apples_amount):
+
+            # Координата x яблока в [м]
+            x_apple: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
+
+            # Координата y яблока в [м]
+            y_apple: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
+
+            apple = Apple(self, x_apple, y_apple)  # Объект яблока
+            self.apples_list.append(apple)
+
+    def generate_sticks(self):
+        """
+        Создаёт палки
+        """
+
+        sticks_amount: int = 5  # Количество палок
+        for stick_number in range(sticks_amount):
+            # Координата x палки в [м]
+            stick_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
+
+            # Координата y палки в [м]
+            stick_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
+
+            stick = Stick(self, stick_x, stick_y)  # Объект палки
+            self.sticks_list.append(stick)
+
+    def set_logical_dict(self):
+        """
+        Создаёт логический словарь
+        """
+        self.logical_dict: dict = {'walk': [None],  # Логический словарь
+                                   'act': [self.manage_apples_logic],
+                                   'inventory': [self.game.hero.inventory.process],
+                                   'exit': [None]}
+
+    def setup(self):
+        """
+        Действия при создании леса
+        """
+
+        self.set_logical_dict()
+        self.create_borders()
+        self.count_max_distance()
+        self.count_draw_distance()
+        self.generate_apples()
+        self.generate_sticks()
 
     # --- Логика ---
     def convert_horizontal_m_to_px(self, coordinate_m: float):
@@ -72,46 +191,21 @@ class Forest(object):
         distance_px_cooked: int = distance_px + self.game.screen.get_height() // 2  # Координата  объекта в [px]
         return distance_px_cooked
 
-    def count_draw_distance(self):
-        """
-        Вычисляет расстояние прорисовки в [м]
-        """
-
-        screen_height: int = self.game.screen.get_height()  # Высота экрана в [px]
-        screen_width: int = self.game.screen.get_width()  # Ширина экрана в [px]
-
-        # Максимальное расстояние на экране в [px]
-        max_screen_distance: float = math.sqrt(screen_height ** 2 + screen_width ** 2)
-
-        max_distance: float = max_screen_distance / self.scale  # Максимальное расстояние до видимого объекта в [м]
-        self.max_draw_distance: int = math.ceil(max_distance)  # Максимальное расстояние прорисовки в []
-
-    def process_hero_actions(self):
+    def manage_apples_logic(self):
         """
         Обрабатывает действия героя
         """
 
-        if self.game.hero.status_current == 'act':  # Если герой выполняет действие
-            for item in self.items_list:
+        for apple in self.apples_list:
 
-                # Список компонент расстояния до объекта в [м]
-                distance_list: list = self.calculate_distance_to_point(item.x, item.y)
+            # Список компонент физического расстояния до яблока в [м]
+            distance_list: list = self.calculate_distance_to_point(apple.physical_x, apple.physical_y)
 
-                # Расстояние до объекта в [м]
-                distance: float = math.sqrt(distance_list[0] ** 2 + distance_list[1] ** 2)
+            # Физическое расстояние до яблока в [м]
+            distance: float = math.sqrt(distance_list[0] ** 2 + distance_list[1] ** 2)
 
-                if distance <= self.game.hero.action_radius:
-                    item.process_action(self, self.game.hero)
-
-    def setup(self):
-        """
-        Действия при создании леса
-        """
-
-        self.create_borders()
-        self.count_max_distance()
-        self.count_draw_distance()
-        self.generate_items()
+            if distance <= self.game.hero.action_radius:
+                apple.manage_logic()
 
     # --- Физика ---
     def calculate_distance_to_line(self, line_dict: dict):
@@ -141,40 +235,6 @@ class Forest(object):
         distance_list: list = [x_distance, y_distance]  # Компоненты расстояния от героя до точки в [м]
         return distance_list
 
-    def count_max_distance(self):
-        """
-        Вычисляет размеры экрана в [м]
-        """
-
-        down_border_dict: dict = self.borders_dict['down']  # Словарь нижней границы
-        left_border_dict: dict = self.borders_dict['left']  # Словарь левой границы
-        right_border_dict: dict = self.borders_dict['right']  # Словарь правой границы
-        up_border_dict: dict = self.borders_dict['up']  # Словарь верхней границы
-        x_left: float = left_border_dict['value']  # Координата x левой границы в [м]
-        x_right: float = right_border_dict['value']  # Координата x правой границы в [м]
-        y_down: float = down_border_dict['value']  # Координата y нижней границы в [м]
-        y_up: float = up_border_dict['value']  # Координата y верхней границы в [м]
-        self.max_x_distance: float = x_right - x_left  # Расстояние между границами вдоль оси x в [м]
-        self.max_y_distance: float = y_down - y_up  # Расстояние между границами по y в [м]
-
-    def create_borders(self):
-        """
-        Создаёт словарь границ
-        """
-
-        down_border_dict: dict = {'coordinate': 'y',
-                                  'value': 10}  # Словарь нижней границы леса
-        left_border_dict: dict = {'coordinate': 'x',
-                                  'value': -10}  # Словаь левой границы леса
-        right_border_dict: dict = {'coordinate': 'x',
-                                   'value': 10}  # Словарь правой границы леса
-        up_border_dict: dict = {'coordinate': 'y',
-                                'value': -10}  # Словарь верхней границы леса
-        self.borders_dict: dict = {'down': down_border_dict,  # Словарь границ
-                                   'left': left_border_dict,
-                                   'right': right_border_dict,
-                                   'up': up_border_dict}
-
     def draw_needed(self, distance: float):
         """
         Проверяет, нужно ли рисовать объект
@@ -187,25 +247,21 @@ class Forest(object):
         else:
             return False
 
-    # --- Объекты ---
-    def generate_items(self):
-        """
-        Создаёт объекты
-        """
-
-        apples_amount: int = 5  # Количество яблок
-        for apple_number in range(apples_amount):
-
-            # Координата x яблока в [м]
-            x_apple: float = random() * self.max_x_distance + self.borders_dict['left']['value']
-
-            # Координата y яблока в [м]
-            y_apple: float = random() * self.max_y_distance + self.borders_dict['up']['value']
-
-            apple = Apple(self.game.screen, x_apple, y_apple)  # Объект яблока
-            self.items_list.append(apple)
-
     # --- Графика ---
+    def draw_apples(self):
+        """
+        Рисует яблоки
+        """
+
+        for apple in self.apples_list:
+            # Графическая координата x яблока в [px]
+            apple_graphical_x: int = self.convert_horizontal_m_to_px(apple.physical_x)
+
+            # Графическая координата y яблока в [px]
+            apple_graphical_y: int = self.convert_vertical_m_to_px(apple.physical_y)
+
+            apple.manage_graphics(apple_graphical_x, apple_graphical_y)
+
     def draw_background(self):
         """
         Рисует фон леса
@@ -243,16 +299,6 @@ class Forest(object):
 
         line(self.game.screen, self.border_color, [line_coordinate, y_1], [line_coordinate, y_2], self.border_width)
 
-    def draw_items(self):
-        """
-        Рисует объекты
-        """
-
-        for item in self.items_list:
-            item_x: int = self.convert_horizontal_m_to_px(item.x)  # Координата объекта по оси x в [px]
-            item_y: int = self.convert_vertical_m_to_px(item.y)  # Координата объекта по оси y в [px]
-            item.draw(item_x, item_y)
-
     def draw_vertical_line(self, line_coordinate: float):
         """
         Рисует вертикальную прямую
@@ -265,26 +311,40 @@ class Forest(object):
 
         line(self.game.screen, self.border_color, [x_1, line_coordinate], [x_2, line_coordinate], self.border_width)
 
+    def draw_sticks(self):
+        """
+        Рисует палки
+        """
+
+        for stick in self.sticks_list:
+            # Графическая координата x палки в [px]
+            stick_graphical_x: int = self.convert_horizontal_m_to_px(stick.physical_x)
+
+            # Графическая координата y палки в [px]
+            stick_graphical_y: int = self.convert_vertical_m_to_px(stick.physical_y)
+
+            stick.manage_graphics(stick_graphical_x, stick_graphical_y)
+
     # --- Обработка ---
     def manage_logic(self):
         """
-        Обрабатывает события, зависящие от статуса игры
+        Обрабатывает логические события леса
         """
 
-        actions_dict: dict = {'walk': [self.process_hero_actions,  # Словарь действий
-                                       self.draw_background,
-                                       self.draw_borders,
-                                       self.draw_items],
-                              'act': [self.process_hero_actions,
-                                      self.draw_background,
-                                      self.draw_borders,
-                                      self.draw_items],
-                              'inventory': [self.game.hero.inventory.process],
-                              'exit': [None]}
-        actions_list: list = actions_dict[self.game.hero.status_current]  # Список действий
-        for action in actions_list:
-            if action is not None:
-                action()
+        logical_list: list = self.logical_dict[self.game.hero.status_current]  # Список действий
+        for logical_action in logical_list:
+            if logical_action is not None:
+                logical_action()
+
+    def manage_graphics(self):
+        """
+        Обрабатывает графические события леса
+        """
+
+        graphical_list: list = self.graphical_dict[self.game.hero.status_current]
+        for graphical_action in graphical_list:
+            if graphical_action is not None:
+                graphical_action()
 
     def process(self):
         """
@@ -292,3 +352,4 @@ class Forest(object):
         """
 
         self.manage_logic()
+        self.manage_graphics()

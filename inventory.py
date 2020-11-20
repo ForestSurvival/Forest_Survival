@@ -35,7 +35,7 @@ class Inventory(object):
         self.text_space = 10  # Ширина пробела между изображением объекта и записью о количестве его копий в [px]
 
         # Объекты
-        self.apple = Apple(self.screen, 0, 0)  # Объект яблока
+        self.apple = Apple(hero.game.forest, 0, 0)  # Объект яблока
         self.button_apple = Button(hero.eat_apple, self, self.apple_x, self.apple_y)  # Объект кнопки яблока
         self.hero = hero  # Объект героя
 
