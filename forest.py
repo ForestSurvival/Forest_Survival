@@ -148,7 +148,8 @@ class Forest(object):
         Создаёт логический словарь
         """
         self.logical_dict: dict = {'walk': [None],  # Логический словарь
-                                   'act': [self.manage_apples_logic],
+                                   'act': [self.manage_apples_logic,
+                                           self.manage_sticks_logic],
                                    'inventory': [self.game.hero.inventory.process],
                                    'exit': [None]}
 
@@ -193,7 +194,7 @@ class Forest(object):
 
     def manage_apples_logic(self):
         """
-        Обрабатывает действия героя
+        Обрабатывает действия героя над яблоками
         """
 
         for apple in self.apples_list:
@@ -206,6 +207,22 @@ class Forest(object):
 
             if distance <= self.game.hero.action_radius:
                 apple.manage_logic()
+
+    def manage_sticks_logic(self):
+        """
+        Обрабатывает действия героя над палками
+        """
+
+        for stick in self.sticks_list:
+
+            # Список компонент физического расстояния до палки в [м]
+            distance_list: list = self.calculate_distance_to_point(stick.physical_x, stick.physical_y)
+
+            # Физическое расстояние до палки в [м]
+            distance: float = math.sqrt(distance_list[0] ** 2 + distance_list[1] ** 2)
+
+            if distance <= self.game.hero.action_radius:
+                stick.manage_logic()
 
     # --- Физика ---
     def calculate_distance_to_line(self, line_dict: dict):

@@ -30,6 +30,15 @@ class Stick(object):
         # Объекты
         self.forest = forest
 
+    # --- Логика ---
+    def get_collected(self):
+        """
+        Палка собрана героем
+        """
+
+        self.forest.game.hero.inventory.sticks_amount += 1  # Увеличить количество палок в инвентаре
+        self.forest.sticks_list.remove(self)
+
     # --- Графика ---
     def draw(self, graphical_x: int, graphical_y: int):
         """
@@ -42,6 +51,13 @@ class Stick(object):
         circle(self.forest.game.screen, self.color, (graphical_x, graphical_y), self.radius)
 
     # --- Обработка ---
+    def manage_logic(self):
+        """
+        Обрабатывает логические события палки
+        """
+
+        self.get_collected()
+
     def manage_graphics(self, graphical_x: int, graphical_y: int):
         """
         Обрабатывает графические события палки
