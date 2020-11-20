@@ -47,9 +47,11 @@ class Game(object):
         self.set_screen()
 
         self.forest = Forest(self)  # Объект леса
-        self.forest.setup()
 
         self.hero = Hero(self)  # Объект героя
+
+        self.forest.setup()
+
         self.hero.setup()
 
         self.logic_engine = LogicEngine(self)  # Объект логического движка
