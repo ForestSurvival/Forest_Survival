@@ -8,6 +8,7 @@ from pygame.draw import *
 from random import *
 
 from apple import Apple
+from house import House
 from stick import Stick
 
 
@@ -35,10 +36,12 @@ class Forest(object):
         self.graphical_dict: dict = {'walk': [self.draw_background,  # Графический словарь
                                               self.draw_borders,
                                               self.draw_apples,
+                                              self.draw_houses,
                                               self.draw_sticks],
                                      'act': [self.draw_background,
                                              self.draw_borders,
                                              self.draw_apples,
+                                             self.draw_houses,
                                              self.draw_sticks],
                                      'inventory': [None]}
 
@@ -59,6 +62,7 @@ class Forest(object):
         # Объекты
         self.apples_list: list = []  # Список яблок
         self.game = game
+        self.houses_list: list = []  # Список домов
         self.sticks_list: list = []  # Список палок
 
     # --- Инициализация ---
@@ -127,6 +131,23 @@ class Forest(object):
             apple = Apple(self, x_apple, y_apple)  # Объект яблока
             self.apples_list.append(apple)
 
+    def generate_houses(self):
+        """
+        Создаёт дома
+        """
+
+        houses_amount: int = 1  # Количество домов
+        for house_number in range(houses_amount):
+            # Физическая координата x дома в [м]
+            house_physical_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
+
+            # Физическая координата y дома в [м]
+            house_physical_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
+
+            house = House(self, house_physical_x, house_physical_y)  # Объект яблока
+            house.setup()
+            self.houses_list.append(house)
+
     def generate_sticks(self):
         """
         Создаёт палки
@@ -149,6 +170,7 @@ class Forest(object):
         """
         self.logical_dict: dict = {'walk': [None],  # Логический словарь
                                    'act': [self.manage_apples_logic,
+                                           self.manage_houses_logic,
                                            self.manage_sticks_logic],
                                    'inventory': [self.game.hero.inventory.process],
                                    'exit': [None]}
@@ -163,6 +185,7 @@ class Forest(object):
         self.count_max_distance()
         self.count_draw_distance()
         self.generate_apples()
+        self.generate_houses()
         self.generate_sticks()
 
     # --- Логика ---
@@ -207,6 +230,22 @@ class Forest(object):
 
             if distance <= self.game.hero.action_radius:
                 apple.manage_logic()
+
+    def manage_houses_logic(self):
+        """
+        Обрабатывает действия героя над домами
+        """
+
+        for house in self.houses_list:
+
+            # Список компонент физического расстояния до дома в [м]
+            distance_list: list = self.calculate_distance_to_point(house.physical_x, house.physical_y)
+
+            # Физическое расстояние до дома в [м]
+            distance: float = math.sqrt(distance_list[0] ** 2 + distance_list[1] ** 2)
+
+            if distance <= self.game.hero.action_radius:
+                house.manage_logic()
 
     def manage_sticks_logic(self):
         """
@@ -315,6 +354,20 @@ class Forest(object):
         y_2: int = self.game.screen.get_height() + 1  # Нижняя точка ниже экрана
 
         line(self.game.screen, self.border_color, [line_coordinate, y_1], [line_coordinate, y_2], self.border_width)
+
+    def draw_houses(self):
+        """
+        Рисует дома
+        """
+
+        for house in self.houses_list:
+            # Графическая координата x дома в [px]
+            house_graphical_x: int = self.convert_horizontal_m_to_px(house.physical_x)
+
+            # Графическая координата y дома в [px]
+            house_graphical_y: int = self.convert_vertical_m_to_px(house.physical_y)
+
+            house.manage_graphics(house_graphical_x, house_graphical_y)
 
     def draw_vertical_line(self, line_coordinate: float):
         """

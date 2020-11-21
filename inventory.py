@@ -21,11 +21,14 @@ class Inventory(object):
 
         # Физика
         self.apples_amount: int = 0  # Количество яблок
+        self.paper_amount: int = 0  # Количество бумаги
         self.sticks_amount: int = 0  # Количество палок
 
         # Графика
         self.apple_graphical_x: int = 5  # Координата x запси о яблоке в [px]
         self.apple_graphical_y: int = 40  # Координата y записи о яблоке в [px]
+        self.paper_graphical_x: int = 200  # Координата x запси о бумаге в [px]
+        self.paper_graphical_y: int = 80  # Координата x запси о бумаге в [px]
         self.stick_graphical_x: int = 200  # Графическая коордиата x записи о палке в [px]
         self.stick_graphical_y: int = 40  # Графическая координата y записи о палке в [px]
 
@@ -42,6 +45,7 @@ class Inventory(object):
         self.button_apple = Button(hero.eat_apple, self, self.apple_graphical_x, self.apple_graphical_y)
 
         self.hero = hero  # Объект героя
+        self.paper = None  # Объект бумаги определяется в inventory.setup()
         self.stick = None  # Объект палки определяется в inventory.setup()
 
     # --- Инициализация ---
@@ -51,6 +55,13 @@ class Inventory(object):
         """
 
         self.apple = self.hero.game.forest.apples_list[0]  # Объект яблока
+
+    def get_paper(self):
+        """
+        Определяет объект бумаги
+        """
+
+        self.paper = self.hero.game.forest.houses_list[0].paper  # Объект бумаги
 
     def get_stick(self):
         """
@@ -74,8 +85,9 @@ class Inventory(object):
         """
 
         self.get_apple()
-        self.get_stick()
         self.set_font()
+        self.get_paper()
+        self.get_stick()
 
     # --- Графика ---
     def print_amount(self, item, amount: int, graphical_x: int, graphical_y: int):
@@ -104,6 +116,14 @@ class Inventory(object):
         self.apple.draw(self.apple_graphical_x, self.apple_graphical_y)
         self.print_amount(self.apple, self.apples_amount, self.apple_graphical_x, self.apple_graphical_y)
 
+    def show_paper(self):
+        """
+        Показывает информацию о бумаге
+        """
+
+        self.paper.draw(self.paper_graphical_x, self.paper_graphical_y)
+        self.print_amount(self.paper, self.paper_amount, self.paper_graphical_x, self.paper_graphical_y)
+
     def show_stick(self):
         """
         Показывает информацию о палках
@@ -119,6 +139,7 @@ class Inventory(object):
         """
 
         self.show_apple()
+        self.show_paper()
         self.show_stick()
 
     def process(self):
