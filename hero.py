@@ -8,6 +8,7 @@ import pygame
 from pygame.draw import *
 
 from apple import Apple
+from indicator import Indicator
 from inventory import Inventory
 
 
@@ -26,6 +27,9 @@ class Hero(object):
         # Физика
         self.speed_actual: float = 2  # Действительная скорость героя в [м/с]
         self.speed_max: float = 2  # Максимальная скорость героя в [м/с]
+        self.thirst: float = 0.0009  # Жажда героя в [м^3]
+        self.thirst_max: float = 0.0018  # Минимальная жажда героя в [м^3]
+        self.thirst_increase: float = self.thirst_max / game.day_length  # Скорость увеличения жажды в [м^3/с]
         self.x: float = 0  # Координата x героя в [м]
         self.y: float = 0  # Координата y героя в [м]
 
@@ -35,12 +39,14 @@ class Hero(object):
         self.action_radius: float = 0.5  # Расстояние, в пределах которого герой может действовать на объект в [м]
         self.satiety: float = 4186.8  # Пищевая энергия в [Дж]
         self.satiety_max: float = 8373.6  # Максимальня пищевая энергия в [Дж]
-        self.satiety_reduce: int = self.satiety_max // game.day_length  # Скорость голодания в [Дж/с]
+        self.satiety_reduce: float = self.satiety_max / game.day_length  # Скорость голодания в [Дж/с]
         self.status_current: str = 'walk'  # Герой может перемещаться
         self.status_last: str = 'walk'  # Статус героя в предыдущем цикле
 
         # Объекты
         self.game = game
+        self.indicator_satiety = None  # Объект индикатора сытости определяется в hero.setup()
+        self.indicator_thirst = None  # Объект индикатора жажды определяется в hero.setup()
         self.inventory = Inventory(self)  # Объект инвентаря
 
         # Графика
@@ -50,6 +56,26 @@ class Hero(object):
         self.screen = game.screen
 
     # --- Инициализация ---
+    def set_indicator_satiety(self):
+        """
+        Создаёт индикатор сытости
+        """
+
+        indicator_satiety_x: int = 0  # Координата x индикатора сытости
+        indicator_satiety_y: int = 0  # Координата y индикатора сытости
+        satiety_percent: float = 100 * self.satiety / self.satiety_max  # Сытость героя в [%]
+        self.indicator_satiety = Indicator('Сытость', self, satiety_percent, indicator_satiety_x, indicator_satiety_y)
+
+    def set_indicator_thirst(self):
+        """
+        Создаёт индикатор жажды
+        """
+
+        indicator_thirst_x: int = 200  # Координата x индикатора жажды
+        indicator_thirst_y: int = 0  # Координата y индикатора жажды
+        thirst_percent: float = 100 * self.thirst / self.thirst_max  # Жажда героя в [%]
+        self.indicator_thirst = Indicator('Жажда', self, thirst_percent, indicator_thirst_x, indicator_thirst_y)
+
     def setup(self):
         """
         Действия при создании героя
@@ -57,6 +83,8 @@ class Hero(object):
 
         self.inventory.setup()
         self.set_actions_dicts()
+        self.set_indicator_satiety()
+        self.set_indicator_thirst()
 
     # --- Логика ---
     def act(self):
@@ -81,14 +109,6 @@ class Hero(object):
             speed_reduce: float = 1  # Сохранение полной скорости героя
         return speed_reduce
 
-    def check_live_parameters(self):
-        """
-        Проверяет жизненно важные параметры героя
-        """
-
-        if self.satiety == 0:  # Если герой смертельно голоден
-            self.get_dead()
-
     def eat_apple(self):
         """
         Герой ест яблоко
@@ -105,7 +125,7 @@ class Hero(object):
         """
 
         self.status_current: str = 'dead'  # Герой мёртв
-        self.game.finish()
+        self.game.exit()
 
     def set_actions_dicts(self):
         """
@@ -152,14 +172,23 @@ class Hero(object):
         self.status_last: str = self.status_current  # Обновить статус
 
     # --- Физика ---
+    def check_live_parameters(self):
+        """
+        Проверяет жизненно важные параметры героя
+        """
+
+        if self.satiety == 0 or self.thirst == self.thirst_max:  # Если герой смертельно голоден или хочет пить
+            self.get_dead()
+
     def get_hungry(self):
         """
         Уменьшает сытость
         """
 
-        delta_satiety: float = self.satiety_reduce * self.game.time_step  # Квант голодания в [Дж]
+        time_step: float = 1 / self.game.fps  # Квант времени в [с]
+        delta_satiety: float = self.satiety_reduce * time_step  # Квант голодания в [Дж]
         new_satiety: float = self.satiety - delta_satiety  # Новая пищевая энергия в [Дж]
-        new_satiety_int: int = round(new_satiety)  # Округлённое значение новой пищевой энергии в [Дж]
+        new_satiety_int: int = round(new_satiety)  # Округлённая новая пищевая энергия в [Дж]
         self.satiety = max(0, new_satiety_int)  # Пищевая энергия не может быть отрицательной
 
     def get_inventory(self):
@@ -169,12 +198,23 @@ class Hero(object):
 
         self.status_current: str = 'inventory'  # Отобразить инвентарь
 
+    def get_thirsty(self):
+        """
+        Увеличивает жажду
+        """
+
+        time_step: float = 1 / self.game.fps  # Квант времени в [с]
+        delta_thirst: float = self.thirst_increase * time_step  # Квант увеличения жажды в [м^3]
+        new_thirst: float = self.thirst + delta_thirst  # Новая жажда в [м^3]
+        self.thirst = min(new_thirst, self.thirst_max)  # Жажда не может быть больше максимальной
+
     def move_down(self):
         """
         Перемещает героя вниз
         """
 
-        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        time_step: float = 1 / self.game.fps  # Квант времени в [с]
+        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
         self.y += delta_distance  # Координата y героя в [м]
 
     def move_left(self):
@@ -182,7 +222,8 @@ class Hero(object):
         Перемещает героя влево
         """
 
-        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        time_step: float = 1 / self.game.fps  # Квант времени в [с]
+        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
         self.x -= delta_distance  # Координата y героя в [м]
 
     def move_right(self):
@@ -190,7 +231,8 @@ class Hero(object):
         Перемещает героя вправо
         """
 
-        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        time_step: float = 1 / self.game.fps  # Квант времени в [с]
+        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
         self.x += delta_distance  # Координата y героя в [м]
 
     def move_up(self):
@@ -198,8 +240,25 @@ class Hero(object):
         Перемещает героя вверх
         """
 
-        delta_distance: float = self.speed_actual * self.game.time_step  # Квант перемещения в [м]
+        time_step: float = 1 / self.game.fps  # Квант времени в [с]
+        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
         self.y -= delta_distance  # Координата y героя в [м]
+
+    def update_indicator_satiety(self):
+        """
+        Обновляет значение индикатора сытости
+        """
+
+        satiety_percent: float = 100 * self.satiety / self.satiety_max  # Сытость героя в [%]
+        self.indicator_satiety.value = satiety_percent
+
+    def update_indicator_thirst(self):
+        """
+        Обновляет значение индикатора жажды
+        """
+
+        thirst_percent: float = 100 * self.thirst / self.thirst_max  # Жажда героя в [%]
+        self.indicator_thirst.value = thirst_percent
 
     # --- Графика ---
     def draw(self):
@@ -228,9 +287,6 @@ class Hero(object):
         Обрабатывает логические события героя
         """
 
-        self.get_hungry()
-        self.check_live_parameters()
-        self.update_status()
         for key_index in range(self.game.logic_engine.keys_amount):
             if key_index in self.actions_current_dict:
                 if self.game.logic_engine.keys_current_list[key_index] == 1:  # Если клавиша нажата в текущем цикле
@@ -241,9 +297,24 @@ class Hero(object):
                 if self.game.logic_engine.keys_moment_list[key_index] == 1:
                     self.actions_moment_dict[key_index]()
 
+    def manage_physics(self):
+        """
+        Обрабатывает физические события героя
+        """
+
+        self.get_hungry()
+        self.get_thirsty()
+        self.check_live_parameters()
+        self.update_status()
+        self.update_indicator_satiety()
+        self.update_indicator_thirst()
+
     def process(self):
         """
         Обрабатывает события героя
         """
-
+        self.manage_logic()
+        self.manage_physics()
         self.manage_graphics()
+        self.indicator_satiety.process()
+        self.indicator_thirst.process()
