@@ -5,6 +5,7 @@
 from pygame.draw import *
 from random import random
 
+from match import Match
 from paper import Paper
 
 
@@ -22,6 +23,8 @@ class House(object):
 
         self.color: tuple = (41, 171, 255)  # Цвет дома
         self.graphical_radius: int = 5  # Графический радиус дома в [px]
+        self.matches_amount: int = 0  # Количество спичек
+        self.match_generation_chance: float = 0.5  # Шанс нахождения спички в доме
         self.paper_amount: int = 0  # Количество листов бумаги в доме
         self.paper_generation_chance: float = 0.5  # Шанс нахождения бумаги в доме
         self.physical_x: float = physical_x
@@ -29,6 +32,7 @@ class House(object):
 
         # Объекты
         self.forest = forest
+        self.match = Match(self)  # Объект спички
         self.paper = Paper(self)  # Объект бумаги
 
     # --- Инициализация ---
@@ -46,22 +50,39 @@ class House(object):
         else:
             return False
 
+    def generate_matches(self):
+        """
+        В доме можно найти спички
+        """
+
+        while self.generation_needed(self.match_generation_chance):
+            self.matches_amount += 1  # Создать спичку
+
     def generate_paper(self):
         """
         В доме можно найти бумагу
         """
 
         while self.generation_needed(self.paper_generation_chance):
-            self.paper_amount += 1  # Генерировать бумагу
+            self.paper_amount += 1  # Создать бумагу
 
     def setup(self):
         """
         Инициализация дома
         """
 
+        self.generate_matches()
         self.generate_paper()
 
     # --- Логика ---
+    def collect_matches(self):
+        """
+        Герой забирает спички
+        """
+
+        self.forest.game.hero.inventory.matches_amount += self.matches_amount  # Герой забирает все спички
+        self.matches_amount: int = 0  # Спичек не осталось
+
     def collect_paper(self):
         """
         Герой забирает бумагу
@@ -97,4 +118,5 @@ class House(object):
         Обрабатывает логические события дома
         """
 
+        self.collect_matches()
         self.collect_paper()
