@@ -21,13 +21,23 @@ class Forest(object):
         """
         Параметры
 
-        Координаты центров объектов
-        Словарь прямой состоит из названия оси, которой она перпендикулярна, и её координаты
-
         game - объект игры
-        hero - объект героя
-        screen - экран pygame
         """
+
+        # Логика
+        self.logical_dict: dict = {None: None}  # Логический словарь определяется в forest.setup()
+
+        # Физика
+        self.borders_dict = None  # Словари границ определяется в forest.setup()
+
+        # Расстояние между границами леса по горизонтали в [м] определяется в forest.setup()
+        self.borders_distance_x = None
+
+        # Расстояние между границами леса по вертикали в [м] определяется в forest.setup()
+        self.borders_distance_y = None
+
+        self.draw_distance_max = None  # Максимальное расстояние прорисовки в [м] определяется в forest.setup()
+        self.scale: int = 35  # Масштаб в [px/м]
 
         # Графика
         self.border_color: tuple = (185, 250, 250)  # Цвет границ
@@ -44,20 +54,6 @@ class Forest(object):
                                              self.draw_houses,
                                              self.draw_sticks],
                                      'inventory': [None]}
-
-        # Логика
-        self.logical_dict: dict = {None: None}  # Логический словарь определяется в forest.setup()
-        self.max_draw_distance = None  # Максимальное расстояние прорисовки в [м] определяется в forest.setup()
-        self.scale: int = 35  # Масштаб в [px/м]
-
-        # Физика
-        self.borders_dict = None  # Словари границ определяется в forest.setup()
-
-        # Расстояние между границами леса по горизонтали в [м] определяется в forest.setup()
-        self.borders_distance_x = None
-
-        # Расстояние между границами леса по вертикали в [м] определяется в forest.setup()
-        self.borders_distance_y = None
 
         # Объекты
         self.apples_list: list = []  # Список яблок
@@ -94,7 +90,7 @@ class Forest(object):
         max_screen_distance: float = math.sqrt(screen_height ** 2 + screen_width ** 2)
 
         max_distance: float = max_screen_distance / self.scale  # Максимальное расстояние до видимого объекта в [м]
-        self.max_draw_distance: int = math.ceil(max_distance)  # Максимальное расстояние прорисовки в []
+        self.draw_distance_max: int = math.ceil(max_distance)  # Максимальное расстояние прорисовки в []
 
     def create_borders(self):
         """
@@ -298,7 +294,7 @@ class Forest(object):
         line_dict - словарь прямой
         """
 
-        if distance <= self.max_draw_distance:  # Если прямую надо прорисовывать
+        if distance <= self.draw_distance_max:  # Если прямую надо прорисовывать
             return True
         else:
             return False
