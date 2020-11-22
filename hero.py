@@ -8,6 +8,7 @@ import pygame
 from pygame.draw import *
 
 from apple import Apple
+from crafts import Crafts
 from indicator import Indicator
 from inventory import Inventory
 
@@ -45,6 +46,7 @@ class Hero(object):
 
         # Объекты
         self.game = game
+        self.crafts = Crafts(self)  # Объект крафтов
         self.indicator_satiety = None  # Объект индикатора сытости определяется в hero.setup()
         self.indicator_thirst = None  # Объект индикатора жажды определяется в hero.setup()
         self.inventory = Inventory(self)  # Объект инвентаря
@@ -81,6 +83,7 @@ class Hero(object):
         Действия при создании героя
         """
 
+        self.crafts.setup()
         self.inventory.setup()
         self.set_actions_dicts()
         self.set_indicator_satiety()
@@ -134,7 +137,8 @@ class Hero(object):
 
         self.actions_moment_dict: dict = {pygame.K_e: self.act,  # Словарь мгновенных действий
                                           pygame.K_ESCAPE: self.walk,
-                                          pygame.K_i: self.get_inventory}
+                                          pygame.K_i: self.get_inventory,
+                                          pygame.K_c: self.get_crafts}
         self.actions_current_dict: dict = {pygame.K_a: self.move_left,
                                            pygame.K_d: self.move_right,
                                            pygame.K_s: self.move_down,
@@ -179,6 +183,13 @@ class Hero(object):
 
         if self.satiety == 0 or self.thirst == self.thirst_max:  # Если герой смертельно голоден или хочет пить
             self.get_dead()
+
+    def get_crafts(self):
+        """
+        Отображает крафты
+        """
+
+        self.status_current: str = 'crafts'  # Отобразить крафты
 
     def get_hungry(self):
         """

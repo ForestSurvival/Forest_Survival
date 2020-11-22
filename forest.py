@@ -53,10 +53,12 @@ class Forest(object):
                                              self.draw_apples,
                                              self.draw_houses,
                                              self.draw_sticks],
+                                     'crafts': [None],
                                      'inventory': [None]}
 
         # Объекты
         self.apples_list: list = []  # Список яблок
+        self.campfires_list: list = []  # Список костров
         self.game = game
         self.houses_list: list = []  # Список домов
         self.sticks_list: list = []  # Список палок
@@ -168,6 +170,7 @@ class Forest(object):
                                    'act': [self.manage_apples_logic,
                                            self.manage_houses_logic,
                                            self.manage_sticks_logic],
+                                   'crafts': [self.game.hero.crafts.process],
                                    'inventory': [self.game.hero.inventory.process],
                                    'exit': [None]}
 
