@@ -55,7 +55,7 @@ class Hero(object):
         self.color: tuple = (206, 181, 75)  # Цвет героя
         self.draw_list: list = [None]  # Графический список
         self.radius: int = 5  # Радиус в [px]
-        self.screen = game.screen
+        # self.screen = game.graphic_engine.screen
 
     # --- Инициализация ---
     def set_indicator_satiety(self):
@@ -118,7 +118,7 @@ class Hero(object):
         """
 
         if self.inventory.apples_amount > 0 and self.satiety < self.satiety_max:  # Если есть яблоки и герой хочет есть
-            apple = Apple(self.game.screen, 0, 0)  # Тестовое яблоко
+            apple = Apple(self.game.graphic_engine.screen, 0, 0)  # Тестовое яблоко
             self.inventory.apples_amount -= 1  # Уменьшить количество яблок в инвентаре
             self.satiety += apple.satiety
 
@@ -277,10 +277,10 @@ class Hero(object):
         Нарисовать героя
         """
 
-        x: int = self.screen.get_width() // 2  # Координата x героя на экране в [px]
-        y: int = self.screen.get_height() // 2  # Координата y героя на экране в [px]
+        x: int = self.game.graphic_engine.screen.get_width() // 2  # Координата x героя на экране в [px]
+        y: int = self.game.graphic_engine.screen.get_height() // 2  # Координата y героя на экране в [px]
 
-        circle(self.screen, self.color, (x, y), self.radius)
+        circle(self.game.graphic_engine.screen, self.color, (x, y), self.radius)
 
     # --- Обработка ---
     def manage_graphics(self):

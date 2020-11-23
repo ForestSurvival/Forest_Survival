@@ -32,7 +32,7 @@ class Match(object):
         graphical_y - Графическая координата y спички в [px]
         """
 
-        circle(self.house.forest.game.screen, self.color, (graphical_x, graphical_y), self.radius)
+        circle(self.house.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.radius)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):

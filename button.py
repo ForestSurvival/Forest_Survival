@@ -58,7 +58,7 @@ class Button(object):
         # Упрощение
         h_s = self.hero_screen
 
-        rect(h_s.hero.game.screen, self.color, (self.graphical_x, self.graphical_y, self.width, self.height))
+        rect(h_s.hero.game.graphic_engine.screen, self.color, (self.graphical_x, self.graphical_y, self.width, self.height))
 
     # --- Обработка ---
     def process(self):
