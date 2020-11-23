@@ -48,7 +48,7 @@ class Stick(object):
         graphical_y - графическая координата палки в [px]
         """
 
-        circle(self.forest.game.screen, self.color, (graphical_x, graphical_y), self.radius)
+        circle(self.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.radius)
 
     # --- Обработка ---
     def manage_logic(self):

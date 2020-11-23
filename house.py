@@ -1,7 +1,7 @@
 """
 Класс дома
 """
-
+import pygame
 from pygame.draw import *
 from random import random
 
@@ -22,13 +22,17 @@ class House(object):
         """
 
         self.color: tuple = (41, 171, 255)  # Цвет дома
-        self.graphical_radius: int = 5  # Графический радиус дома в [px]
+        self.graphical_height: int = 75  # Графическая высота дома в [px]
+        self.graphical_width: int = 60  # Графическая ширина дома в [px]
         self.matches_amount: int = 0  # Количество спичек
-        self.match_generation_chance: float = 0.5  # Шанс нахождения спички в доме
+        self.match_generation_chance: float = 0.999999999999999999  # Шанс нахождения спички в доме
         self.paper_amount: int = 0  # Количество листов бумаги в доме
         self.paper_generation_chance: float = 0.5  # Шанс нахождения бумаги в доме
         self.physical_x: float = physical_x
         self.physical_y: float = physical_y
+
+        # Изображение дома в формате png
+        self.picture_house = pygame.image.load('Sprites/snow_house.bmp')
 
         # Объекты
         self.forest = forest
@@ -94,23 +98,36 @@ class House(object):
     # --- Графика ---
     def draw(self, graphical_x: int, graphical_y: int):
         """
-        Рисует яблоко
+        Рисует дом
 
-        graphical_x - Графическая координата x яблока в [px]
-        graphical_y - Графическая координата y яблока в [px]
+        graphical_x - Графическая координата x дома в [px]
+        graphical_y - Графическая координата y дома в [px]
         """
 
-        circle(self.forest.game.screen, self.color, (graphical_x, graphical_y), self.graphical_radius)
+        circle(self.forest.game.graphic_engine.screen, (0, 0, 0), (graphical_x, graphical_y), 10)
+        graphical_x -= self.graphical_width // 2
+        graphical_y -= self.graphical_height // 2
+
+        # Вставляет изображение дома
+        self.forest.game.graphic_engine.screen.blit(self.picture_house, (graphical_x, graphical_y))
+
+    def transform(self):
+        """
+        Изменяет размер изображения
+        """
+
+        self.picture_house = pygame.transform.scale(self.picture_house, (self.graphical_height, self.graphical_width))
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
         """
-        Обрабатывает графические события яблока
+        Обрабатывает графические события дома
 
-        graphical_x - Графическая координата x яблока в [px]
-        graphical_y - Графическая координата y яблока в [px]
+        graphical_x - Графическая координата x дома в [px]
+        graphical_y - Графическая координата y дома в [px]
         """
 
+        self.transform()
         self.draw(graphical_x, graphical_y)
 
     def manage_logic(self):

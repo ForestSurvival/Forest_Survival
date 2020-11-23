@@ -118,7 +118,7 @@ class Inventory(object):
         amount_str: str = str(amount)  # Количество копий объекта
         text = self.font.render(amount_str, self.font_smoothing, self.text_color)  # Текст о количестве копий объекта
 
-        self.hero.game.screen.blit(text, (text_graphical_x, graphical_y))
+        self.hero.game.graphic_engine.screen.blit(text, (text_graphical_x, graphical_y))
 
     def show_apple(self):
         """
