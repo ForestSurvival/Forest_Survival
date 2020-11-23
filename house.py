@@ -25,7 +25,7 @@ class House(object):
         self.graphical_height: int = 75  # Графическая высота дома в [px]
         self.graphical_width: int = 60  # Графическая ширина дома в [px]
         self.matches_amount: int = 0  # Количество спичек
-        self.match_generation_chance: float = 0.999999999999999999  # Шанс нахождения спички в доме
+        self.match_generation_chance: float = 0.5  # Шанс нахождения спички в доме
         self.paper_amount: int = 0  # Количество листов бумаги в доме
         self.paper_generation_chance: float = 0.5  # Шанс нахождения бумаги в доме
         self.physical_x: float = physical_x
