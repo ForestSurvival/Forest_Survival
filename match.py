@@ -1,13 +1,13 @@
 """
-Модуль бумаги
+Модуль спички
 """
 
 from pygame.draw import *
 
 
-class Paper(object):
+class Match(object):
     """
-    Описывает бумагу
+    Описывает спичку
     """
 
     def __init__(self, house):
@@ -17,8 +17,8 @@ class Paper(object):
         forest - объект дома
         """
 
-        self.color: tuple = (16, 77, 57)  # Цвет бумаги
-        self.radius: int = 5  # Радиус бумаги в [px]
+        self.color: tuple = (176, 254, 177)  # Цвет спички
+        self.radius: int = 5  # Радиус спички в [px]
 
         # Объекты
         self.house = house
@@ -28,8 +28,8 @@ class Paper(object):
         """
         Рисует бумагу
 
-        graphical_x - Графическая координата x бумаги в [px]
-        graphical_y - Графическая координата y бумаги в [px]
+        graphical_x - Графическая координата x спички в [px]
+        graphical_y - Графическая координата y спички в [px]
         """
 
         circle(self.house.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.radius)
@@ -37,10 +37,10 @@ class Paper(object):
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
         """
-        Обрабатывает графические события бумаги
+        Обрабатывает графические события спички
 
-        graphical_x - Графическая координата x бумаги в [px]
-        graphical_y - Графическая координата y бумаги в [px]
+        graphical_x - Графическая координата x спички в [px]
+        graphical_y - Графическая координата y спички в [px]
         """
 
         self.draw(graphical_x, graphical_y)

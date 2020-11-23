@@ -21,16 +21,19 @@ class Inventory(object):
 
         # Физика
         self.apples_amount: int = 0  # Количество яблок
+        self.matches_amount: int = 0  # Количество спичек
         self.paper_amount: int = 0  # Количество бумаги
         self.sticks_amount: int = 0  # Количество палок
 
         # Графика
-        self.apple_graphical_x: int = 5  # Координата x запси о яблоке в [px]
-        self.apple_graphical_y: int = 40  # Координата y записи о яблоке в [px]
-        self.paper_graphical_x: int = 200  # Координата x запси о бумаге в [px]
-        self.paper_graphical_y: int = 80  # Координата x запси о бумаге в [px]
+        self.apple_graphical_x: int = 5  # Графическая координата x запси о яблоке в [px]
+        self.apple_graphical_y: int = 40  # Графическая координата y записи о яблоке в [px]
+        self.match_graphical_x: int = 200  # Графическая координата x запси о спичке в [px]
+        self.match_graphical_y: int = 40  # Графическая координата y запси о спичке в [px]
+        self.paper_graphical_x: int = 200  # Графическая координата x запси о бумаге в [px]
+        self.paper_graphical_y: int = 80  # Графическая координата y запси о бумаге в [px]
         self.stick_graphical_x: int = 200  # Графическая коордиата x записи о палке в [px]
-        self.stick_graphical_y: int = 40  # Графическая координата y записи о палке в [px]
+        self.stick_graphical_y: int = 120  # Графическая координата y записи о палке в [px]
 
         # Текст
         self.font = None  # Шрифт определяется в inventory.setup()
@@ -45,6 +48,7 @@ class Inventory(object):
         self.button_apple = Button(hero.eat_apple, self, self.apple_graphical_x, self.apple_graphical_y)
 
         self.hero = hero  # Объект героя
+        self.match = None  # Объект спички определяется в inventory.setup()
         self.paper = None  # Объект бумаги определяется в inventory.setup()
         self.stick = None  # Объект палки определяется в inventory.setup()
 
@@ -55,6 +59,13 @@ class Inventory(object):
         """
 
         self.apple = self.hero.game.forest.apples_list[0]  # Объект яблока
+
+    def get_match(self):
+        """
+        Определяет объект спички
+        """
+
+        self.match = self.hero.game.forest.houses_list[0].match  # Объект спички
 
     def get_paper(self):
         """
@@ -86,6 +97,7 @@ class Inventory(object):
 
         self.get_apple()
         self.set_font()
+        self.get_match()
         self.get_paper()
         self.get_stick()
 
@@ -106,7 +118,7 @@ class Inventory(object):
         amount_str: str = str(amount)  # Количество копий объекта
         text = self.font.render(amount_str, self.font_smoothing, self.text_color)  # Текст о количестве копий объекта
 
-        self.hero.game.screen.blit(text, (text_graphical_x, graphical_y))
+        self.hero.game.graphic_engine.screen.blit(text, (text_graphical_x, graphical_y))
 
     def show_apple(self):
         """
@@ -115,6 +127,14 @@ class Inventory(object):
 
         self.apple.draw(self.apple_graphical_x, self.apple_graphical_y)
         self.print_amount(self.apple, self.apples_amount, self.apple_graphical_x, self.apple_graphical_y)
+
+    def show_match(self):
+        """
+        Показывает информацию о спичках
+        """
+
+        self.match.draw(self.match_graphical_x, self.match_graphical_y)
+        self.print_amount(self.match, self.matches_amount, self.match_graphical_x, self.match_graphical_y)
 
     def show_paper(self):
         """
@@ -139,6 +159,7 @@ class Inventory(object):
         """
 
         self.show_apple()
+        self.show_match()
         self.show_paper()
         self.show_stick()
 

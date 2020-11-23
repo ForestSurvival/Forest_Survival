@@ -39,27 +39,33 @@ class Forest(object):
         self.draw_distance_max = None  # Максимальное расстояние прорисовки в [м] определяется в forest.setup()
         self.scale: int = 35  # Масштаб в [px/м]
 
+        # Объекты
+        self.apples_list: list = []  # Список яблок
+        self.campfires_list: list = []  # Список костров
+        self.game = game
+        self.houses_list: list = []  # Список домов
+        self.sticks_list: list = []  # Список палок
+
         # Графика
+
+        # # Изображение фона в формате png
+        # self.game_background = pygame.image.load('Sprites/game_background.png')
+
         self.border_color: tuple = (185, 250, 250)  # Цвет границ
         self.border_width: int = 1  # Толщина границ в [px]
         self.color: tuple = (193, 86, 217)  # Цвет леса
-        self.graphical_dict: dict = {'walk': [self.draw_background,  # Графический словарь
+        self.graphical_dict: dict = {'walk': [self.game.graphic_engine.manage_graphic,  # Графический словарь
                                               self.draw_borders,
                                               self.draw_apples,
                                               self.draw_houses,
                                               self.draw_sticks],
-                                     'act': [self.draw_background,
+                                     'act': [self.game.graphic_engine.manage_graphic,
                                              self.draw_borders,
                                              self.draw_apples,
                                              self.draw_houses,
                                              self.draw_sticks],
+                                     'crafts': [None],
                                      'inventory': [None]}
-
-        # Объекты
-        self.apples_list: list = []  # Список яблок
-        self.game = game
-        self.houses_list: list = []  # Список домов
-        self.sticks_list: list = []  # Список палок
 
     # --- Инициализация ---
     def count_max_distance(self):
@@ -83,8 +89,8 @@ class Forest(object):
         Вычисляет расстояние прорисовки в [м]
         """
 
-        screen_height: int = self.game.screen.get_height()  # Высота экрана в [px]
-        screen_width: int = self.game.screen.get_width()  # Ширина экрана в [px]
+        screen_height: int = self.game.graphic_engine.screen.get_height()  # Высота экрана в [px]
+        screen_width: int = self.game.graphic_engine.screen.get_width()  # Ширина экрана в [px]
 
         # Максимальное расстояние на экране в [px]
         max_screen_distance: float = math.sqrt(screen_height ** 2 + screen_width ** 2)
@@ -168,6 +174,7 @@ class Forest(object):
                                    'act': [self.manage_apples_logic,
                                            self.manage_houses_logic,
                                            self.manage_sticks_logic],
+                                   'crafts': [self.game.hero.crafts.process],
                                    'inventory': [self.game.hero.inventory.process],
                                    'exit': [None]}
 
@@ -195,7 +202,10 @@ class Forest(object):
         distance_m: float = coordinate_m - self.game.hero.x  # Расстояние от героя до объекта в [м]
         distance_raw: float = distance_m * self.scale  # Расстояние в [px]
         distance_px: int = round(distance_raw)  # Округлённое расстояние в [px]
-        distance_px_cooked: int = distance_px + self.game.screen.get_width() // 2  # Координата  объекта в [px]
+
+        # Координата  объекта в [px]
+        distance_px_cooked: int = distance_px + self.game.graphic_engine.screen.get_width() // 2
+
         return distance_px_cooked
 
     def convert_vertical_m_to_px(self, coordinate_m: float):
@@ -208,7 +218,10 @@ class Forest(object):
         distance_m: float = coordinate_m - self.game.hero.y  # Расстояние от героя до объекта в [м]
         distance_raw: float = distance_m * self.scale  # Расстояние в [px]
         distance_px: int = round(distance_raw)  # Округлённое расстояние в [px]
-        distance_px_cooked: int = distance_px + self.game.screen.get_height() // 2  # Координата  объекта в [px]
+
+        # Координата  объекта в [px]
+        distance_px_cooked: int = distance_px + self.game.graphic_engine.screen.get_height() // 2
+
         return distance_px_cooked
 
     def manage_apples_logic(self):
@@ -314,13 +327,6 @@ class Forest(object):
 
             apple.manage_graphics(apple_graphical_x, apple_graphical_y)
 
-    def draw_background(self):
-        """
-        Рисует фон леса
-        """
-
-        self.game.screen.fill(self.color)
-
     def draw_borders(self):
         """
         Рисует границы
@@ -347,9 +353,10 @@ class Forest(object):
         """
 
         y_1: int = -1  # Верхняя точка выше экрана
-        y_2: int = self.game.screen.get_height() + 1  # Нижняя точка ниже экрана
+        y_2: int = self.game.graphic_engine.screen.get_height() + 1  # Нижняя точка ниже экрана
+        screen = self.game.graphic_engine.screen
 
-        line(self.game.screen, self.border_color, [line_coordinate, y_1], [line_coordinate, y_2], self.border_width)
+        line(screen, self.border_color, [line_coordinate, y_1], [line_coordinate, y_2], self.border_width)
 
     def draw_houses(self):
         """
@@ -373,9 +380,10 @@ class Forest(object):
         """
 
         x_1: int = -1  # Левая точка левее экрана
-        x_2: int = self.game.screen.get_width() + 1  # Правая точка правее экрана
+        x_2: int = self.game.graphic_engine.screen.get_width() + 1  # Правая точка правее экрана
 
-        line(self.game.screen, self.border_color, [x_1, line_coordinate], [x_2, line_coordinate], self.border_width)
+        screen = self.game.graphic_engine.screen
+        line(screen, self.border_color, [x_1, line_coordinate], [x_2, line_coordinate], self.border_width)
 
     def draw_sticks(self):
         """

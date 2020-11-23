@@ -8,6 +8,7 @@ import pygame
 from pygame.draw import *
 
 from apple import Apple
+from crafts import Crafts
 from indicator import Indicator
 from inventory import Inventory
 
@@ -45,6 +46,7 @@ class Hero(object):
 
         # Объекты
         self.game = game
+        self.crafts = Crafts(self)  # Объект крафтов
         self.indicator_satiety = None  # Объект индикатора сытости определяется в hero.setup()
         self.indicator_thirst = None  # Объект индикатора жажды определяется в hero.setup()
         self.inventory = Inventory(self)  # Объект инвентаря
@@ -53,7 +55,7 @@ class Hero(object):
         self.color: tuple = (206, 181, 75)  # Цвет героя
         self.draw_list: list = [None]  # Графический список
         self.radius: int = 5  # Радиус в [px]
-        self.screen = game.screen
+        # self.screen = game.graphic_engine.screen
 
     # --- Инициализация ---
     def set_indicator_satiety(self):
@@ -81,6 +83,7 @@ class Hero(object):
         Действия при создании героя
         """
 
+        self.crafts.setup()
         self.inventory.setup()
         self.set_actions_dicts()
         self.set_indicator_satiety()
@@ -115,7 +118,7 @@ class Hero(object):
         """
 
         if self.inventory.apples_amount > 0 and self.satiety < self.satiety_max:  # Если есть яблоки и герой хочет есть
-            apple = Apple(self.game.screen, 0, 0)  # Тестовое яблоко
+            apple = Apple(self.game.graphic_engine.screen, 0, 0)  # Тестовое яблоко
             self.inventory.apples_amount -= 1  # Уменьшить количество яблок в инвентаре
             self.satiety += apple.satiety
 
@@ -134,7 +137,8 @@ class Hero(object):
 
         self.actions_moment_dict: dict = {pygame.K_e: self.act,  # Словарь мгновенных действий
                                           pygame.K_ESCAPE: self.walk,
-                                          pygame.K_i: self.get_inventory}
+                                          pygame.K_i: self.get_inventory,
+                                          pygame.K_c: self.get_crafts}
         self.actions_current_dict: dict = {pygame.K_a: self.move_left,
                                            pygame.K_d: self.move_right,
                                            pygame.K_s: self.move_down,
@@ -179,6 +183,13 @@ class Hero(object):
 
         if self.satiety == 0 or self.thirst == self.thirst_max:  # Если герой смертельно голоден или хочет пить
             self.get_dead()
+
+    def get_crafts(self):
+        """
+        Отображает крафты
+        """
+
+        self.status_current: str = 'crafts'  # Отобразить крафты
 
     def get_hungry(self):
         """
@@ -266,10 +277,10 @@ class Hero(object):
         Нарисовать героя
         """
 
-        x: int = self.screen.get_width() // 2  # Координата x героя на экране в [px]
-        y: int = self.screen.get_height() // 2  # Координата y героя на экране в [px]
+        x: int = self.game.graphic_engine.screen.get_width() // 2  # Координата x героя на экране в [px]
+        y: int = self.game.graphic_engine.screen.get_height() // 2  # Координата y героя на экране в [px]
 
-        circle(self.screen, self.color, (x, y), self.radius)
+        circle(self.game.graphic_engine.screen, self.color, (x, y), self.radius)
 
     # --- Обработка ---
     def manage_graphics(self):
