@@ -10,11 +10,11 @@ class Campfire(object):
     Описывает костёр
     """
 
-    def __init__(self, crafts, physical_x: float, physical_y: float):
+    def __init__(self, inventory, physical_x: float, physical_y: float):
         """
         Параметры
 
-        crafts - объект крафтов
+        inventory - объект инвентаря
         physical_x - физическая координата x костра в [м]
         physical_y - физическая координата y костра в [м]
         """
@@ -22,13 +22,16 @@ class Campfire(object):
         # Физика
         self.physical_x: float = physical_x
         self.physical_y: float = physical_y
+        self.matches_amount: int = 1  # Необходимое количество спичек
+        self.paper_amount: int = 1  # Необходимое колчество бумаги
+        self.sticks_amount: int = 5  # Необходимое количество палок
 
         # Графика
-        self.color: tuple = (0, 0, 0)  # Цвет костра
-        self.graphical_radius: int = 5  # Графический радиус костра в [px]
+        self.color: tuple = (128, 0, 0)  # Цвет костра
+        self.radius: int = 5  # Графический радиус костра в [px]
 
         # Объекты
-        self.crafts = crafts
+        self.inventory = inventory  # Объект инвентаря
 
     # --- Логика ---
     def get_created(self):
@@ -36,7 +39,7 @@ class Campfire(object):
         Герой создаёт костёр
         """
 
-        self.crafts.hero.game.forest.campfires_list.append(self)
+        self.inventory.hero.game.forest.campfires_list.append(self)
 
     # --- Графика ---
     def draw(self, graphical_x: int, graphical_y: int):
@@ -47,7 +50,10 @@ class Campfire(object):
         graphical_y - графическая координата y костра в [px]
         """
 
-        circle(self.crafts.hero.game.screen, self.color, (graphical_x, graphical_y), self.graphical_radius)
+        # Объекты
+        screen = self.inventory.hero.game.graphic_engine.screen  # Объект экрана Pygame
+
+        circle(screen, self.color, (graphical_x, graphical_y), self.radius)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):

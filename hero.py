@@ -8,7 +8,7 @@ import pygame
 from pygame.draw import *
 
 from apple import Apple
-from crafts import Crafts
+from campfire import Campfire
 from indicator import Indicator
 from inventory import Inventory
 
@@ -46,7 +46,6 @@ class Hero(object):
 
         # Объекты
         self.game = game
-        self.crafts = Crafts(self)  # Объект крафтов
         self.indicator_satiety = None  # Объект индикатора сытости определяется в hero.setup()
         self.indicator_thirst = None  # Объект индикатора жажды определяется в hero.setup()
         self.inventory = Inventory(self)  # Объект инвентаря
@@ -83,7 +82,6 @@ class Hero(object):
         Действия при создании героя
         """
 
-        self.crafts.setup()
         self.inventory.setup()
         self.set_actions_dicts()
         self.set_indicator_satiety()
@@ -137,8 +135,7 @@ class Hero(object):
 
         self.actions_moment_dict: dict = {pygame.K_e: self.act,  # Словарь мгновенных действий
                                           pygame.K_ESCAPE: self.walk,
-                                          pygame.K_i: self.get_inventory,
-                                          pygame.K_c: self.get_crafts}
+                                          pygame.K_i: self.get_inventory}
         self.actions_current_dict: dict = {pygame.K_a: self.move_left,
                                            pygame.K_d: self.move_right,
                                            pygame.K_s: self.move_down,
@@ -176,6 +173,20 @@ class Hero(object):
         self.status_last: str = self.status_current  # Обновить статус
 
     # --- Физика ---
+    def burn_campfire(self):
+        """
+        Развести костёр
+        """
+
+        if self.inventory.matches_amount >= self.inventory.campfire.matches_amount:  # Если хватает спичек
+            if self.inventory.paper_amount >= self.inventory.campfire.paper_amount:  # Если хватает бумаги
+                if self.inventory.sticks_amount >= self.inventory.campfire.sticks_amount:  # Если хватает палок
+                    campfire = Campfire(self.inventory, self.x, self.y)  # Объект костра
+                    self.game.forest.campfires_list.append(campfire)
+                    self.inventory.matches_amount -= self.inventory.campfire.matches_amount  # Спички израсходованы
+                    self.inventory.paper_amount -= self.inventory.campfire.paper_amount  # Бумага израсходована
+                    self.inventory.sticks_amount -= self.inventory.campfire.sticks_amount  # Палки израсходованы
+
     def check_live_parameters(self):
         """
         Проверяет жизненно важные параметры героя
@@ -183,13 +194,6 @@ class Hero(object):
 
         if self.satiety == 0 or self.thirst == self.thirst_max:  # Если герой смертельно голоден или хочет пить
             self.get_dead()
-
-    def get_crafts(self):
-        """
-        Отображает крафты
-        """
-
-        self.status_current: str = 'crafts'  # Отобразить крафты
 
     def get_hungry(self):
         """
