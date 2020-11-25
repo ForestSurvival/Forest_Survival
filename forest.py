@@ -57,11 +57,13 @@ class Forest(object):
         self.graphical_dict: dict = {'walk': [self.game.graphic_engine.manage_graphic,  # Графический словарь
                                               self.draw_borders,
                                               self.draw_apples,
+                                              self.draw_campfires,
                                               self.draw_houses,
                                               self.draw_sticks],
                                      'act': [self.game.graphic_engine.manage_graphic,
                                              self.draw_borders,
                                              self.draw_apples,
+                                             self.draw_campfires,
                                              self.draw_houses,
                                              self.draw_sticks],
                                      'crafts': [None],
@@ -104,13 +106,13 @@ class Forest(object):
         """
 
         down_border_dict: dict = {'coordinate': 'y',
-                                  'value': 10}  # Словарь нижней границы леса
+                                  'value': 30}  # Словарь нижней границы леса
         left_border_dict: dict = {'coordinate': 'x',
-                                  'value': -10}  # Словаь левой границы леса
+                                  'value': -30}  # Словаь левой границы леса
         right_border_dict: dict = {'coordinate': 'x',
-                                   'value': 10}  # Словарь правой границы леса
+                                   'value': 30}  # Словарь правой границы леса
         up_border_dict: dict = {'coordinate': 'y',
-                                'value': -10}  # Словарь верхней границы леса
+                                'value': -30}  # Словарь верхней границы леса
         self.borders_dict: dict = {'down': down_border_dict,  # Словарь границ
                                    'left': left_border_dict,
                                    'right': right_border_dict,
@@ -121,7 +123,7 @@ class Forest(object):
         Создаёт яблоки
         """
 
-        apples_amount: int = 5  # Количество яблок
+        apples_amount: int = 10  # Количество яблок
         for apple_number in range(apples_amount):
 
             # Координата x яблока в [м]
@@ -138,7 +140,7 @@ class Forest(object):
         Создаёт дома
         """
 
-        houses_amount: int = 1  # Количество домов
+        houses_amount: int = 3  # Количество домов
         for house_number in range(houses_amount):
             # Физическая координата x дома в [м]
             house_physical_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
@@ -155,7 +157,7 @@ class Forest(object):
         Создаёт палки
         """
 
-        sticks_amount: int = 5  # Количество палок
+        sticks_amount: int = 20  # Количество палок
         for stick_number in range(sticks_amount):
             # Координата x палки в [м]
             stick_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
@@ -174,7 +176,7 @@ class Forest(object):
                                    'act': [self.manage_apples_logic,
                                            self.manage_houses_logic,
                                            self.manage_sticks_logic],
-                                   'crafts': [self.game.hero.crafts.process],
+                                   'crafts': [self.game.hero.inventory.process],
                                    'inventory': [self.game.hero.inventory.process],
                                    'exit': [None]}
 
@@ -357,6 +359,20 @@ class Forest(object):
         screen = self.game.graphic_engine.screen
 
         line(screen, self.border_color, [line_coordinate, y_1], [line_coordinate, y_2], self.border_width)
+
+    def draw_campfires(self):
+        """
+        Рисует костры
+        """
+
+        for campfire in self.campfires_list:
+            # Графическая координата x дома в [px]
+            campfire_graphical_x: int = self.convert_horizontal_m_to_px(campfire.physical_x)
+
+            # Графическая координата y дома в [px]
+            campfire_graphical_y: int = self.convert_vertical_m_to_px(campfire.physical_y)
+
+            campfire.manage_graphics(campfire_graphical_x, campfire_graphical_y)
 
     def draw_houses(self):
         """
