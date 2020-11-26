@@ -6,6 +6,7 @@ from pygame.font import *
 
 from button import Button
 from campfire import Campfire
+from water import Water
 
 
 class Inventory(object):
@@ -25,6 +26,7 @@ class Inventory(object):
         self.matches_amount: int = 0  # Количество спичек
         self.paper_amount: int = 0  # Количество бумаги
         self.sticks_amount: int = 0  # Количество палок
+        self.water_amount: int = 0  # Количество воды
 
         # Графика
         self.apple_graphical_x: int = 5  # Графическая координата x запси о яблоке в [px]
@@ -37,6 +39,8 @@ class Inventory(object):
         self.paper_graphical_y: int = 80  # Графическая координата y запси о бумаге в [px]
         self.stick_graphical_x: int = 200  # Графическая коордиата x записи о палке в [px]
         self.stick_graphical_y: int = 120  # Графическая координата y записи о палке в [px]
+        self.water_graphical_x: int = 5  # Графическая коордиата x записи о воде в [px]
+        self.water_graphical_y: int = 80  # Графическая координата y записи о воде в [px]
 
         # Текст
         self.font_size = 30  # Размер шрифта
@@ -54,6 +58,7 @@ class Inventory(object):
         self.match = None  # Объект спички определяется в inventory.setup()
         self.paper = None  # Объект бумаги определяется в inventory.setup()
         self.stick = None  # Объект палки определяется в inventory.setup()
+        self.water = Water(self)
 
     # --- Инициализация ---
     def get_object(self, item_name: str):
@@ -140,17 +145,22 @@ class Inventory(object):
                             'graphical_x': self.stick_graphical_x,
                             'graphical_y': self.stick_graphical_y,
                             'name': self.stick}
+        water_dict: dict = {'amount': self.water_amount,  # Словарь воды
+                            'graphical_x': self.water_graphical_x,
+                            'graphical_y': self.water_graphical_y,
+                            'name': self.water}
         objects_dict: dict = {'apple': apple_dict,  # Словарь объектов
                               'campfire': campfire_dict,
                               'match': match_dict,
                               'paper': paper_dict,
-                              'stick': stick_dict}
+                              'stick': stick_dict,
+                              'water': water_dict}
 
         item_dict: dict = objects_dict[object_name]  # Словарь объекта, информацию о котором нужно показать
         item_dict['name'].draw(item_dict['graphical_x'], item_dict['graphical_y'])
 
         # Графическая координата x текста в [px]
-        text_graphical_x = item_dict['graphical_x'] + 2 * item_dict['name'].radius + self.text_space
+        text_graphical_x = item_dict['graphical_x'] + 2 * item_dict['name'].graphical_radius + self.text_space
 
         item_dict['name'].draw(item_dict['graphical_x'], item_dict['graphical_y'])
         if item_dict['amount'] is not None:  # Если у объекта определено количество
@@ -168,6 +178,7 @@ class Inventory(object):
         self.show_object('match')
         self.show_object('paper')
         self.show_object('stick')
+        self.show_object('water')
 
     def process(self):
         """

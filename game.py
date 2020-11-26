@@ -8,6 +8,7 @@ from forest import Forest
 from hero import Hero
 from graphic_engine import GraphicEngine
 from logic_engine import LogicEngine
+from physical_engine import PhysicalEngine
 
 
 class Game(object):
@@ -19,6 +20,11 @@ class Game(object):
         """
         Параметры
         """
+
+        # Движки
+        self.graphic_engine = None  # Объект графического движка определяется в game.setup()
+        self.logic_engine = None  # Объект логического движка определяется в game.setup()
+        self.physical_engine = None  # Объект физического движка определяется в game.setup()
 
         # Логика
         self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
@@ -36,8 +42,6 @@ class Game(object):
         # Объекты
         self.forest = None  # Объект леса определяется в game.setup()
         self.hero = None  # Объект героя определяется в game.setup()
-        self.graphic_engine = None  # Объект графического движка определяется в game.setup()
-        self.logic_engine = None  # Объект логического движка определяется в game.setup()
 
     # --- Инициализация ---
     def setup(self):
@@ -45,12 +49,14 @@ class Game(object):
         Инициализация игры
         """
 
+        # Движки
         self.graphic_engine = GraphicEngine(self)  # Объект графического движка
         self.graphic_engine.setup()
-
         self.logic_engine = LogicEngine(self)  # Объект логического движка
         self.logic_engine.setup()
+        self.physical_engine = PhysicalEngine(self)  # Объект физческого движка
 
+        # Объекты
         self.forest = Forest(self)  # Объект леса
 
         self.hero = Hero(self)  # Объект героя

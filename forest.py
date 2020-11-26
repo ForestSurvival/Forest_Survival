@@ -106,13 +106,13 @@ class Forest(object):
         """
 
         down_border_dict: dict = {'coordinate': 'y',
-                                  'value': 30}  # Словарь нижней границы леса
+                                  'value': 20}  # Словарь нижней границы леса
         left_border_dict: dict = {'coordinate': 'x',
-                                  'value': -30}  # Словаь левой границы леса
+                                  'value': -20}  # Словаь левой границы леса
         right_border_dict: dict = {'coordinate': 'x',
-                                   'value': 30}  # Словарь правой границы леса
+                                   'value': 20}  # Словарь правой границы леса
         up_border_dict: dict = {'coordinate': 'y',
-                                'value': -30}  # Словарь верхней границы леса
+                                'value': -20}  # Словарь верхней границы леса
         self.borders_dict: dict = {'down': down_border_dict,  # Словарь границ
                                    'left': left_border_dict,
                                    'right': right_border_dict,
@@ -174,6 +174,7 @@ class Forest(object):
         """
         self.logical_dict: dict = {'walk': [None],  # Логический словарь
                                    'act': [self.manage_apples_logic,
+                                           self.manage_campfires_logic,
                                            self.manage_houses_logic,
                                            self.manage_sticks_logic],
                                    'crafts': [self.game.hero.inventory.process],
@@ -231,16 +232,28 @@ class Forest(object):
         Обрабатывает действия героя над яблоками
         """
 
-        for apple in self.apples_list:
+        # Движки
+        physical_engine = self.game.physical_engine
 
-            # Список компонент физического расстояния до яблока в [м]
-            distance_list: list = self.calculate_distance_to_point(apple.physical_x, apple.physical_y)
+        # Объекты
+        close_apple = physical_engine.find_close_object(self.apples_list)  # Близкое к герою яблоко
 
-            # Физическое расстояние до яблока в [м]
-            distance: float = math.sqrt(distance_list[0] ** 2 + distance_list[1] ** 2)
+        if close_apple is not None:  # Если существует близкое к герою яблоко
+            close_apple.manage_logic()
 
-            if distance <= self.game.hero.action_radius:
-                apple.manage_logic()
+    def manage_campfires_logic(self):
+        """
+        Обрабатывает действия героя над кострами
+        """
+
+        # Движки
+        physical_engine = self.game.physical_engine
+
+        # Объекты
+        close_campfire = physical_engine.find_close_object(self.campfires_list)  # Близкий к герою костёр
+
+        if close_campfire is not None:  # Если рядом с героем есть костёр
+            close_campfire.manage_logic()
 
     def manage_houses_logic(self):
         """

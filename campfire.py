@@ -28,7 +28,7 @@ class Campfire(object):
 
         # Графика
         self.color: tuple = (128, 0, 0)  # Цвет костра
-        self.radius: int = 5  # Графический радиус костра в [px]
+        self.graphical_radius: int = 5  # Графический радиус костра в [px]
 
         # Объекты
         self.inventory = inventory  # Объект инвентаря
@@ -53,7 +53,15 @@ class Campfire(object):
         # Объекты
         screen = self.inventory.hero.game.graphic_engine.screen  # Объект экрана Pygame
 
-        circle(screen, self.color, (graphical_x, graphical_y), self.radius)
+        circle(screen, self.color, (graphical_x, graphical_y), self.graphical_radius)
+
+    # --- Физика ---
+    def melt_snow(self):
+        """
+        Растопить снег
+        """
+
+        self.inventory.water_amount += 1  # Добавить воду в инвентарь
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
@@ -65,3 +73,10 @@ class Campfire(object):
         """
 
         self.draw(graphical_x, graphical_y)
+
+    def manage_logic(self):
+        """
+        Обрабатывает логические события костра
+        """
+
+        self.melt_snow()
