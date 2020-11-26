@@ -21,7 +21,7 @@ class Stick(object):
 
         # Графика
         self.color: tuple = (255, 228, 205)  # Цвет палки
-        self.radius: int = 5  # Радиус палки в [px]
+        self.graphical_radius: int = 5  # Радиус палки в [px]
 
         # Физика
         self.physical_x: float = physical_x
@@ -48,7 +48,7 @@ class Stick(object):
         graphical_y - графическая координата палки в [px]
         """
 
-        circle(self.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.radius)
+        circle(self.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.graphical_radius)
 
     # --- Обработка ---
     def manage_logic(self):

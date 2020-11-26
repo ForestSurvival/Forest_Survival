@@ -18,7 +18,7 @@ class Paper(object):
         """
 
         self.color: tuple = (16, 77, 57)  # Цвет бумаги
-        self.radius: int = 5  # Радиус бумаги в [px]
+        self.graphical_radius: int = 5  # Радиус бумаги в [px]
 
         # Объекты
         self.house = house
@@ -32,7 +32,7 @@ class Paper(object):
         graphical_y - Графическая координата y бумаги в [px]
         """
 
-        circle(self.house.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.radius)
+        circle(self.house.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.graphical_radius)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
