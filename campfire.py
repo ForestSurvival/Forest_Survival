@@ -20,6 +20,7 @@ class Campfire(object):
         """
 
         # Физика
+        self.burn_time_left: float = 10800  # Игровое время горения костра в [с]
         self.physical_x: float = physical_x
         self.physical_y: float = physical_y
         self.matches_amount: int = 1  # Необходимое количество спичек
@@ -40,6 +41,29 @@ class Campfire(object):
         """
 
         self.inventory.hero.game.forest.campfires_list.append(self)
+
+    # --- Физика ---
+    def burn(self):
+        """
+        Костёр горит
+        """
+
+        # Объекты
+        physical_engine = self.inventory.hero.game.physical_engine  # Объект физического движка
+
+        # Физика
+        game_time_delta: float = physical_engine.time_step * physical_engine.time_scale  # Шаг игрового времени в [с]
+
+        self.burn_time_left -= game_time_delta  # Оставшееся игровое время горения костра в [с]
+        if self.burn_time_left <= 0:  # Если костёр сгорел
+            self.burn_out()
+
+    def burn_out(self):
+        """
+        Костёр сгорел
+        """
+
+        self.inventory.hero.game.forest.campfires_list.remove(self)
 
     # --- Графика ---
     def draw(self, graphical_x: int, graphical_y: int):
@@ -62,6 +86,7 @@ class Campfire(object):
         """
 
         self.inventory.water_amount += 1  # Добавить воду в инвентарь
+        self.burn_out()
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
@@ -80,3 +105,10 @@ class Campfire(object):
         """
 
         self.melt_snow()
+
+    def process(self):
+        """
+        Обрабатывает события костра
+        """
+
+        self.burn()

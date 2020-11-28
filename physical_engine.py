@@ -17,6 +17,10 @@ class PhysicalEngine(object):
         game - объект игры
         """
 
+        # Физика
+        self.time_scale: float = 86400 / game.day_length  # Масштаб времени
+        self.time_step: float = 1 / game.fps  # Шаг игры по времени
+
         # Объекты
         self.game = game
 
