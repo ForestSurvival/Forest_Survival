@@ -29,7 +29,7 @@ class Hero(object):
         self.speed_actual: float = 2  # Действительная скорость героя в [м/с]
         self.speed_max: float = 2  # Максимальная скорость героя в [м/с]
         self.thirst: float = 0.0009  # Жажда героя в [м^3]
-        self.thirst_max: float = 0.0018  # Минимальная жажда героя в [м^3]
+        self.thirst_max: float = 0.0018  # Максимальная жажда героя в [м^3]
         self.thirst_increase: float = self.thirst_max / game.day_length  # Скорость увеличения жажды в [м^3/с]
         self.x: float = 0  # Координата x героя в [м]
         self.y: float = 0  # Координата y героя в [м]
@@ -194,6 +194,16 @@ class Hero(object):
 
         if self.satiety == 0 or self.thirst == self.thirst_max:  # Если герой смертельно голоден или хочет пить
             self.get_dead()
+
+    def drink_water(self):
+        """
+        Герой пьёт воду
+        """
+
+        if self.inventory.water_amount > 0:  # Если в инвентаре есть вода
+            if self.thirst > 0:  # Если герой хочет пить
+                self.thirst: float = max(self.thirst - self.inventory.water.volume, 0)  # Жажда героя уменьшается
+                self.inventory.water_amount -= 1  # Вода тратится
 
     def get_hungry(self):
         """

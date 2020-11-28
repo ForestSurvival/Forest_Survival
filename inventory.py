@@ -53,6 +53,7 @@ class Inventory(object):
         self.button_apple = Button(hero.eat_apple, self, self.apple_graphical_x, self.apple_graphical_y)
 
         self.button_campfire = None  # Кнопка разведения костра определяется в inventory.setup()
+        self.button_water = None  # Кнопка воды определяется в inventory.setup()
         self.campfire = Campfire(self, 0, 0)  # Объект костра
         self.hero = hero  # Объект героя
         self.match = None  # Объект спички определяется в inventory.setup()
@@ -86,7 +87,10 @@ class Inventory(object):
         self.match = self.get_object('match')
         self.paper = self.get_object('paper')
         self.stick = self.get_object('stick')
-        self.button_campfire = Button(self.hero.burn_campfire, self, self.campfire_graphical_x, self.campfire_graphical_y)
+        self.button_campfire = Button(self.hero.burn_campfire, self, self.campfire_graphical_x,
+                                      self.campfire_graphical_y)
+        self.button_water = Button(self.hero.drink_water, self, self.water_graphical_x,
+                                   self.water_graphical_y)
 
     # --- Графика ---
     def print_text(self, graphical_x: int, graphical_y: int, text_str: str):
@@ -187,4 +191,5 @@ class Inventory(object):
 
         self.button_apple.process()
         self.button_campfire.process()
+        self.button_water.process()
         self.manage_graphics()

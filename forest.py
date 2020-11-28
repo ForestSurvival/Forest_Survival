@@ -456,3 +456,12 @@ class Forest(object):
 
         self.manage_logic()
         self.manage_graphics()
+        self.process_campfires()
+
+    def process_campfires(self):
+        """
+        Обрабатывает события костров
+        """
+
+        for campfire in self.campfires_list:
+            campfire.process()
