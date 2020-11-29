@@ -9,6 +9,7 @@ from random import *
 
 from apple import Apple
 from house import House
+from village import Village
 from stick import Stick
 
 
@@ -44,6 +45,7 @@ class Forest(object):
         self.campfires_list: list = []  # Список костров
         self.game = game
         self.houses_list: list = []  # Список домов
+        self.villages_list: list = []  # Список деревень
         self.sticks_list: list = []  # Список палок
 
         # Графика
@@ -59,12 +61,14 @@ class Forest(object):
                                               self.draw_apples,
                                               self.draw_campfires,
                                               self.draw_houses,
+                                              self.draw_villages,
                                               self.draw_sticks],
                                      'act': [self.game.graphic_engine.manage_graphic,
                                              self.draw_borders,
                                              self.draw_apples,
                                              self.draw_campfires,
                                              self.draw_houses,
+                                             self.draw_villages,
                                              self.draw_sticks],
                                      'crafts': [None],
                                      'inventory': [None]}
@@ -152,6 +156,22 @@ class Forest(object):
             house.setup()
             self.houses_list.append(house)
 
+    def generate_villages(self):
+        """
+        Создаёт деревни
+        """
+
+        villages_amount: int = 1  # Количество деревень
+        for village_number in range(villages_amount):
+            # Физическая координата x деревни в [м]
+            village_physical_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
+
+            # Физическая координата y деревни в [м]
+            village_physical_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
+
+            village = Village(self, village_physical_x, village_physical_y)  # Объект деревни
+            self.villages_list.append(village)
+
     def generate_sticks(self):
         """
         Создаёт палки
@@ -176,6 +196,7 @@ class Forest(object):
                                    'act': [self.manage_apples_logic,
                                            self.manage_campfires_logic,
                                            self.manage_houses_logic,
+                                           self.manage_villages_logic,
                                            self.manage_sticks_logic],
                                    'crafts': [self.game.hero.inventory.process],
                                    'inventory': [self.game.hero.inventory.process],
@@ -192,6 +213,7 @@ class Forest(object):
         self.count_draw_distance()
         self.generate_apples()
         self.generate_houses()
+        self.generate_villages()
         self.generate_sticks()
 
     # --- Логика ---
@@ -270,6 +292,20 @@ class Forest(object):
 
             if distance <= self.game.hero.action_radius:
                 house.manage_logic()
+
+    def manage_villages_logic(self):
+        """
+        Обрабатывает действия героя над деревнями
+        """
+
+        # Движки
+        physical_engine = self.game.physical_engine
+
+        # Объекты
+        close_village = physical_engine.find_close_object(self.villages_list)  # Близкая к герою деревня
+
+        if close_village is not None:  # Если существует близкая к герою деревня
+            close_village.manage_logic()
 
     def manage_sticks_logic(self):
         """
@@ -400,6 +436,20 @@ class Forest(object):
             house_graphical_y: int = self.convert_vertical_m_to_px(house.physical_y)
 
             house.manage_graphics(house_graphical_x, house_graphical_y)
+
+    def draw_villages(self):
+        """
+        Рисует деревни
+        """
+
+        for village in self.villages_list:
+            # Графическая координата x дома в [px]
+            village_graphical_x: int = self.convert_horizontal_m_to_px(village.physical_x)
+
+            # Графическая координата y дома в [px]
+            village_graphical_y: int = self.convert_vertical_m_to_px(village.physical_y)
+
+            village.manage_graphics(village_graphical_x, village_graphical_y)
 
     def draw_vertical_line(self, line_coordinate: float):
         """
