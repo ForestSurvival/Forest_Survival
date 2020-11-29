@@ -51,10 +51,10 @@ class GraphicEngine(object):
         """
 
         # Объект экрана pygame
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
 
     # --- Графика ---
-    def draw_picture(self, picture, grafical_x: int, grafical_y: int):
+    def draw_picture(self, picture, graphical_x: int, graphical_y: int):
         """
         Рисует объект
 
@@ -62,10 +62,11 @@ class GraphicEngine(object):
         graphical_y - Графическая координата y объекта в [px]
         """
 
-        print(grafical_x, grafical_y)
-        self.screen.blit(picture, (grafical_x, grafical_y))  # Вставляет изображение объекта
+        print(graphical_x, graphical_y)
+        self.screen.blit(picture, (graphical_x, graphical_y))  # Вставляет изображение объекта
 
-    def transform(self, picture, width: float, height: float):
+    @staticmethod
+    def transform(picture, width: float, height: float):
         """
         Изменяет размер изображения
         """
