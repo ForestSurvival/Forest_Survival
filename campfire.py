@@ -2,7 +2,7 @@
 Модуль костра
 """
 
-from pygame.draw import *
+import pygame
 
 
 class Campfire(object):
@@ -28,8 +28,11 @@ class Campfire(object):
         self.sticks_amount: int = 5  # Необходимое количество палок
 
         # Графика
-        self.color: tuple = (128, 0, 0)  # Цвет костра
-        self.graphical_radius: int = 5  # Графический радиус костра в [px]
+        self.graphical_height: int = 20  # Графическая высота костра в [px]
+        self.graphical_width: int = 20  # Графическая ширина костра в [px]
+
+        # Изображение палки в формате bmp
+        self.image_campfire = pygame.image.load('Sprites/campfire.bmp')
 
         # Объекты
         self.inventory = inventory  # Объект инвентаря
@@ -75,9 +78,8 @@ class Campfire(object):
         """
 
         # Объекты
-        screen = self.inventory.hero.game.graphic_engine.screen  # Объект экрана Pygame
-
-        circle(screen, self.color, (graphical_x, graphical_y), self.graphical_radius)
+        self.inventory.hero.game.graphic_engine.draw_image(self.image_campfire, graphical_x, graphical_y,
+                                                           self.graphical_width, self.graphical_height)
 
     # --- Физика ---
     def melt_snow(self):

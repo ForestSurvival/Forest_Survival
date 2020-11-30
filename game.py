@@ -111,7 +111,6 @@ class Game(object):
         Обрабатывает события игры
         """
 
-        self.graphic_engine.process()
         self.logic_engine.process()
         self.manage_graphics()
         self.manage_logic()

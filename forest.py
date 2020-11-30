@@ -3,6 +3,7 @@
 """
 
 import math
+import pygame
 
 from pygame.draw import *
 from random import *
@@ -50,21 +51,19 @@ class Forest(object):
 
         # Графика
 
-        # # Изображение фона в формате png
+        # Изображение фона в формате png
         # self.game_background = pygame.image.load('Sprites/game_background.png')
 
         self.border_color: tuple = (185, 250, 250)  # Цвет границ
         self.border_width: int = 1  # Толщина границ в [px]
         self.color: tuple = (193, 86, 217)  # Цвет леса
-        self.graphical_dict: dict = {'walk': [self.game.graphic_engine.manage_graphic,  # Графический словарь
-                                              self.draw_borders,
+        self.graphical_dict: dict = {'walk': [self.draw_borders,
                                               self.draw_apples,
                                               self.draw_campfires,
                                               self.draw_houses,
                                               self.draw_villages,
                                               self.draw_sticks],
-                                     'act': [self.game.graphic_engine.manage_graphic,
-                                             self.draw_borders,
+                                     'act': [self.draw_borders,
                                              self.draw_apples,
                                              self.draw_campfires,
                                              self.draw_houses,

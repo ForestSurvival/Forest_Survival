@@ -164,7 +164,7 @@ class Inventory(object):
         item_dict['name'].draw(item_dict['graphical_x'], item_dict['graphical_y'])
 
         # Графическая координата x текста в [px]
-        text_graphical_x = item_dict['graphical_x'] + 2 * item_dict['name'].graphical_radius + self.text_space
+        text_graphical_x = item_dict['graphical_x'] + item_dict['name'].graphical_width + self.text_space
 
         item_dict['name'].draw(item_dict['graphical_x'], item_dict['graphical_y'])
         if item_dict['amount'] is not None:  # Если у объекта определено количество

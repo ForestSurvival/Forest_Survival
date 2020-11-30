@@ -2,7 +2,7 @@
 Модуль бумаги
 """
 
-from pygame.draw import *
+import pygame
 
 
 class Paper(object):
@@ -17,8 +17,12 @@ class Paper(object):
         forest - объект дома
         """
 
-        self.color: tuple = (16, 77, 57)  # Цвет бумаги
-        self.graphical_radius: int = 5  # Радиус бумаги в [px]
+        # Графика
+        self.graphical_height: int = 20  # Графическая высота бумаги в [px]
+        self.graphical_width: int = 20  # Графическая ширина бумаги в [px]
+
+        # Изображение палки в формате bmp
+        self.image_paper = pygame.image.load('Sprites/paper.bmp')
 
         # Объекты
         self.house = house
@@ -32,7 +36,8 @@ class Paper(object):
         graphical_y - Графическая координата y бумаги в [px]
         """
 
-        circle(self.house.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.graphical_radius)
+        self.house.forest.game.graphic_engine.draw_image(self.image_paper, graphical_x, graphical_y, self.graphical_width,
+                                                   self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):

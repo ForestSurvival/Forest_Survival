@@ -2,7 +2,7 @@
 Модуль воды
 """
 
-from pygame.draw import *
+import pygame
 
 
 class Water(object):
@@ -18,8 +18,11 @@ class Water(object):
         """
 
         # Графика
-        self.color: tuple = (221, 242, 50)  # Цвет воды
-        self.graphical_radius: int = 5  # Графический радиус воды в [px]
+        self.graphical_height: int = 20  # Графическая высота воды в [px]
+        self.graphical_width: int = 20  # Графическая ширина воды в [px]
+
+        # Изображение палки в формате bmp
+        self.image_water = pygame.image.load('Sprites/water.bmp')
 
         # Физика
         self.volume = 0.001  # Объём в [м^3]
@@ -36,7 +39,16 @@ class Water(object):
         graphical_y - графическая координата y воды в [px]
         """
 
-        # Объекты
-        screen = self.inventory.hero.game.graphic_engine.screen  # Объект экрана Pygame
+        self.inventory.hero.game.graphic_engine.draw_image(self.image_water, graphical_x, graphical_y,
+                                                           self.graphical_width, self.graphical_height)
 
-        circle(screen, self.color, (graphical_x, graphical_y), self.graphical_radius)
+    # --- Обработка ---
+    def manage_graphics(self, graphical_x: int, graphical_y: int):
+        """
+        Обрабатывает графические события спички
+
+        graphical_x - Графическая координата x спички в [px]
+        graphical_y - Графическая координата y спички в [px]
+        """
+
+        self.draw(graphical_x, graphical_y)
