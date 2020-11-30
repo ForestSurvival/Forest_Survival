@@ -2,7 +2,7 @@
 Модуль яблока
 """
 
-from pygame.draw import *  # FIXME яблоко должно рисоваться графическим движком
+import pygame
 
 
 class Apple(object):
@@ -20,8 +20,11 @@ class Apple(object):
         """
 
         # Графика
-        self.color: tuple = (5, 95, 23)  # Цвет яблока
-        self.graphical_radius: int = 5  # Радиус яблока в [px]
+        self.graphical_height: int = 20  # Графическая высота яблока в [px]
+        self.graphical_width: int = 20  # Графическая ширина яблока в [px]
+
+        # Изображение палки в формате bmp
+        self.image_apple = pygame.image.load('Sprites/apple.bmp')
 
         # Объекты
         self.forest = forest
@@ -49,7 +52,8 @@ class Apple(object):
         graphical_y - Графическая координата y яблока в [px]
         """
 
-        circle(self.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.graphical_radius)
+        self.forest.game.graphic_engine.draw_image(self.image_apple, graphical_x, graphical_y, self.graphical_width,
+                                                   self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):

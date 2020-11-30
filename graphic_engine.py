@@ -22,7 +22,7 @@ class GraphicEngine(object):
         self.screen = None  # Определяется в game.setup()
 
         # Спрайты
-        self.game_background = pygame.image.load('Sprites/game_background.png')  # Изображение фона в формате png
+        # self.game_background = pygame.image.load('Sprites/game_background.png')  # Изображение фона в формате png
 
         # Объекты
         self.game = game
@@ -34,16 +34,15 @@ class GraphicEngine(object):
         """
 
         self.set_screen()
-        self.set_draw_background()
 
-    def set_draw_background(self):
-        """
-        Рисует фон игры
-        """
-
-        # self.transform(self.game_background, self.screen_width, self.screen_height)
-        # self.draw_picture(self.game_background, 0, 0)
-        self.screen.fill((255, 100, 210))
+    # def set_draw_background(self, image_load):
+    #     """
+    #     Рисует фон игры
+    #     """
+    #
+    #     self.transform(self.game_background)
+    #     self.draw_picture(self.game_background, 0, 0)
+    #     self.screen.fill((255, 100, 210))
 
     def set_screen(self):
         """
@@ -51,44 +50,32 @@ class GraphicEngine(object):
         """
 
         # Объект экрана pygame
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.FULLSCREEN)
 
     # --- Графика ---
-    def draw_picture(self, picture, graphical_x: int, graphical_y: int):
+    def draw_image(self, image_load, graphical_x: int, graphical_y: int, width: int, height: int):
         """
         Рисует объект
 
+        image_load - Загруженное изображение
         graphical_x - Графическая координата x объекта в [px]
         graphical_y - Графическая координата y объекта в [px]
+        width - Необходимая ширина изображения в [px]
+        height - Необходимая высота изображения в [px]
         """
 
-        print(graphical_x, graphical_y)
-        self.screen.blit(picture, (graphical_x, graphical_y))  # Вставляет изображение объекта
+        image_transformed = self.transform(image_load, width, height)  # Изменяет размеры изображения
+
+        graphical_x -= width // 2
+        graphical_y -= height // 2
+
+        self.screen.blit(image_transformed, (graphical_x, graphical_y))  # Вставляет изображение объекта
 
     @staticmethod
-    def transform(picture, width: float, height: float):
+    def transform(image_load, width: float, height: float):
         """
         Изменяет размер изображения
         """
 
-        picture = pygame.transform.scale(picture, (width, height))
-        return picture
-
-    # --- Логика ---
-    def manage_graphic(self):
-        """
-        Обрабатывает графические события
-        """
-
-        # Обработка фона
-        # self.transform(self.game_background, self.screen_width, self.screen_height)
-        # self.draw_picture(self.game_background, 300, 200)
-        pass
-
-    # --- Обработка ---
-    def process(self):
-        """
-        Обрабатывает события графического движка
-        """
-
-        self.manage_graphic()
+        image_transformed = pygame.transform.scale(image_load, (height, width))
+        return image_transformed
