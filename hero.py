@@ -26,7 +26,6 @@ class Hero(object):
         """
 
         # Физика
-        self.speed_actual: float = 2  # Действительная скорость героя в [м/с]
         self.speed_max: float = 2  # Максимальная скорость героя в [м/с]
         self.thirst: float = 0.0009  # Жажда героя в [м^3]
         self.thirst_max: float = 0.0018  # Максимальная жажда героя в [м^3]
@@ -95,15 +94,22 @@ class Hero(object):
 
         self.status_current: str = 'act'  # Герой производит действие
 
-    @staticmethod
-    def calculate_speed_reduce(directions_list: list):
+    def calculate_speed_reduce(self):
         """
         Вычисляет фактор уменьшения скорости
-
-        directions_list - список направлений, по которым сейчас движется герой
         """
 
-        directions_count: int = len(directions_list)  # Количество направлений, по которым сейчас идёт герой
+        # Логика
+        directions_count: int = 0
+
+        if self.game.logic_engine.keys_current_list[pygame.K_w]:
+            directions_count += 1
+        if self.game.logic_engine.keys_current_list[pygame.K_a]:
+            directions_count += 1
+        if self.game.logic_engine.keys_current_list[pygame.K_s]:
+            directions_count += 1
+        if self.game.logic_engine.keys_current_list[pygame.K_d]:
+            directions_count += 1
         if directions_count == 2:  # Если герой идёт сразу по 2 направлениям
             speed_reduce: float = math.sqrt(2)  # Сохранение полной скорости героя
         else:
@@ -238,8 +244,10 @@ class Hero(object):
         Перемещает героя вниз
         """
 
+        speed_reduce: float = self.calculate_speed_reduce()
+        speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
-        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
+        delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
         self.y += delta_distance  # Координата y героя в [м]
 
     def move_left(self):
@@ -247,8 +255,10 @@ class Hero(object):
         Перемещает героя влево
         """
 
+        speed_reduce: float = self.calculate_speed_reduce()
+        speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
-        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
+        delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
         self.x -= delta_distance  # Координата y героя в [м]
 
     def move_right(self):
@@ -256,8 +266,10 @@ class Hero(object):
         Перемещает героя вправо
         """
 
+        speed_reduce: float = self.calculate_speed_reduce()
+        speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
-        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
+        delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
         self.x += delta_distance  # Координата y героя в [м]
 
     def move_up(self):
@@ -265,8 +277,10 @@ class Hero(object):
         Перемещает героя вверх
         """
 
+        speed_reduce: float = self.calculate_speed_reduce()
+        speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
-        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
+        delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
         self.y -= delta_distance  # Координата y героя в [м]
 
     def update_indicator_satiety(self):
