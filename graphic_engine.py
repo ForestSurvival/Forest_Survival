@@ -21,9 +21,6 @@ class GraphicEngine(object):
         self.screen_width: int = 1200  # Ширина экрана в пикселях
         self.screen = None  # Определяется в game.setup()
 
-        # Спрайты
-        # self.game_background = pygame.image.load('Sprites/game_background.png')  # Изображение фона в формате png
-
         # Объекты
         self.game = game
 
@@ -35,22 +32,13 @@ class GraphicEngine(object):
 
         self.set_screen()
 
-    # def set_draw_background(self, image_load):
-    #     """
-    #     Рисует фон игры
-    #     """
-    #
-    #     self.transform(self.game_background)
-    #     self.draw_picture(self.game_background, 0, 0)
-    #     self.screen.fill((255, 100, 210))
-
     def set_screen(self):
         """
         Создаёт объект экрана
         """
 
         # Объект экрана pygame
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
 
     # --- Графика ---
     def draw_image(self, image_load, graphical_x: int, graphical_y: int, width: int, height: int):
