@@ -208,9 +208,9 @@ class Forest(object):
 
     def set_logical_dict(self):
         """
-        Создаёт логический словарь
+        Создаёт словарь, сопоставляющий статус героя и действия окружающей среды
         """
-        self.logical_dict: dict = {'walk': [None],  # Логический словарь
+        self.logical_dict: dict = {'walk': [None],  # Логический действий
                                    'act': [self.manage_apples_logic,
                                            self.manage_campfires_logic,
                                            self.manage_houses_logic,

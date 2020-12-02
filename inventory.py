@@ -50,7 +50,7 @@ class Inventory(object):
         self.apple = None  # Объект яблока определяется в inventory.setup()
 
         # Объект кнопки яблока
-        self.button_apple = Button(hero.eat_apple, self, self.apple_graphical_x, self.apple_graphical_y)
+        self.button_apple = None  # Объект кнопки яблока определяется в inventory.setup()
 
         self.button_campfire = None  # Кнопка разведения костра определяется в inventory.setup()
         self.button_water = None  # Кнопка воды определяется в inventory.setup()
@@ -87,9 +87,14 @@ class Inventory(object):
         self.match = self.get_object('match')
         self.paper = self.get_object('paper')
         self.stick = self.get_object('stick')
-        self.button_campfire = Button(self.hero.burn_campfire, self, self.campfire_graphical_x,
+
+        # Объект кнопки яблока
+        self.button_apple = Button(self.hero.eat_apple, self.hero.game.logic_engine, self.apple_graphical_x,
+                                   self.apple_graphical_y)
+
+        self.button_campfire = Button(self.hero.burn_campfire, self.hero.game.logic_engine, self.campfire_graphical_x,
                                       self.campfire_graphical_y)
-        self.button_water = Button(self.hero.drink_water, self, self.water_graphical_x,
+        self.button_water = Button(self.hero.drink_water, self.hero.game.logic_engine, self.water_graphical_x,
                                    self.water_graphical_y)
 
     # --- Графика ---
@@ -189,7 +194,7 @@ class Inventory(object):
         Обрабатывает события инвентаря
         """
 
-        self.button_apple.process()
-        self.button_campfire.process()
-        self.button_water.process()
+        self.button_apple.process(self.hero.game.graphic_engine.screen)
+        self.button_campfire.process(self.hero.game.graphic_engine.screen)
+        self.button_water.process(self.hero.game.graphic_engine.screen)
         self.manage_graphics()
