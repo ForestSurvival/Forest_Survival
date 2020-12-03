@@ -24,6 +24,7 @@ class Menu(object):
         self.font = None  # Шрифт определяется в menu.setup()
 
         # Объекты
+        self.button_exit = None  # Кнопка выхода из игры определяется в menu.setup()
         self.button_play = None  # Кнопка запуска игры определяется в menu.setup()
         self.game = game
 
@@ -42,6 +43,7 @@ class Menu(object):
         Инициализация меню
         """
 
+        self.button_exit = Button(self.game.exit, self.game.logic_engine, 0, 80)  # Кнопка выхода из игры
         self.button_play = Button(self.game.play, self.game.logic_engine, 0, 40)  # Кнопка запуска игры
         self.set_font()
 
@@ -86,5 +88,7 @@ class Menu(object):
         screen - экран Pygame
         """
 
+        self.button_exit.process(screen)
         self.button_play.process(screen)
+        self.print_text('Exit', 0, 80)
         self.print_text('Play', 0, 40)
