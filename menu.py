@@ -53,7 +53,7 @@ class Menu(object):
         self.button_rules = Button(self.switch_to_rules, self.game.logic_engine, 0, 80)  # Кнопка правил
 
         # Кнопка закрытия окна с правилами
-        self.button_rules_exit = Button(self.switch_to_main, self.game.logic_engine, 0, 40)
+        self.button_rules_exit = Button(self.switch_to_main, self.game.logic_engine, 0, 280)
 
         self.set_font()
 
@@ -121,5 +121,14 @@ class Menu(object):
             self.print_text('Rules', 0, 80)
             self.print_text('Exit', 0, 120)
         elif self.status == 'rules':  # Если игрок читает правила
+            self.print_text('Rules', 0, 40)
+            self.print_text('1) You can be dead from starvation. Find food in the forest and eat it to increase your '
+                            'satiety', 0, 80)
+            self.print_text('2) You can be dead from thirst. You need to burn the campfire and melt the snow down to '
+                            'get water', 0, 120)
+            self.print_text('3) To burn the campfire you need to find 5 sticks in the forest, 1 match and 1 piece of '
+                            'paper', 0, 160)
+            self.print_text('   in the house', 0, 200)
+            self.print_text('4) To win the game you need to find the village and get out of the forest', 0, 240)
             self.button_rules_exit.process(screen)
-            self.print_text('Menu', 0, 40)
+            self.print_text('Menu', 0, 280)
