@@ -25,6 +25,21 @@ class PhysicalEngine(object):
         self.game = game
 
     # --- Физика ---
+    @staticmethod
+    def get_physical_distance(physical_x_1: float, physical_y_1: float, physical_x_2: float, physical_y_2: float):
+        """
+        Вычисляет физическое расстояние в [м] между 2 точками
+        :param physical_x_1 - физическая координата x 1 точки в [м]
+        :param physical_y_1 - физическая координата y 1 точки в [м]
+        :param physical_x_2 - физическая координата x 2 точки в [м]
+        :param physical_y_2 - физическая координата y 2 точки в [м]
+        """
+
+        distance_x: float = physical_x_1 - physical_x_2  # Физическое расстояние между объектами по оси x в [м]
+        distance_y: float = physical_y_1 - physical_y_2  # Физическое расстояние между объектами по оси y в [м]
+        distance: float = sqrt(distance_x ** 2 + distance_y ** 2)  # Физическое расстояние между точками в [м]
+        return distance
+
     def find_close_object(self, object_list: list):
         """
         Проверяет, есть ли объект в радиусе действия героя

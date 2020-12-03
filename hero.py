@@ -132,6 +132,7 @@ class Hero(object):
         """
 
         self.status_current: str = 'dead'  # Герой мёртв
+        self.game.status = 'menu'  # Перевести игру в меню
         self.game.exit()
 
     def set_actions_dicts(self):
