@@ -192,6 +192,7 @@ class Hero(object):
             if self.inventory.paper_amount >= self.inventory.campfire.paper_amount:  # Если хватает бумаги
                 if self.inventory.sticks_amount >= self.inventory.campfire.sticks_amount:  # Если хватает палок
                     campfire = Campfire(self.inventory, self.x, self.y)  # Объект костра
+                    campfire.setup()
                     self.game.forest.campfires_list.append(campfire)
                     self.inventory.matches_amount -= self.inventory.campfire.matches_amount  # Спички израсходованы
                     self.inventory.paper_amount -= self.inventory.campfire.paper_amount  # Бумага израсходована

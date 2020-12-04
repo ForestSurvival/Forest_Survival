@@ -29,6 +29,8 @@ class Campfire(object):
         self.sticks_amount: int = 5  # Необходимое количество палок
         self.temperature: float = 573  # Температура костра
         self.temperature_constant = 0.1  # Пропорциональность между темпрературами костра и среды в [м^2]
+        self.temperature_burnout: float = 373  # Температура костра при потухании в [К]
+        self.cooling_speed = None  # Скорость изменения температуры в [К/с] определяется в campfire.setup()
 
         # Графика
         self.graphical_height: int = 20  # Графическая высота костра в [px]
@@ -39,6 +41,24 @@ class Campfire(object):
 
         # Объекты
         self.inventory = inventory  # Объект инвентаря
+
+    # --- Инициализация ---
+    def count_cooling_speed(self):
+        """
+        Вычисляет скорость охлаждения костра
+        """
+
+        # Разность начальной и конечной температур в [К]
+        temperature_range: float = self.temperature - self.temperature_burnout
+
+        self.cooling_speed: float = temperature_range / self.burn_time_left  # Скорость охлаждения в [К/с]
+
+    def setup(self):
+        """
+        Инициализация костра
+        """
+
+        self.count_cooling_speed()
 
     # --- Логика ---
     def get_created(self):
@@ -61,6 +81,7 @@ class Campfire(object):
         game_time_delta: float = physical_engine.time_step * physical_engine.time_scale  # Шаг игрового времени в [с]
 
         self.burn_time_left -= game_time_delta  # Оставшееся игровое время горения костра в [с]
+        self.temperature -= self.cooling_speed * game_time_delta  # Костёр остывает
         if self.burn_time_left <= 0:  # Если костёр сгорел
             self.burn_out()
 
