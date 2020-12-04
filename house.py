@@ -2,7 +2,7 @@
 Класс дома
 """
 import pygame
-from pygame.draw import *
+
 from random import random
 
 from match import Match
@@ -31,8 +31,8 @@ class House(object):
         self.physical_x: float = physical_x
         self.physical_y: float = physical_y
 
-        # Изображение дома в формате png
-        self.picture_house = pygame.image.load('Sprites/snow_house.bmp')
+        # Изображение дома в формате bmp
+        self.image_house = pygame.image.load('Sprites/snow_house.bmp')
 
         # Объекты
         self.forest = forest
@@ -104,19 +104,8 @@ class House(object):
         graphical_y - Графическая координата y дома в [px]
         """
 
-        circle(self.forest.game.graphic_engine.screen, (0, 0, 0), (graphical_x, graphical_y), 10)
-        graphical_x -= self.graphical_width // 2
-        graphical_y -= self.graphical_height // 2
-
-        # Вставляет изображение дома
-        self.forest.game.graphic_engine.screen.blit(self.picture_house, (graphical_x, graphical_y))
-
-    def transform(self):
-        """
-        Изменяет размер изображения
-        """
-
-        self.picture_house = pygame.transform.scale(self.picture_house, (self.graphical_height, self.graphical_width))
+        self.forest.game.graphic_engine.draw_image(self.image_house, graphical_x, graphical_y, self.graphical_width,
+                                                   self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
@@ -127,7 +116,6 @@ class House(object):
         graphical_y - Графическая координата y дома в [px]
         """
 
-        self.transform()
         self.draw(graphical_x, graphical_y)
 
     def manage_logic(self):

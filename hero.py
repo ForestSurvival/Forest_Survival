@@ -26,10 +26,12 @@ class Hero(object):
         """
 
         # Физика
-        self.speed_actual: float = 2  # Действительная скорость героя в [м/с]
+        self.heat_capacity: float = 3470  # Теплоёмкость героя в [Дж / К]
         self.speed_max: float = 2  # Максимальная скорость героя в [м/с]
+        self.temperature: float = 309.6  # Температура героя в [К]
+        self.thermal_conductivity: float = 0.48  # Коэффициент теплопередачи в [Вт / К]
         self.thirst: float = 0.0009  # Жажда героя в [м^3]
-        self.thirst_max: float = 0.0018  # Минимальная жажда героя в [м^3]
+        self.thirst_max: float = 0.0018  # Максимальная жажда героя в [м^3]
         self.thirst_increase: float = self.thirst_max / game.day_length  # Скорость увеличения жажды в [м^3/с]
         self.x: float = 0  # Координата x героя в [м]
         self.y: float = 0  # Координата y героя в [м]
@@ -95,15 +97,22 @@ class Hero(object):
 
         self.status_current: str = 'act'  # Герой производит действие
 
-    @staticmethod
-    def calculate_speed_reduce(directions_list: list):
+    def calculate_speed_reduce(self):
         """
         Вычисляет фактор уменьшения скорости
-
-        directions_list - список направлений, по которым сейчас движется герой
         """
 
-        directions_count: int = len(directions_list)  # Количество направлений, по которым сейчас идёт герой
+        # Логика
+        directions_count: int = 0
+
+        if self.game.logic_engine.keys_current_list[pygame.K_w]:
+            directions_count += 1
+        if self.game.logic_engine.keys_current_list[pygame.K_a]:
+            directions_count += 1
+        if self.game.logic_engine.keys_current_list[pygame.K_s]:
+            directions_count += 1
+        if self.game.logic_engine.keys_current_list[pygame.K_d]:
+            directions_count += 1
         if directions_count == 2:  # Если герой идёт сразу по 2 направлениям
             speed_reduce: float = math.sqrt(2)  # Сохранение полной скорости героя
         else:
@@ -126,6 +135,7 @@ class Hero(object):
         """
 
         self.status_current: str = 'dead'  # Герой мёртв
+        self.game.status = 'menu'  # Перевести игру в меню
         self.game.exit()
 
     def set_actions_dicts(self):
@@ -182,6 +192,7 @@ class Hero(object):
             if self.inventory.paper_amount >= self.inventory.campfire.paper_amount:  # Если хватает бумаги
                 if self.inventory.sticks_amount >= self.inventory.campfire.sticks_amount:  # Если хватает палок
                     campfire = Campfire(self.inventory, self.x, self.y)  # Объект костра
+                    campfire.setup()
                     self.game.forest.campfires_list.append(campfire)
                     self.inventory.matches_amount -= self.inventory.campfire.matches_amount  # Спички израсходованы
                     self.inventory.paper_amount -= self.inventory.campfire.paper_amount  # Бумага израсходована
@@ -194,6 +205,16 @@ class Hero(object):
 
         if self.satiety == 0 or self.thirst == self.thirst_max:  # Если герой смертельно голоден или хочет пить
             self.get_dead()
+
+    def drink_water(self):
+        """
+        Герой пьёт воду
+        """
+
+        if self.inventory.water_amount > 0:  # Если в инвентаре есть вода
+            if self.thirst > 0:  # Если герой хочет пить
+                self.thirst: float = max(self.thirst - self.inventory.water.volume, 0)  # Жажда героя уменьшается
+                self.inventory.water_amount -= 1  # Вода тратится
 
     def get_hungry(self):
         """
@@ -228,8 +249,10 @@ class Hero(object):
         Перемещает героя вниз
         """
 
+        speed_reduce: float = self.calculate_speed_reduce()
+        speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
-        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
+        delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
         self.y += delta_distance  # Координата y героя в [м]
 
     def move_left(self):
@@ -237,8 +260,10 @@ class Hero(object):
         Перемещает героя влево
         """
 
+        speed_reduce: float = self.calculate_speed_reduce()
+        speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
-        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
+        delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
         self.x -= delta_distance  # Координата y героя в [м]
 
     def move_right(self):
@@ -246,8 +271,10 @@ class Hero(object):
         Перемещает героя вправо
         """
 
+        speed_reduce: float = self.calculate_speed_reduce()
+        speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
-        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
+        delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
         self.x += delta_distance  # Координата y героя в [м]
 
     def move_up(self):
@@ -255,8 +282,10 @@ class Hero(object):
         Перемещает героя вверх
         """
 
+        speed_reduce: float = self.calculate_speed_reduce()
+        speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
-        delta_distance: float = self.speed_actual * time_step  # Квант перемещения в [м]
+        delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
         self.y -= delta_distance  # Координата y героя в [м]
 
     def update_indicator_satiety(self):

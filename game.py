@@ -8,6 +8,8 @@ from forest import Forest
 from hero import Hero
 from graphic_engine import GraphicEngine
 from logic_engine import LogicEngine
+from menu import Menu
+from physical_engine import PhysicalEngine
 
 
 class Game(object):
@@ -20,11 +22,16 @@ class Game(object):
         Параметры
         """
 
+        # Движки
+        self.graphic_engine = None  # Объект графического движка определяется в game.setup()
+        self.logic_engine = None  # Объект логического движка определяется в game.setup()
+        self.physical_engine = None  # Объект физического движка определяется в game.setup()
+
         # Логика
         self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
         self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
         self.clock = pygame.time.Clock()  # Часы pygame
-        self.status: str = 'run'  # Игра запущена
+        self.status: str = 'menu'  # Игра находится в меню
 
         # Графика
         self.black: tuple = (0, 0, 0)  # Чёрный цвет
@@ -36,8 +43,7 @@ class Game(object):
         # Объекты
         self.forest = None  # Объект леса определяется в game.setup()
         self.hero = None  # Объект героя определяется в game.setup()
-        self.graphic_engine = None  # Объект графического движка определяется в game.setup()
-        self.logic_engine = None  # Объект логического движка определяется в game.setup()
+        self.menu = Menu(self)  # Объект меню
 
     # --- Инициализация ---
     def setup(self):
@@ -45,12 +51,14 @@ class Game(object):
         Инициализация игры
         """
 
+        # Движки
         self.graphic_engine = GraphicEngine(self)  # Объект графического движка
         self.graphic_engine.setup()
-
         self.logic_engine = LogicEngine(self)  # Объект логического движка
         self.logic_engine.setup()
+        self.physical_engine = PhysicalEngine(self)  # Объект физческого движка
 
+        # Объекты
         self.forest = Forest(self)  # Объект леса
 
         self.hero = Hero(self)  # Объект героя
@@ -58,6 +66,7 @@ class Game(object):
         self.forest.setup()
 
         self.hero.setup()
+        self.menu.setup()
 
     # --- Логика ---
     def exit(self):
@@ -65,7 +74,17 @@ class Game(object):
         Завершает игру
         """
 
-        self.status: str = 'exit'  # Игра завершена
+        if self.status == 'run':  # Если игра запущена
+            self.status: str = 'menu'  # Выйти в меню
+        elif self.status == 'menu':  # Если открыто меню
+            self.status: str = 'exit'  # Выйти из игры
+
+    def play(self):
+        """
+        Запускает игру
+        """
+
+        self.status: str = 'run'  # Игра запущена
 
     def update_actions_dicts(self):
         """
@@ -105,9 +124,13 @@ class Game(object):
         Обрабатывает события игры
         """
 
-        self.graphic_engine.process()
         self.logic_engine.process()
         self.manage_graphics()
         self.manage_logic()
-        self.forest.process()
-        self.hero.process()
+        if self.status == 'menu':
+            self.menu.manage_graphics()
+            self.menu.manage_logic(self.graphic_engine.screen)
+        elif self.status == 'run':
+            self.physical_engine.manage_physics()
+            self.forest.process()
+            self.hero.process()

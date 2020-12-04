@@ -2,7 +2,7 @@
 Модуль спички
 """
 
-from pygame.draw import *
+import pygame
 
 
 class Match(object):
@@ -17,8 +17,12 @@ class Match(object):
         forest - объект дома
         """
 
-        self.color: tuple = (176, 254, 177)  # Цвет спички
-        self.radius: int = 5  # Радиус спички в [px]
+        # Графика
+        self.graphical_height: int = 20  # Графическая высота спички в [px]
+        self.graphical_width: int = 20  # Графическая ширина спички в [px]
+
+        # Изображение палки в формате bmp
+        self.image_match = pygame.image.load('Sprites/match.bmp')
 
         # Объекты
         self.house = house
@@ -32,7 +36,8 @@ class Match(object):
         graphical_y - Графическая координата y спички в [px]
         """
 
-        circle(self.house.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.radius)
+        self.house.forest.game.graphic_engine.draw_image(self.image_match, graphical_x, graphical_y, self.graphical_width,
+                                                   self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):

@@ -2,7 +2,7 @@
 Модуль палки
 """
 
-from pygame.draw import *
+import pygame
 
 
 class Stick(object):
@@ -20,8 +20,11 @@ class Stick(object):
         """
 
         # Графика
-        self.color: tuple = (255, 228, 205)  # Цвет палки
-        self.radius: int = 5  # Радиус палки в [px]
+        self.graphical_height: int = 20  # Графическая высота палки в [px]
+        self.graphical_width: int = 20  # Графическая ширина палки в [px]
+
+        # Изображение палки в формате bmp
+        self.image_stick = pygame.image.load('Sprites/stick.bmp')
 
         # Физика
         self.physical_x: float = physical_x
@@ -48,7 +51,8 @@ class Stick(object):
         graphical_y - графическая координата палки в [px]
         """
 
-        circle(self.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.radius)
+        self.forest.game.graphic_engine.draw_image(self.image_stick, graphical_x, graphical_y, self.graphical_width,
+                                                   self.graphical_height)
 
     # --- Обработка ---
     def manage_logic(self):

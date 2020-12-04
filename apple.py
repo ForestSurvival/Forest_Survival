@@ -2,7 +2,7 @@
 Модуль яблока
 """
 
-from pygame.draw import *
+import pygame
 
 
 class Apple(object):
@@ -19,14 +19,20 @@ class Apple(object):
         physical_y - Физическая координата y яблока в [м]
         """
 
-        self.color: tuple = (5, 95, 23)  # Цвет яблока
-        self.radius: int = 5  # Радиус яблока в [px]
-        self.satiety: float = 196.7796  # Пищевая энергетическая ценность яблока в [Дж]
-        self.physical_x: float = physical_x
-        self.physical_y: float = physical_y
+        # Графика
+        self.graphical_height: int = 20  # Графическая высота яблока в [px]
+        self.graphical_width: int = 20  # Графическая ширина яблока в [px]
+
+        # Изображение палки в формате bmp
+        self.image_apple = pygame.image.load('Sprites/apple.bmp')
 
         # Объекты
         self.forest = forest
+
+        # Физика
+        self.satiety: float = 196.7796  # Пищевая энергетическая ценность яблока в [Дж]
+        self.physical_x: float = physical_x
+        self.physical_y: float = physical_y
 
     # --- Логика ---
     def get_collected(self):
@@ -46,7 +52,8 @@ class Apple(object):
         graphical_y - Графическая координата y яблока в [px]
         """
 
-        circle(self.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.radius)
+        self.forest.game.graphic_engine.draw_image(self.image_apple, graphical_x, graphical_y, self.graphical_width,
+                                                   self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
