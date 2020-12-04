@@ -39,6 +39,7 @@ class Forest(object):
         self.borders_distance_y = None
 
         self.draw_distance_max = None  # Максимальное расстояние прорисовки в [м] определяется в forest.setup()
+        self.temperature_passive: float = 265  # Температура пустого леса в [К]
         self.scale: int = 35  # Масштаб в [px/м]
 
         # Объекты

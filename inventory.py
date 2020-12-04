@@ -188,6 +188,14 @@ class Inventory(object):
         self.show_object('paper')
         self.show_object('stick')
         self.show_object('water')
+        temperature: float = self.hero.game.physical_engine.get_local_temperature()  # Температура среды в [К]
+
+        # Температура среды в [С*]
+        temperature_celsius: float = temperature + self.hero.game.physical_engine.absolute_zero_celsius
+
+        temperature_round: int = round(temperature_celsius)  # Округлённая температура среды в [С*]
+        temperature_str: str = str(temperature_round)  # Строка с температурой среды в [С*]
+        self.print_text(600, 0, 'Температура: ' + temperature_str + ' C*')
 
     def process(self):
         """

@@ -131,5 +131,6 @@ class Game(object):
             self.menu.manage_graphics()
             self.menu.manage_logic(self.graphic_engine.screen)
         elif self.status == 'run':
+            self.physical_engine.manage_physics()
             self.forest.process()
             self.hero.process()
