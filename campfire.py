@@ -25,7 +25,10 @@ class Campfire(object):
         self.physical_y: float = physical_y
         self.matches_amount: int = 1  # Необходимое количество спичек
         self.paper_amount: int = 1  # Необходимое колчество бумаги
+        self.safe_distance: float = 1  # Минимальное расстояние, на которое герой может подойти к костру в [м]
         self.sticks_amount: int = 5  # Необходимое количество палок
+        self.temperature: float = 573  # Температура костра
+        self.temperature_constant = 0.1  # Пропорциональность между темпрературами костра и среды в [м^2]
 
         # Графика
         self.graphical_height: int = 20  # Графическая высота костра в [px]

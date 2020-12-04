@@ -18,6 +18,7 @@ class PhysicalEngine(object):
         """
 
         # Физика
+        self.absolute_zero_celsius: int = -273  # Абсолютный ноль в [С*]
         self.time_scale: float = 86400 / game.day_length  # Масштаб времени
         self.time_step: float = 1 / game.fps  # Шаг игры по времени
 
@@ -25,6 +26,26 @@ class PhysicalEngine(object):
         self.game = game
 
     # --- Физика ---
+    def get_local_temperature(self):
+        """
+        Вычисляет температуру среды в точке, где находится герой
+        """
+
+        campfires_heat: float = 0  # Температура, создаваемая кострами
+        for campfire in self.game.forest.campfires_list:
+            x: float = campfire.physical_x  # Координата x костра в [м]
+            y: float = campfire.physical_y  # Координата y костра в [м]
+            distance: float = self.get_physical_distance(self.game.hero.x, self.game.hero.y, x, y)
+            if distance < campfire.safe_distance:  # Если герой подашёл слишком близко к костру
+                distance: float = campfire.safe_distance  # Он не сгорит заживо
+
+            # Вклад костра в увеличение температуры
+            delta_temperature: float = campfire.temperature_constant * campfire.temperature / distance ** 2
+
+            campfires_heat += delta_temperature  # Вклад всех костров в уведичение температуры
+        temperature: float = self.game.forest.temperature_passive + campfires_heat  # Температура среды
+        return temperature
+
     @staticmethod
     def get_physical_distance(physical_x_1: float, physical_y_1: float, physical_x_2: float, physical_y_2: float):
         """
@@ -70,3 +91,20 @@ class PhysicalEngine(object):
             if distance <= hero.action_radius:  # Если объект близко к герою
                 return item
         return None
+
+    def make_heat_translation(self, temper: float):
+        """
+        Выполняет теплообмен между героем и средой
+
+        temper - температура среды в [К]
+        """
+
+        pass
+
+    # --- Обработка ---
+    def manage_physics(self):
+        """
+        Обрабатывает физические события
+        """
+
+        self.get_local_temperature()
