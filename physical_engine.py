@@ -31,9 +31,8 @@ class PhysicalEngine(object):
         Вычисляет температуру среды в точке, где находится герой
         """
 
-        campfires_heat_square: float = 0  # Квадрат температуры, создаваемой кострами в [К^2]
+        campfires_heat: float = 0  # Температура, создаваемая кострами
         for campfire in self.game.forest.campfires_list:
-
             x: float = campfire.physical_x  # Координата x костра в [м]
             y: float = campfire.physical_y  # Координата y костра в [м]
             distance: float = self.get_physical_distance(self.game.hero.x, self.game.hero.y, x, y)
@@ -43,19 +42,8 @@ class PhysicalEngine(object):
             # Вклад костра в увеличение температуры
             delta_temperature: float = campfire.temperature_constant * campfire.temperature / distance ** 2
 
-            campfires_heat_square += delta_temperature ** 2  # Складываются квадраты температур
-        campfires_heat: float = sqrt(campfires_heat_square)  # Температура, создаваемая всеми кострами в [К]
-        house_heat: float = 0  # Вклад дома в повышение температуры
-        for house in self.game.forest.houses_list:
-            x: float = house.physical_x  # Координата x дома в [м]
-            y: float = house.physical_y  # Координата y дома в [м]
-
-            # Расстояние до дома в [м]
-            distance: float = self.get_physical_distance(self.game.hero.x, self.game.hero.y, x, y)
-
-            if distance <= house.action_radius:
-                house_heat: float = house.temperature  # Вклад дома в повышение в температуры
-        temperature: float = self.game.forest.temperature_passive + campfires_heat + house_heat  # Температура среды
+            campfires_heat += delta_temperature  # Вклад всех костров в уведичение температуры
+        temperature: float = self.game.forest.temperature_passive + campfires_heat  # Температура среды
         return temperature
 
     @staticmethod
@@ -72,7 +60,7 @@ class PhysicalEngine(object):
         distance_y: float = physical_y_1 - physical_y_2  # Физическое расстояние между объектами по оси y в [м]
         distance: float = sqrt(distance_x ** 2 + distance_y ** 2)  # Физическое расстояние между точками в [м]
         return distance
-
+      
     def find_close_object(self, object_list: list):
         """
         Проверяет, есть ли объект в радиусе действия героя
@@ -104,27 +92,14 @@ class PhysicalEngine(object):
                 return item
         return None
 
-    def make_heat_translation(self, temperature: float):
+    def make_heat_translation(self, temper: float):
         """
         Выполняет теплообмен между героем и средой
 
-        temperature - температура среды в [К]
+        temper - температура среды в [К]
         """
 
-        # Объекты
-        hero = self.game.hero  # Объект героя
-
-        temperature_delta: float = temperature - hero.temperature  # Разность температур среды и героя в [К]
-        heat_power: float = temperature_delta * hero.thermal_conductivity  # Мощность теплообмена в [Вт]
-        game_time_delta: float = self.time_step * self.time_scale  # Шаг игрового времени в [с]
-        thermal_energy_delta: float = heat_power * game_time_delta  # Расход теплоты в [Дж]
-
-        # Изменение температуры героя в [К]
-        hero_temperature_delta: float = thermal_energy_delta / hero.heat_capacity
-
-        # Новая температура героя в [К]
-        self.game.hero.temperature: float = min(hero.temperature_max, max(hero.temperature_min,
-                                                                          hero.temperature + hero_temperature_delta))
+        pass
 
     # --- Обработка ---
     def manage_physics(self):
@@ -132,5 +107,4 @@ class PhysicalEngine(object):
         Обрабатывает физические события
         """
 
-        temperature: float = self.get_local_temperature()
-        self.make_heat_translation(temperature)
+        self.get_local_temperature()

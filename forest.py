@@ -3,7 +3,6 @@
 """
 
 import math
-import pygame
 
 from pygame.draw import *
 from random import *
