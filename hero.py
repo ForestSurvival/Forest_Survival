@@ -5,8 +5,6 @@
 import math
 import pygame
 
-from pygame.draw import *
-
 from apple import Apple
 from campfire import Campfire
 from indicator import Indicator
@@ -40,6 +38,7 @@ class Hero(object):
         self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий определяется в hero.setup()
         self.actions_current_dict: dict = {None: None}  # Словарь продолжительных действий определяется в hero.setup()
         self.action_radius: float = 0.5  # Расстояние, в пределах которого герой может действовать на объект в [м]
+        self.key: int = 0  # Номер изображения
         self.satiety: float = 4186.8  # Пищевая энергия в [Дж]
         self.satiety_max: float = 8373.6  # Максимальня пищевая энергия в [Дж]
         self.satiety_reduce: float = self.satiety_max / game.day_length  # Скорость голодания в [Дж/с]
@@ -56,7 +55,26 @@ class Hero(object):
         self.color: tuple = (206, 181, 75)  # Цвет героя
         self.draw_list: list = [None]  # Графический список
         self.radius: int = 5  # Радиус в [px]
-        # self.screen = game.graphic_engine.screen
+        self.graphical_height: int = 36  # Графическая высота героя в [px]
+        self.graphical_width: int = 26  # Графическая ширина героя в [px]
+
+        # Изображения героя в формате bmp
+        self.image_hero_dict: dict = {'W': [pygame.image.load('Sprites/Heroes/hero_up_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_up_2.bmp')],
+                                      'S': [pygame.image.load('Sprites/Heroes/hero_down_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_down_2.bmp')],
+                                      'A': [pygame.image.load('Sprites/Heroes/hero_left_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_left_2.bmp')],
+                                      'D': [pygame.image.load('Sprites/Heroes/hero_right_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_right_2.bmp')],
+                                      'WA': [pygame.image.load('Sprites/Heroes/hero_up_left_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_up_left_2.bmp')],
+                                      'WD': [pygame.image.load('Sprites/Heroes/hero_up_right_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_up_right_2.bmp')],
+                                      'SA': [pygame.image.load('Sprites/Heroes/hero_down_left_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_down_left_2.bmp')],
+                                      'SD': [pygame.image.load('Sprites/Heroes/hero_down_right_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_down_right_2.bmp')]}
 
     # --- Инициализация ---
     def set_indicator_satiety(self):
@@ -312,8 +330,38 @@ class Hero(object):
 
         x: int = self.game.graphic_engine.screen.get_width() // 2  # Координата x героя на экране в [px]
         y: int = self.game.graphic_engine.screen.get_height() // 2  # Координата y героя на экране в [px]
+        button = ''
 
-        circle(self.game.graphic_engine.screen, self.color, (x, y), self.radius)
+        # for button in self.image_hero_dict:
+        #     if button in self.actions_current_dict:
+        #         if self.game.logic_engine.keys_current_list[button] == 1:  # Если клавиша нажата в текущем цикле
+        #
+
+        for keys in self.image_hero_dict:
+            key_current = self.game.logic_engine.keys_current_list
+            if (keys == 'WA') and (key_current[pygame.K_a] == 1) and (key_current[pygame.K_w] == 1):
+                button = keys
+            elif (keys == 'WD') and (key_current[pygame.K_d] == 1) and (key_current[pygame.K_w] == 1):
+                button = keys
+            elif (keys == 'SA') and (key_current[pygame.K_a] == 1) and (key_current[pygame.K_s] == 1):
+                button = keys
+            elif (keys == 'SD') and (key_current[pygame.K_d] == 1) and (key_current[pygame.K_s] == 1):
+                button = keys
+            elif (keys == 'A') and (key_current[pygame.K_a] == 1) and (key_current[pygame.K_w] == 0) and (key_current[pygame.K_s] == 0):
+                button = keys
+            elif (keys == 'D') and (key_current[pygame.K_d] == 1) and (key_current[pygame.K_w] == 0) and (key_current[pygame.K_s] == 0):
+                button = keys
+            elif (keys == 'S') and (key_current[pygame.K_s] == 1) and (key_current[pygame.K_a] == 0) and (key_current[pygame.K_d] == 0):
+                button = keys
+            elif (keys == 'W') and (key_current[pygame.K_w] == 1) and (key_current[pygame.K_a] == 0) and (key_current[pygame.K_d] == 0):
+                button = keys
+            else:
+                continue
+            if self.game.tick_count % 7 == 0:
+                self.key = self.game.tick_count % 2
+            image_load = self.image_hero_dict[button][self.key]
+            self.game.graphic_engine.draw_image(image_load, x, y, self.graphical_width, self.graphical_height)
+            button = ''
 
     # --- Обработка ---
     def manage_graphics(self):

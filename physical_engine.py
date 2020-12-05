@@ -60,7 +60,7 @@ class PhysicalEngine(object):
         distance_y: float = physical_y_1 - physical_y_2  # Физическое расстояние между объектами по оси y в [м]
         distance: float = sqrt(distance_x ** 2 + distance_y ** 2)  # Физическое расстояние между точками в [м]
         return distance
-
+      
     def find_close_object(self, object_list: list):
         """
         Проверяет, есть ли объект в радиусе действия героя

@@ -201,7 +201,7 @@ class Inventory(object):
         """
         Обрабатывает события инвентаря
         """
-
+        
         self.button_apple.process(self.hero.game.graphic_engine.screen)
         self.button_campfire.process(self.hero.game.graphic_engine.screen)
         self.button_water.process(self.hero.game.graphic_engine.screen)
