@@ -38,7 +38,11 @@ class GraphicEngine(object):
         """
 
         # Объект экрана pygame
+<<<<<<< HEAD
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+=======
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.FULLSCREEN)
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
 
     # --- Графика ---
     def draw_image(self, image_load, graphical_x: int, graphical_y: int, width: int, height: int):
@@ -65,5 +69,9 @@ class GraphicEngine(object):
         Изменяет размер изображения
         """
 
+<<<<<<< HEAD
         image_transformed = pygame.transform.scale(image_load, (width, height))
+=======
+        image_transformed = pygame.transform.scale(image_load, (height, width))
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
         return image_transformed

@@ -10,6 +10,10 @@ from random import *
 
 from apple import Apple
 from house import House
+<<<<<<< HEAD
+=======
+from tree import Tree
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
 from village import Village
 from stick import Stick
 
@@ -46,6 +50,10 @@ class Forest(object):
         self.campfires_list: list = []  # Список костров
         self.game = game
         self.houses_list: list = []  # Список домов
+<<<<<<< HEAD
+=======
+        self.trees_list: list = []  # Список деревьев
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
         self.villages_list: list = []  # Список деревень
         self.sticks_list: list = []  # Список палок
 
@@ -58,12 +66,20 @@ class Forest(object):
         self.border_width: int = 1  # Толщина границ в [px]
         self.color: tuple = (193, 86, 217)  # Цвет леса
         self.graphical_dict: dict = {'walk': [self.draw_borders,
+<<<<<<< HEAD
+=======
+                                              self.draw_trees,
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
                                               self.draw_apples,
                                               self.draw_campfires,
                                               self.draw_houses,
                                               self.draw_villages,
                                               self.draw_sticks],
                                      'act': [self.draw_borders,
+<<<<<<< HEAD
+=======
+                                             self.draw_trees,
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
                                              self.draw_apples,
                                              self.draw_campfires,
                                              self.draw_houses,
@@ -155,6 +171,25 @@ class Forest(object):
             house.setup()
             self.houses_list.append(house)
 
+<<<<<<< HEAD
+=======
+    def generate_trees(self):
+        """
+        Создаёт деревья
+        """
+
+        trees_amount: int = 100  # Количество деревьев
+        for tree_number in range(trees_amount):
+            # Физическая координата x дерева в [м]
+            tree_physical_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
+
+            # Физическая координата y дерева в [м]
+            tree_physical_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
+
+            tree = Tree(self, tree_physical_x, tree_physical_y)  # Объект дерева
+            self.trees_list.append(tree)
+
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
     def generate_villages(self):
         """
         Создаёт деревни
@@ -212,6 +247,10 @@ class Forest(object):
         self.count_draw_distance()
         self.generate_apples()
         self.generate_houses()
+<<<<<<< HEAD
+=======
+        self.generate_trees()
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
         self.generate_villages()
         self.generate_sticks()
 
@@ -261,6 +300,7 @@ class Forest(object):
 
         if close_apple is not None:  # Если существует близкое к герою яблоко
             close_apple.manage_logic()
+<<<<<<< HEAD
 
     def manage_campfires_logic(self):
         """
@@ -292,6 +332,39 @@ class Forest(object):
             if distance <= self.game.hero.action_radius:
                 house.manage_logic()
 
+=======
+
+    def manage_campfires_logic(self):
+        """
+        Обрабатывает действия героя над кострами
+        """
+
+        # Движки
+        physical_engine = self.game.physical_engine
+
+        # Объекты
+        close_campfire = physical_engine.find_close_object(self.campfires_list)  # Близкий к герою костёр
+
+        if close_campfire is not None:  # Если рядом с героем есть костёр
+            close_campfire.manage_logic()
+
+    def manage_houses_logic(self):
+        """
+        Обрабатывает действия героя над домами
+        """
+
+        for house in self.houses_list:
+
+            # Список компонент физического расстояния до дома в [м]
+            distance_list: list = self.calculate_distance_to_point(house.physical_x, house.physical_y)
+
+            # Физическое расстояние до дома в [м]
+            distance: float = math.sqrt(distance_list[0] ** 2 + distance_list[1] ** 2)
+
+            if distance <= self.game.hero.action_radius:
+                house.manage_logic()
+
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
     def manage_villages_logic(self):
         """
         Обрабатывает действия героя над деревнями
@@ -369,6 +442,7 @@ class Forest(object):
         """
 
         for apple in self.apples_list:
+<<<<<<< HEAD
             # Графическая координата x яблока в [px]
             apple_graphical_x: int = self.convert_horizontal_m_to_px(apple.physical_x)
 
@@ -376,6 +450,23 @@ class Forest(object):
             apple_graphical_y: int = self.convert_vertical_m_to_px(apple.physical_y)
 
             apple.manage_graphics(apple_graphical_x, apple_graphical_y)
+=======
+
+            # Физическое расстояние до яблока в [м]
+            distance_x: float = apple.physical_x - self.game.hero.x
+            distance_y: float = apple.physical_y - self.game.hero.y
+            apple_physical_distance: float = math.sqrt(distance_x ** 2 + distance_y ** 2)
+
+            if self.draw_needed(apple_physical_distance):
+
+                # Графическая координата x яблока в [px]
+                apple_graphical_x: int = self.convert_horizontal_m_to_px(apple.physical_x)
+
+                # Графическая координата y яблока в [px]
+                apple_graphical_y: int = self.convert_vertical_m_to_px(apple.physical_y)
+
+                apple.manage_graphics(apple_graphical_x, apple_graphical_y)
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
 
     def draw_borders(self):
         """
@@ -405,6 +496,7 @@ class Forest(object):
         y_1: int = -1  # Верхняя точка выше экрана
         y_2: int = self.game.graphic_engine.screen.get_height() + 1  # Нижняя точка ниже экрана
         screen = self.game.graphic_engine.screen
+<<<<<<< HEAD
 
         line(screen, self.border_color, [line_coordinate, y_1], [line_coordinate, y_2], self.border_width)
 
@@ -449,6 +541,90 @@ class Forest(object):
             village_graphical_y: int = self.convert_vertical_m_to_px(village.physical_y)
 
             village.manage_graphics(village_graphical_x, village_graphical_y)
+=======
+
+        line(screen, self.border_color, [line_coordinate, y_1], [line_coordinate, y_2], self.border_width)
+
+    def draw_campfires(self):
+        """
+        Рисует костры
+        """
+
+        for campfire in self.campfires_list:
+            # Графическая координата x дома в [px]
+            campfire_graphical_x: int = self.convert_horizontal_m_to_px(campfire.physical_x)
+
+            # Графическая координата y дома в [px]
+            campfire_graphical_y: int = self.convert_vertical_m_to_px(campfire.physical_y)
+
+            campfire.manage_graphics(campfire_graphical_x, campfire_graphical_y)
+
+    def draw_houses(self):
+        """
+        Рисует дома
+        """
+
+        for house in self.houses_list:
+
+            # Физическое расстояние до дома в [м]
+            distance_x: float = house.physical_x - self.game.hero.x
+            distance_y: float = house.physical_y - self.game.hero.y
+            house_physical_distance: float = math.sqrt(distance_x ** 2 + distance_y ** 2)
+
+            if self.draw_needed(house_physical_distance):
+
+                # Графическая координата x дома в [px]
+                house_graphical_x: int = self.convert_horizontal_m_to_px(house.physical_x)
+
+                # Графическая координата y дома в [px]
+                house_graphical_y: int = self.convert_vertical_m_to_px(house.physical_y)
+
+                house.manage_graphics(house_graphical_x, house_graphical_y)
+
+    def draw_trees(self):
+        """
+        Рисует деревья
+        """
+
+        for tree in self.trees_list:
+
+            # Физическое расстояние до дерева в [м]
+            distance_x: float = tree.physical_x - self.game.hero.x
+            distance_y: float = tree.physical_y - self.game.hero.y
+            tree_physical_distance: float = math.sqrt(distance_x ** 2 + distance_y ** 2)
+
+            if self.draw_needed(tree_physical_distance):
+
+                # Графическая координата x дома в [px]
+                tree_graphical_x: int = self.convert_horizontal_m_to_px(tree.physical_x)
+
+                # Графическая координата y дома в [px]
+                tree_graphical_y: int = self.convert_vertical_m_to_px(tree.physical_y)
+
+                tree.manage_graphics(tree_graphical_x, tree_graphical_y)
+
+    def draw_villages(self):
+        """
+        Рисует деревни
+        """
+
+        for village in self.villages_list:
+
+            # Физическое расстояние до деревни в [м]
+            distance_x: float = village.physical_x - self.game.hero.x
+            distance_y: float = village.physical_y - self.game.hero.y
+            village_physical_distance: float = math.sqrt(distance_x ** 2 + distance_y ** 2)
+
+            if self.draw_needed(village_physical_distance):
+
+                # Графическая координата x деревни в [px]
+                village_graphical_x: int = self.convert_horizontal_m_to_px(village.physical_x)
+
+                # Графическая координата y деревни в [px]
+                village_graphical_y: int = self.convert_vertical_m_to_px(village.physical_y)
+
+                village.manage_graphics(village_graphical_x, village_graphical_y)
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
 
     def draw_vertical_line(self, line_coordinate: float):
         """
@@ -467,6 +643,7 @@ class Forest(object):
         """
         Рисует палки
         """
+<<<<<<< HEAD
 
         for stick in self.sticks_list:
             # Графическая координата x палки в [px]
@@ -476,11 +653,31 @@ class Forest(object):
             stick_graphical_y: int = self.convert_vertical_m_to_px(stick.physical_y)
 
             stick.manage_graphics(stick_graphical_x, stick_graphical_y)
+=======
+
+        for stick in self.sticks_list:
+
+            # Физическое расстояние до палки в [м]
+            distance_x: float = stick.physical_x - self.game.hero.x
+            distance_y: float = stick.physical_y - self.game.hero.y
+            stick_physical_distance: float = math.sqrt(distance_x ** 2 + distance_y ** 2)
+
+            if self.draw_needed(stick_physical_distance):
+
+                # Графическая координата x палки в [px]
+                stick_graphical_x: int = self.convert_horizontal_m_to_px(stick.physical_x)
+
+                # Графическая координата y палки в [px]
+                stick_graphical_y: int = self.convert_vertical_m_to_px(stick.physical_y)
+
+                stick.manage_graphics(stick_graphical_x, stick_graphical_y)
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
 
     # --- Обработка ---
     def manage_logic(self):
         """
         Обрабатывает логические события леса
+<<<<<<< HEAD
         """
 
         logical_list: list = self.logical_dict[self.game.hero.status_current]  # Список действий
@@ -493,6 +690,20 @@ class Forest(object):
         Обрабатывает графические события леса
         """
 
+=======
+        """
+
+        logical_list: list = self.logical_dict[self.game.hero.status_current]  # Список действий
+        for logical_action in logical_list:
+            if logical_action is not None:
+                logical_action()
+
+    def manage_graphics(self):
+        """
+        Обрабатывает графические события леса
+        """
+
+>>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
         graphical_list: list = self.graphical_dict[self.game.hero.status_current]
         for graphical_action in graphical_list:
             if graphical_action is not None:
