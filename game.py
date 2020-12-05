@@ -8,6 +8,7 @@ from forest import Forest
 from hero import Hero
 from graphic_engine import GraphicEngine
 from logic_engine import LogicEngine
+from menu import Menu
 from physical_engine import PhysicalEngine
 
 
@@ -30,7 +31,7 @@ class Game(object):
         self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
         self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
         self.clock = pygame.time.Clock()  # Часы pygame
-        self.status: str = 'run'  # Игра запущена
+        self.status: str = 'menu'  # Игра находится в меню
 
         # Графика
         self.black: tuple = (0, 0, 0)  # Чёрный цвет
@@ -43,6 +44,7 @@ class Game(object):
         # Объекты
         self.forest = None  # Объект леса определяется в game.setup()
         self.hero = None  # Объект героя определяется в game.setup()
+        self.menu = Menu(self)  # Объект меню
 
     # --- Инициализация ---
     def setup(self):
@@ -65,6 +67,7 @@ class Game(object):
         self.forest.setup()
 
         self.hero.setup()
+        self.menu.setup()
 
     # --- Логика ---
     def exit(self):
@@ -72,8 +75,18 @@ class Game(object):
         Завершает игру
         """
 
-        self.status: str = 'exit'  # Игра завершена
+        if self.status == 'run':  # Если игра запущена
+            self.status: str = 'menu'  # Выйти в меню
+        elif self.status == 'menu':  # Если открыто меню
+            self.status: str = 'exit'  # Выйти из игры
 
+    def play(self):
+        """
+        Запускает игру
+        """
+
+        self.status: str = 'run'  # Игра запущена
+          
     def update_actions_dicts(self):
         """
         Создаёт словарь действий
@@ -124,5 +137,10 @@ class Game(object):
         self.logic_engine.process()
         self.manage_graphics()
         self.manage_logic()
-        self.forest.process()
-        self.hero.process()
+        if self.status == 'menu':
+            self.menu.manage_graphics()
+            self.menu.manage_logic(self.graphic_engine.screen)
+        elif self.status == 'run':
+            self.physical_engine.manage_physics()
+            self.forest.process()
+            self.hero.process()

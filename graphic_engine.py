@@ -38,7 +38,7 @@ class GraphicEngine(object):
         """
 
         # Объект экрана pygame
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.FULLSCREEN)
 
     # --- Графика ---
     def draw_image(self, image_load, graphical_x: int, graphical_y: int, width: int, height: int):
