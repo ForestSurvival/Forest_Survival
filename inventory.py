@@ -195,13 +195,13 @@ class Inventory(object):
 
         temperature_round: int = round(temperature_celsius)  # Округлённая температура среды в [С*]
         temperature_str: str = str(temperature_round)  # Строка с температурой среды в [С*]
-        self.print_text(600, 0, 'Температура: ' + temperature_str + ' C*')
+        self.print_text(600, 40, 'Температура: ' + temperature_str + ' C*')
 
     def process(self):
         """
         Обрабатывает события инвентаря
         """
-        
+
         self.button_apple.process(self.hero.game.graphic_engine.screen)
         self.button_campfire.process(self.hero.game.graphic_engine.screen)
         self.button_water.process(self.hero.game.graphic_engine.screen)
