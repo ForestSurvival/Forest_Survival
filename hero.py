@@ -26,7 +26,12 @@ class Hero(object):
         """
 
         # Физика
+        self.heat_capacity: float = 3470  # Теплоёмкость героя в [Дж / К]
         self.speed_max: float = 2  # Максимальная скорость героя в [м/с]
+        self.temperature: float = 309.6  # Температура героя в [К]
+        self.temperature_max: float = 329.6  # Максимальная температура героя в [К]
+        self.temperature_min: float = 289.6  # Температурав [К], при которой герой умирает
+        self.thermal_conductivity: float = 0.048  # Коэффициент теплопередачи в [Вт / К]
         self.thirst: float = 0.0009  # Жажда героя в [м^3]
         self.thirst_max: float = 0.0018  # Максимальная жажда героя в [м^3]
         self.thirst_increase: float = self.thirst_max / game.day_length  # Скорость увеличения жажды в [м^3/с]
@@ -45,6 +50,7 @@ class Hero(object):
 
         # Объекты
         self.game = game
+        self.indicator_heat = None  # Объект индикатора теплоты определяется в hero.setup()
         self.indicator_satiety = None  # Объект индикатора сытости определяется в hero.setup()
         self.indicator_thirst = None  # Объект индикатора жажды определяется в hero.setup()
         self.inventory = Inventory(self)  # Объект инвентаря
@@ -56,6 +62,22 @@ class Hero(object):
         # self.screen = game.graphic_engine.screen
 
     # --- Инициализация ---
+    def set_indicator_heat(self):
+        """
+        Создаёт индикатор температуры
+        """
+
+        # Физика
+        t: float = self.temperature
+
+        indicator_heat_x: int = 400  # Координата x индикатора температуры
+        indicator_heat_y: int = 0  # Координата y индикатора температуры
+
+        # Температура героя в [%]
+        heat_percent: float = 100 * (t - self.temperature_min) / (self.temperature_max - self.temperature_min)
+
+        self.indicator_heat = Indicator('Температура', self, heat_percent, indicator_heat_x, indicator_heat_y)
+
     def set_indicator_satiety(self):
         """
         Создаёт индикатор сытости
@@ -83,6 +105,7 @@ class Hero(object):
 
         self.inventory.setup()
         self.set_actions_dicts()
+        self.set_indicator_heat()
         self.set_indicator_satiety()
         self.set_indicator_thirst()
 
@@ -121,10 +144,13 @@ class Hero(object):
         Герой ест яблоко
         """
 
-        if self.inventory.apples_amount > 0 and self.satiety < self.satiety_max:  # Если есть яблоки и герой хочет есть
-            apple = Apple(self.game.graphic_engine.screen, 0, 0)  # Тестовое яблоко
-            self.inventory.apples_amount -= 1  # Уменьшить количество яблок в инвентаре
-            self.satiety += apple.satiety
+        satiety_comfort: float = 0.9  # Если сытость больше 90 %, герой не хочет есть
+
+        if self.inventory.apples_amount > 0:  # Если есть яблоки
+            if self.satiety < self.satiety_max * satiety_comfort:  # Если герой хочет есть
+                apple = Apple(self.game.graphic_engine.screen, 0, 0)  # Тестовое яблоко
+                self.inventory.apples_amount -= 1  # Уменьшить количество яблок в инвентаре
+                self.satiety += apple.satiety
 
     def get_dead(self):
         """
@@ -132,6 +158,7 @@ class Hero(object):
         """
 
         self.status_current: str = 'dead'  # Герой мёртв
+        self.game.status = 'menu'  # Перевести игру в меню
         self.game.exit()
 
     def set_actions_dicts(self):
@@ -188,6 +215,7 @@ class Hero(object):
             if self.inventory.paper_amount >= self.inventory.campfire.paper_amount:  # Если хватает бумаги
                 if self.inventory.sticks_amount >= self.inventory.campfire.sticks_amount:  # Если хватает палок
                     campfire = Campfire(self.inventory, self.x, self.y)  # Объект костра
+                    campfire.setup()
                     self.game.forest.campfires_list.append(campfire)
                     self.inventory.matches_amount -= self.inventory.campfire.matches_amount  # Спички израсходованы
                     self.inventory.paper_amount -= self.inventory.campfire.paper_amount  # Бумага израсходована
@@ -198,7 +226,8 @@ class Hero(object):
         Проверяет жизненно важные параметры героя
         """
 
-        if self.satiety == 0 or self.thirst == self.thirst_max:  # Если герой смертельно голоден или хочет пить
+        # Если герой смертельно голоден, хочет пить или замёрз
+        if self.satiety == 0 or self.thirst == self.thirst_max or self.temperature == self.temperature_min:
             self.get_dead()
 
     def drink_water(self):
@@ -206,8 +235,10 @@ class Hero(object):
         Герой пьёт воду
         """
 
+        thirst_comfort: float = 10  # Если жажда составляет 1/10 от максимальной, герой не хочет пить
+
         if self.inventory.water_amount > 0:  # Если в инвентаре есть вода
-            if self.thirst > 0:  # Если герой хочет пить
+            if self.thirst > self.thirst_max / thirst_comfort:  # Если герой хочет пить
                 self.thirst: float = max(self.thirst - self.inventory.water.volume, 0)  # Жажда героя уменьшается
                 self.inventory.water_amount -= 1  # Вода тратится
 
@@ -283,6 +314,18 @@ class Hero(object):
         delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
         self.y -= delta_distance  # Координата y героя в [м]
 
+    def update_indicator_heat(self):
+        """
+        Обновляет значение индикатора температуры
+        """
+
+        # Физика
+        t: float = self.temperature  # Температура героя в [К]
+
+        # Температура героя в [%]
+        heat_percent: float = 100 * (t - self.temperature_min) / (self.temperature_max - self.temperature_min)
+        self.indicator_heat.value = heat_percent
+
     def update_indicator_satiety(self):
         """
         Обновляет значение индикатора сытости
@@ -345,6 +388,7 @@ class Hero(object):
         self.get_thirsty()
         self.check_live_parameters()
         self.update_status()
+        self.update_indicator_heat()
         self.update_indicator_satiety()
         self.update_indicator_thirst()
 
@@ -352,8 +396,10 @@ class Hero(object):
         """
         Обрабатывает события героя
         """
+
         self.manage_logic()
         self.manage_physics()
         self.manage_graphics()
+        self.indicator_heat.process()
         self.indicator_satiety.process()
         self.indicator_thirst.process()

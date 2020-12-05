@@ -39,6 +39,7 @@ class Forest(object):
         self.borders_distance_y = None
 
         self.draw_distance_max = None  # Максимальное расстояние прорисовки в [м] определяется в forest.setup()
+        self.temperature_passive: float = 265  # Температура пустого леса в [К]
         self.scale: int = 35  # Масштаб в [px/м]
 
         # Объекты
@@ -146,17 +147,28 @@ class Forest(object):
         Создаёт дома
         """
 
+        # Физика
         houses_amount: int = 3  # Количество домов
+        distance_min: float = 5  # Минимальное расстояние между домами в [м]
+
         for house_number in range(houses_amount):
+
+            generated_too_close: bool = False  # Флаг слишком близкой генерации домов
+
             # Физическая координата x дома в [м]
-            house_physical_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
+            house_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
 
             # Физическая координата y дома в [м]
-            house_physical_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
-
-            house = House(self, house_physical_x, house_physical_y)  # Объект яблока
-            house.setup()
-            self.houses_list.append(house)
+            house_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
+            for other in self.houses_list:
+                distance: float = self.game.physical_engine.get_physical_distance(house_x, house_y, other.physical_x,
+                                                                                  other.physical_y)
+                if distance < distance_min:  # Если дома сгенерировались слишком близко
+                    generated_too_close: bool = True  # Запомнить это
+            if not generated_too_close:  # Если дома не очень близко
+                house = House(self, house_x, house_y)  # Объект яблока
+                house.setup()
+                self.houses_list.append(house)
 
     def generate_trees(self):
         """
@@ -208,9 +220,9 @@ class Forest(object):
 
     def set_logical_dict(self):
         """
-        Создаёт логический словарь
+        Создаёт словарь, сопоставляющий статус героя и действия окружающей среды
         """
-        self.logical_dict: dict = {'walk': [None],  # Логический словарь
+        self.logical_dict: dict = {'walk': [None],  # Логический действий
                                    'act': [self.manage_apples_logic,
                                            self.manage_campfires_logic,
                                            self.manage_houses_logic,
