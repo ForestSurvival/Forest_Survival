@@ -39,6 +39,7 @@ class Game(object):
 
         # Физика
         self.day_length: int = 600  # Длинна дня в [с]
+        self.tick_count: int = 0  # Количесто циклов, прошедших с начала игры
 
         # Объекты
         self.forest = None  # Объект леса определяется в game.setup()
@@ -86,6 +87,13 @@ class Game(object):
 
         self.status: str = 'run'  # Игра запущена
 
+    def play(self):
+        """
+        Запускает игру
+        """
+
+        self.status: str = 'run'  # Игра запущена
+          
     def update_actions_dicts(self):
         """
         Создаёт словарь действий
@@ -97,6 +105,14 @@ class Game(object):
         else:
             self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
             self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
+
+    # --- Физика ---
+    def increase_tick_count(self):
+        """
+        Увеличивает кол-во циклов
+        """
+
+        self.tick_count += 1
 
     # --- Обработка ---
     def manage_graphics(self):
@@ -124,6 +140,7 @@ class Game(object):
         Обрабатывает события игры
         """
 
+        self.increase_tick_count()
         self.logic_engine.process()
         self.manage_graphics()
         self.manage_logic()

@@ -36,7 +36,7 @@ class Campfire(object):
         self.graphical_height: int = 20  # Графическая высота костра в [px]
         self.graphical_width: int = 20  # Графическая ширина костра в [px]
 
-        # Изображение палки в формате bmp
+        # Изображение костра в формате bmp
         self.image_campfire = pygame.image.load('Sprites/campfire.bmp')
 
         # Объекты

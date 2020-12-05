@@ -65,5 +65,5 @@ class GraphicEngine(object):
         Изменяет размер изображения
         """
 
-        image_transformed = pygame.transform.scale(image_load, (height, width))
+        image_transformed = pygame.transform.scale(image_load, (width, height))
         return image_transformed

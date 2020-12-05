@@ -3,6 +3,7 @@
 """
 
 import math
+import pygame
 
 from pygame.draw import *
 from random import *
@@ -401,7 +402,7 @@ class Forest(object):
         """
 
         for apple in self.apples_list:
-
+          
             # Физическое расстояние до яблока в [м]
             distance_x: float = apple.physical_x - self.game.hero.x
             distance_y: float = apple.physical_y - self.game.hero.y
@@ -414,7 +415,6 @@ class Forest(object):
 
                 # Графическая координата y яблока в [px]
                 apple_graphical_y: int = self.convert_vertical_m_to_px(apple.physical_y)
-
                 apple.manage_graphics(apple_graphical_x, apple_graphical_y)
 
     def draw_borders(self):
@@ -578,7 +578,7 @@ class Forest(object):
         """
         Обрабатывает графические события леса
         """
-
+        
         graphical_list: list = self.graphical_dict[self.game.hero.status_current]
         for graphical_action in graphical_list:
             if graphical_action is not None:
