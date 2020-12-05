@@ -5,9 +5,8 @@
 import math
 import pygame
 
-from pygame.draw import *
-
 from apple import Apple
+from campfire import Campfire
 from indicator import Indicator
 from inventory import Inventory
 
@@ -28,7 +27,7 @@ class Hero(object):
         self.speed_actual: float = 2  # Действительная скорость героя в [м/с]
         self.speed_max: float = 2  # Максимальная скорость героя в [м/с]
         self.thirst: float = 0.0009  # Жажда героя в [м^3]
-        self.thirst_max: float = 0.0018  # Минимальная жажда героя в [м^3]
+        self.thirst_max: float = 0.0018  # Максимальная жажда героя в [м^3]
         self.thirst_increase: float = self.thirst_max / game.day_length  # Скорость увеличения жажды в [м^3/с]
         self.x: float = 0  # Координата x героя в [м]
         self.y: float = 0  # Координата y героя в [м]
@@ -37,6 +36,7 @@ class Hero(object):
         self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий определяется в hero.setup()
         self.actions_current_dict: dict = {None: None}  # Словарь продолжительных действий определяется в hero.setup()
         self.action_radius: float = 0.5  # Расстояние, в пределах которого герой может действовать на объект в [м]
+        self.key: int = 0  # Номер изображения
         self.satiety: float = 4186.8  # Пищевая энергия в [Дж]
         self.satiety_max: float = 8373.6  # Максимальня пищевая энергия в [Дж]
         self.satiety_reduce: float = self.satiety_max / game.day_length  # Скорость голодания в [Дж/с]
@@ -53,7 +53,27 @@ class Hero(object):
         self.color: tuple = (206, 181, 75)  # Цвет героя
         self.draw_list: list = [None]  # Графический список
         self.radius: int = 5  # Радиус в [px]
-        self.screen = game.screen
+
+        self.graphical_height: int = 36  # Графическая высота героя в [px]
+        self.graphical_width: int = 26  # Графическая ширина героя в [px]
+
+        # Изображения героя в формате bmp
+        self.image_hero_dict: dict = {'W': [pygame.image.load('Sprites/Heroes/hero_up_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_up_2.bmp')],
+                                      'S': [pygame.image.load('Sprites/Heroes/hero_down_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_down_2.bmp')],
+                                      'A': [pygame.image.load('Sprites/Heroes/hero_left_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_left_2.bmp')],
+                                      'D': [pygame.image.load('Sprites/Heroes/hero_right_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_right_2.bmp')],
+                                      'WA': [pygame.image.load('Sprites/Heroes/hero_up_left_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_up_left_2.bmp')],
+                                      'WD': [pygame.image.load('Sprites/Heroes/hero_up_right_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_up_right_2.bmp')],
+                                      'SA': [pygame.image.load('Sprites/Heroes/hero_down_left_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_down_left_2.bmp')],
+                                      'SD': [pygame.image.load('Sprites/Heroes/hero_down_right_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_down_right_2.bmp')]}
 
     # --- Инициализация ---
     def set_indicator_satiety(self):
@@ -115,7 +135,7 @@ class Hero(object):
         """
 
         if self.inventory.apples_amount > 0 and self.satiety < self.satiety_max:  # Если есть яблоки и герой хочет есть
-            apple = Apple(self.game.screen, 0, 0)  # Тестовое яблоко
+            apple = Apple(self.game.graphic_engine.screen, 0, 0)  # Тестовое яблоко
             self.inventory.apples_amount -= 1  # Уменьшить количество яблок в инвентаре
             self.satiety += apple.satiety
 
@@ -172,6 +192,20 @@ class Hero(object):
         self.status_last: str = self.status_current  # Обновить статус
 
     # --- Физика ---
+    def burn_campfire(self):
+        """
+        Развести костёр
+        """
+
+        if self.inventory.matches_amount >= self.inventory.campfire.matches_amount:  # Если хватает спичек
+            if self.inventory.paper_amount >= self.inventory.campfire.paper_amount:  # Если хватает бумаги
+                if self.inventory.sticks_amount >= self.inventory.campfire.sticks_amount:  # Если хватает палок
+                    campfire = Campfire(self.inventory, self.x, self.y)  # Объект костра
+                    self.game.forest.campfires_list.append(campfire)
+                    self.inventory.matches_amount -= self.inventory.campfire.matches_amount  # Спички израсходованы
+                    self.inventory.paper_amount -= self.inventory.campfire.paper_amount  # Бумага израсходована
+                    self.inventory.sticks_amount -= self.inventory.campfire.sticks_amount  # Палки израсходованы
+
     def check_live_parameters(self):
         """
         Проверяет жизненно важные параметры героя
@@ -179,6 +213,16 @@ class Hero(object):
 
         if self.satiety == 0 or self.thirst == self.thirst_max:  # Если герой смертельно голоден или хочет пить
             self.get_dead()
+
+    def drink_water(self):
+        """
+        Герой пьёт воду
+        """
+
+        if self.inventory.water_amount > 0:  # Если в инвентаре есть вода
+            if self.thirst > 0:  # Если герой хочет пить
+                self.thirst: float = max(self.thirst - self.inventory.water.volume, 0)  # Жажда героя уменьшается
+                self.inventory.water_amount -= 1  # Вода тратится
 
     def get_hungry(self):
         """
@@ -266,10 +310,40 @@ class Hero(object):
         Нарисовать героя
         """
 
-        x: int = self.screen.get_width() // 2  # Координата x героя на экране в [px]
-        y: int = self.screen.get_height() // 2  # Координата y героя на экране в [px]
+        x: int = self.game.graphic_engine.screen.get_width() // 2  # Координата x героя на экране в [px]
+        y: int = self.game.graphic_engine.screen.get_height() // 2  # Координата y героя на экране в [px]
+        button = ''
 
-        circle(self.screen, self.color, (x, y), self.radius)
+        # for button in self.image_hero_dict:
+        #     if button in self.actions_current_dict:
+        #         if self.game.logic_engine.keys_current_list[button] == 1:  # Если клавиша нажата в текущем цикле
+        #
+
+        for keys in self.image_hero_dict:
+            key_current = self.game.logic_engine.keys_current_list
+            if (keys == 'WA') and (key_current[pygame.K_a] == 1) and (key_current[pygame.K_w] == 1):
+                button = keys
+            elif (keys == 'WD') and (key_current[pygame.K_d] == 1) and (key_current[pygame.K_w] == 1):
+                button = keys
+            elif (keys == 'SA') and (key_current[pygame.K_a] == 1) and (key_current[pygame.K_s] == 1):
+                button = keys
+            elif (keys == 'SD') and (key_current[pygame.K_d] == 1) and (key_current[pygame.K_s] == 1):
+                button = keys
+            elif (keys == 'A') and (key_current[pygame.K_a] == 1) and (key_current[pygame.K_w] == 0) and (key_current[pygame.K_s] == 0):
+                button = keys
+            elif (keys == 'D') and (key_current[pygame.K_d] == 1) and (key_current[pygame.K_w] == 0) and (key_current[pygame.K_s] == 0):
+                button = keys
+            elif (keys == 'S') and (key_current[pygame.K_s] == 1) and (key_current[pygame.K_a] == 0) and (key_current[pygame.K_d] == 0):
+                button = keys
+            elif (keys == 'W') and (key_current[pygame.K_w] == 1) and (key_current[pygame.K_a] == 0) and (key_current[pygame.K_d] == 0):
+                button = keys
+            else:
+                continue
+            if self.game.tick_count % 7 == 0:
+                self.key = self.game.tick_count % 2
+            image_load = self.image_hero_dict[button][self.key]
+            self.game.graphic_engine.draw_image(image_load, x, y, self.graphical_width, self.graphical_height)
+            button = ''
 
     # --- Обработка ---
     def manage_graphics(self):

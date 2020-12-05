@@ -6,7 +6,9 @@ import pygame
 
 from forest import Forest
 from hero import Hero
+from graphic_engine import GraphicEngine
 from logic_engine import LogicEngine
+from physical_engine import PhysicalEngine
 
 
 class Game(object):
@@ -18,6 +20,11 @@ class Game(object):
         """
         Параметры
         """
+
+        # Движки
+        self.graphic_engine = None  # Объект графического движка определяется в game.setup()
+        self.logic_engine = None  # Объект логического движка определяется в game.setup()
+        self.physical_engine = None  # Объект физического движка определяется в game.setup()
 
         # Логика
         self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
@@ -31,12 +38,11 @@ class Game(object):
 
         # Физика
         self.day_length: int = 600  # Длинна дня в [с]
+        self.tick_count: int = 0  # Количесто циклов, прошедших с начала игры
 
         # Объекты
         self.forest = None  # Объект леса определяется в game.setup()
         self.hero = None  # Объект героя определяется в game.setup()
-        self.logic_engine = None  # Объект логического движка определяется в game.setup()
-        self.screen = None  # Определяется в game.setup()
 
     # --- Инициализация ---
     def setup(self):
@@ -44,16 +50,21 @@ class Game(object):
         Инициализация игры
         """
 
-        self.set_screen()
-
-        self.forest = Forest(self)  # Объект леса
-        self.forest.setup()
-
-        self.hero = Hero(self)  # Объект героя
-        self.hero.setup()
-
+        # Движки
+        self.graphic_engine = GraphicEngine(self)  # Объект графического движка
+        self.graphic_engine.setup()
         self.logic_engine = LogicEngine(self)  # Объект логического движка
         self.logic_engine.setup()
+        self.physical_engine = PhysicalEngine(self)  # Объект физческого движка
+
+        # Объекты
+        self.forest = Forest(self)  # Объект леса
+
+        self.hero = Hero(self)  # Объект героя
+
+        self.forest.setup()
+
+        self.hero.setup()
 
     # --- Логика ---
     def exit(self):
@@ -62,15 +73,6 @@ class Game(object):
         """
 
         self.status: str = 'exit'  # Игра завершена
-
-    def set_screen(self):
-        """
-        Создаёт объект экрана
-        """
-
-        screen_height: int = 700  # Высота экрана в пикселях
-        screen_width: int = 1200  # Ширина экрана в пикселях
-        self.screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)  # Объект экрана pygame
 
     def update_actions_dicts(self):
         """
@@ -84,6 +86,14 @@ class Game(object):
             self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
             self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
 
+    # --- Физика ---
+    def increase_tick_count(self):
+        """
+        Увеличивает кол-во циклов
+        """
+
+        self.tick_count += 1
+
     # --- Обработка ---
     def manage_graphics(self):
         """
@@ -92,7 +102,7 @@ class Game(object):
 
         pygame.display.update()
         self.clock.tick(self.fps)
-        self.screen.fill(self.black)
+        self.graphic_engine.screen.fill((255, 100, 210))
 
     def manage_logic(self):
         """
@@ -110,8 +120,9 @@ class Game(object):
         Обрабатывает события игры
         """
 
+        self.increase_tick_count()
         self.logic_engine.process()
-        self.manage_logic()
         self.manage_graphics()
+        self.manage_logic()
         self.forest.process()
         self.hero.process()
