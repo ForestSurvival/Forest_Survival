@@ -22,13 +22,8 @@ class House(object):
         """
 
         self.color: tuple = (41, 171, 255)  # Цвет дома
-<<<<<<< HEAD
         self.graphical_height: int = 60  # Графическая высота дома в [px]
         self.graphical_width: int = 75  # Графическая ширина дома в [px]
-=======
-        self.graphical_height: int = 75  # Графическая высота дома в [px]
-        self.graphical_width: int = 60  # Графическая ширина дома в [px]
->>>>>>> 1d77dc0e6d0a121be83933d17412195615decb9d
         self.matches_amount: int = 0  # Количество спичек
         self.match_generation_chance: float = 0.5  # Шанс нахождения спички в доме
         self.paper_amount: int = 0  # Количество листов бумаги в доме
