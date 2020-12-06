@@ -21,15 +21,20 @@ class House(object):
         physical_y - Физическая координата y дома в [м]
         """
 
+        # Графика
         self.color: tuple = (41, 171, 255)  # Цвет дома
-        self.graphical_height: int = 75  # Графическая высота дома в [px]
-        self.graphical_width: int = 60  # Графическая ширина дома в [px]
+        self.graphical_height: int = 60  # Графическая высота дома в [px]
+        self.graphical_width: int = 75  # Графическая ширина дома в [px]
+
+        # Физика
+        self.action_radius: float = 1  # Радиус в [м], внутри которого герой может взаимодействовать
         self.matches_amount: int = 0  # Количество спичек
         self.match_generation_chance: float = 0.5  # Шанс нахождения спички в доме
         self.paper_amount: int = 0  # Количество листов бумаги в доме
         self.paper_generation_chance: float = 0.5  # Шанс нахождения бумаги в доме
         self.physical_x: float = physical_x
         self.physical_y: float = physical_y
+        self.temperature: float = 28  # Разница температуры внктри дома и снаружи в [К]
 
         # Изображение дома в формате bmp
         self.image_house = pygame.image.load('Sprites/snow_house.bmp')

@@ -39,6 +39,7 @@ class Forest(object):
         self.borders_distance_y = None
 
         self.draw_distance_max = None  # Максимальное расстояние прорисовки в [м] определяется в forest.setup()
+        self.temperature_passive: float = 265  # Температура пустого леса в [К]
         self.scale: int = 35  # Масштаб в [px/м]
 
         # Объекты
@@ -50,28 +51,23 @@ class Forest(object):
         self.villages_list: list = []  # Список деревень
         self.sticks_list: list = []  # Список палок
 
-        # Графика
-
-        # Изображение фона в формате png
-        # self.game_background = pygame.image.load('Sprites/game_background.png')
-
         self.border_color: tuple = (185, 250, 250)  # Цвет границ
         self.border_width: int = 1  # Толщина границ в [px]
         self.color: tuple = (193, 86, 217)  # Цвет леса
         self.graphical_dict: dict = {'walk': [self.draw_borders,
-                                              self.draw_trees,
                                               self.draw_apples,
                                               self.draw_campfires,
                                               self.draw_houses,
                                               self.draw_villages,
-                                              self.draw_sticks],
+                                              self.draw_sticks,
+                                              self.draw_trees],
                                      'act': [self.draw_borders,
-                                             self.draw_trees,
                                              self.draw_apples,
                                              self.draw_campfires,
                                              self.draw_houses,
                                              self.draw_villages,
-                                             self.draw_sticks],
+                                             self.draw_sticks,
+                                             self.draw_trees],
                                      'crafts': [None],
                                      'inventory': [None]}
 
@@ -146,24 +142,36 @@ class Forest(object):
         Создаёт дома
         """
 
+        # Физика
         houses_amount: int = 3  # Количество домов
+        distance_min: float = 5  # Минимальное расстояние между домами в [м]
+
         for house_number in range(houses_amount):
+
+            generated_too_close: bool = False  # Флаг слишком близкой генерации домов
+
             # Физическая координата x дома в [м]
-            house_physical_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
+            house_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
 
             # Физическая координата y дома в [м]
-            house_physical_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
-
-            house = House(self, house_physical_x, house_physical_y)  # Объект яблока
-            house.setup()
-            self.houses_list.append(house)
+            house_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
+            for other in self.houses_list:
+                distance: float = self.game.physical_engine.get_physical_distance(house_x, house_y, other.physical_x,
+                                                                                  other.physical_y)
+                if distance < distance_min:  # Если дома сгенерировались слишком близко
+                    generated_too_close: bool = True  # Запомнить это
+            if not generated_too_close:  # Если дома не очень близко
+                house = House(self, house_x, house_y)  # Объект яблока
+                house.setup()
+                self.houses_list.append(house)
 
     def generate_trees(self):
         """
         Создаёт деревья
         """
 
-        trees_amount: int = 100  # Количество деревьев
+        trees_amount: int = 100  # Максимальное количество деревьев
+        # draw_allowed: bool = True  # Флаг возможности рисования
         for tree_number in range(trees_amount):
             # Физическая координата x дерева в [м]
             tree_physical_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
@@ -172,7 +180,9 @@ class Forest(object):
             tree_physical_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
 
             tree = Tree(self, tree_physical_x, tree_physical_y)  # Объект дерева
+            tree.setup()
             self.trees_list.append(tree)
+        self.trees_list.sort(key=lambda sort_tree: sort_tree.physical_y)
 
     def generate_villages(self):
         """
@@ -208,9 +218,9 @@ class Forest(object):
 
     def set_logical_dict(self):
         """
-        Создаёт логический словарь
+        Создаёт словарь, сопоставляющий статус героя и действия окружающей среды
         """
-        self.logical_dict: dict = {'walk': [None],  # Логический словарь
+        self.logical_dict: dict = {'walk': [None],  # Логический действий
                                    'act': [self.manage_apples_logic,
                                            self.manage_campfires_logic,
                                            self.manage_houses_logic,
@@ -377,7 +387,7 @@ class Forest(object):
         line_dict - словарь прямой
         """
 
-        if distance <= self.draw_distance_max:  # Если прямую надо прорисовывать
+        if distance <= self.draw_distance_max / 2:  # Если прямую надо прорисовывать
             return True
         else:
             return False
@@ -389,7 +399,7 @@ class Forest(object):
         """
 
         for apple in self.apples_list:
-
+          
             # Физическое расстояние до яблока в [м]
             distance_x: float = apple.physical_x - self.game.hero.x
             distance_y: float = apple.physical_y - self.game.hero.y
@@ -402,7 +412,6 @@ class Forest(object):
 
                 # Графическая координата y яблока в [px]
                 apple_graphical_y: int = self.convert_vertical_m_to_px(apple.physical_y)
-
                 apple.manage_graphics(apple_graphical_x, apple_graphical_y)
 
     def draw_borders(self):
@@ -566,7 +575,7 @@ class Forest(object):
         """
         Обрабатывает графические события леса
         """
-
+        
         graphical_list: list = self.graphical_dict[self.game.hero.status_current]
         for graphical_action in graphical_list:
             if graphical_action is not None:

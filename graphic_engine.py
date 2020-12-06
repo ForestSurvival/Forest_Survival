@@ -65,5 +65,33 @@ class GraphicEngine(object):
         Изменяет размер изображения
         """
 
-        image_transformed = pygame.transform.scale(image_load, (height, width))
+        image_transformed = pygame.transform.scale(image_load, (width, height))
         return image_transformed
+
+    # --- Логика ---
+    def key_pressed_hero(self, keys):
+        """
+        Определяет, какая клавиша нажата при движении героя
+        """
+
+        key_cur = self.game.logic_engine.keys_current_list
+        if keys == 'WA' and key_cur[pygame.K_a] == 1 and key_cur[pygame.K_w] == 1:
+            button = keys
+        elif keys == 'WD' and key_cur[pygame.K_d] == 1 and key_cur[pygame.K_w] == 1:
+            button = keys
+        elif keys == 'SA' and key_cur[pygame.K_a] == 1 and key_cur[pygame.K_s] == 1:
+            button = keys
+        elif keys == 'SD' and key_cur[pygame.K_d] == 1 and key_cur[pygame.K_s] == 1:
+            button = keys
+        elif keys == 'A' and key_cur[pygame.K_a] == 1 and key_cur[pygame.K_w] == 0 and key_cur[pygame.K_s] == 0:
+            button = keys
+        elif keys == 'D' and key_cur[pygame.K_d] == 1 and key_cur[pygame.K_w] == 0 and key_cur[pygame.K_s] == 0:
+            button = keys
+        elif keys == 'S' and key_cur[pygame.K_s] == 1 and key_cur[pygame.K_a] == 0 and key_cur[pygame.K_d] == 0:
+            button = keys
+        elif keys == 'W' and key_cur[pygame.K_w] == 1 and key_cur[pygame.K_a] == 0 and key_cur[pygame.K_d] == 0:
+            button = keys
+        else:
+            button = None
+
+        return button
