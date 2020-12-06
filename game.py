@@ -115,7 +115,7 @@ class Game(object):
 
         pygame.display.update()
         self.clock.tick(self.fps)
-        self.graphic_engine.screen.fill((255, 100, 210))
+        self.graphic_engine.screen.fill((255, 255, 255))
 
     def manage_logic(self):
         """

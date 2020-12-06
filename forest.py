@@ -3,7 +3,6 @@
 """
 
 import math
-import pygame
 
 from pygame.draw import *
 from random import *
@@ -52,28 +51,23 @@ class Forest(object):
         self.villages_list: list = []  # Список деревень
         self.sticks_list: list = []  # Список палок
 
-        # Графика
-
-        # Изображение фона в формате png
-        # self.game_background = pygame.image.load('Sprites/game_background.png')
-
         self.border_color: tuple = (185, 250, 250)  # Цвет границ
         self.border_width: int = 1  # Толщина границ в [px]
         self.color: tuple = (193, 86, 217)  # Цвет леса
         self.graphical_dict: dict = {'walk': [self.draw_borders,
-                                              self.draw_trees,
                                               self.draw_apples,
                                               self.draw_campfires,
                                               self.draw_houses,
                                               self.draw_villages,
-                                              self.draw_sticks],
+                                              self.draw_sticks,
+                                              self.draw_trees],
                                      'act': [self.draw_borders,
-                                             self.draw_trees,
                                              self.draw_apples,
                                              self.draw_campfires,
                                              self.draw_houses,
                                              self.draw_villages,
-                                             self.draw_sticks],
+                                             self.draw_sticks,
+                                             self.draw_trees],
                                      'crafts': [None],
                                      'inventory': [None]}
 
@@ -185,6 +179,7 @@ class Forest(object):
             tree_physical_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
 
             tree = Tree(self, tree_physical_x, tree_physical_y)  # Объект дерева
+            tree.setup()
             self.trees_list.append(tree)
 
     def generate_villages(self):
