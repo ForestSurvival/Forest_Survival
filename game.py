@@ -86,6 +86,13 @@ class Game(object):
         """
 
         self.status: str = 'run'  # Игра запущена
+
+    def play(self):
+        """
+        Запускает игру
+        """
+
+        self.status: str = 'run'  # Игра запущена
           
     def update_actions_dicts(self):
         """
