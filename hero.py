@@ -40,7 +40,9 @@ class Hero(object):
         self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий определяется в hero.setup()
         self.actions_current_dict: dict = {None: None}  # Словарь продолжительных действий определяется в hero.setup()
         self.action_radius: float = 0.5  # Расстояние, в пределах которого герой может действовать на объект в [м]
+        self.button_last: str = 'S'
         self.key: int = 0  # Номер изображения
+        self.key_last = self.key
         self.satiety: float = 4186.8  # Пищевая энергия в [Дж]
         self.satiety_max: float = 8373.6  # Максимальня пищевая энергия в [Дж]
         self.satiety_reduce: float = self.satiety_max / game.day_length  # Скорость голодания в [Дж/с]
@@ -59,7 +61,7 @@ class Hero(object):
         self.draw_list: list = [None]  # Графический список
         self.radius: int = 5  # Радиус в [px]
         self.graphical_height: int = 36  # Графическая высота героя в [px]
-        self.graphical_width: int = 26  # Графическая ширина героя в [px]
+        self.graphical_width: int = 30  # Графическая ширина героя в [px]
 
         # Изображения героя в формате bmp
         self.image_hero_dict: dict = {'W': [pygame.image.load('Sprites/Heroes/hero_up_1.bmp'),
@@ -368,38 +370,23 @@ class Hero(object):
 
         x: int = self.game.graphic_engine.screen.get_width() // 2  # Координата x героя на экране в [px]
         y: int = self.game.graphic_engine.screen.get_height() // 2  # Координата y героя на экране в [px]
-        button = ''
-
-        # for button in self.image_hero_dict:
-        #     if button in self.actions_current_dict:
-        #         if self.game.logic_engine.keys_current_list[button] == 1:  # Если клавиша нажата в текущем цикле
-        #
+        flag = False  # Показывает, движется герой в данной итерации
 
         for keys in self.image_hero_dict:
-            key_current = self.game.logic_engine.keys_current_list
-            if (keys == 'WA') and (key_current[pygame.K_a] == 1) and (key_current[pygame.K_w] == 1):
-                button = keys
-            elif (keys == 'WD') and (key_current[pygame.K_d] == 1) and (key_current[pygame.K_w] == 1):
-                button = keys
-            elif (keys == 'SA') and (key_current[pygame.K_a] == 1) and (key_current[pygame.K_s] == 1):
-                button = keys
-            elif (keys == 'SD') and (key_current[pygame.K_d] == 1) and (key_current[pygame.K_s] == 1):
-                button = keys
-            elif (keys == 'A') and (key_current[pygame.K_a] == 1) and (key_current[pygame.K_w] == 0) and (key_current[pygame.K_s] == 0):
-                button = keys
-            elif (keys == 'D') and (key_current[pygame.K_d] == 1) and (key_current[pygame.K_w] == 0) and (key_current[pygame.K_s] == 0):
-                button = keys
-            elif (keys == 'S') and (key_current[pygame.K_s] == 1) and (key_current[pygame.K_a] == 0) and (key_current[pygame.K_d] == 0):
-                button = keys
-            elif (keys == 'W') and (key_current[pygame.K_w] == 1) and (key_current[pygame.K_a] == 0) and (key_current[pygame.K_d] == 0):
-                button = keys
-            else:
-                continue
-            if self.game.tick_count % 7 == 0:
-                self.key = self.game.tick_count % 2
-            image_load = self.image_hero_dict[button][self.key]
-            self.game.graphic_engine.draw_image(image_load, x, y, self.graphical_width, self.graphical_height)
-            button = ''
+            button = self.game.graphic_engine.key_pressed_hero(keys)
+            if button is not None:
+                if self.game.tick_count % 9 == 0:
+                    self.key = self.game.tick_count % 2
+
+                flag = True
+                image_load = self.image_hero_dict[button][self.key]
+                self.game.graphic_engine.draw_image(image_load, x, y, self.graphical_width, self.graphical_height)
+                self.button_last = button
+                self.key_last = self.key
+
+            elif not flag:
+                image_load = self.image_hero_dict[self.button_last][self.key_last]
+                self.game.graphic_engine.draw_image(image_load, x, y, self.graphical_width, self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self):
