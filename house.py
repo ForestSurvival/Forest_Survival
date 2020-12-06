@@ -23,8 +23,8 @@ class House(object):
 
         # Графика
         self.color: tuple = (41, 171, 255)  # Цвет дома
-        self.graphical_height: int = 75  # Графическая высота дома в [px]
-        self.graphical_width: int = 60  # Графическая ширина дома в [px]
+        self.graphical_height: int = 60  # Графическая высота дома в [px]
+        self.graphical_width: int = 75  # Графическая ширина дома в [px]
 
         # Физика
         self.action_radius: float = 1  # Радиус в [м], внутри которого герой может взаимодействовать
