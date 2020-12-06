@@ -57,7 +57,7 @@ class Button(object):
 
         screen - экран Pygame
         """
-        
+
         rect(screen, self.color, (self.graphical_x, self.graphical_y, self.width, self.height))
 
     # --- Обработка ---
