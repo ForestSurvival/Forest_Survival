@@ -39,6 +39,7 @@ class Game(object):
 
         # Физика
         self.day_length: int = 600  # Длинна дня в [с]
+        self.tick_count: int = 0  # Количесто циклов, прошедших с начала игры
 
         # Объекты
         self.forest = None  # Объект леса определяется в game.setup()
@@ -86,6 +87,13 @@ class Game(object):
 
         self.status: str = 'run'  # Игра запущена
 
+    def play(self):
+        """
+        Запускает игру
+        """
+
+        self.status: str = 'run'  # Игра запущена
+          
     def update_actions_dicts(self):
         """
         Создаёт словарь действий
@@ -98,6 +106,14 @@ class Game(object):
             self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
             self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
 
+    # --- Физика ---
+    def increase_tick_count(self):
+        """
+        Увеличивает кол-во циклов
+        """
+
+        self.tick_count += 1
+
     # --- Обработка ---
     def manage_graphics(self):
         """
@@ -106,7 +122,7 @@ class Game(object):
 
         pygame.display.update()
         self.clock.tick(self.fps)
-        self.graphic_engine.screen.fill((255, 100, 210))
+        self.graphic_engine.screen.fill((255, 255, 255))
 
     def manage_logic(self):
         """
@@ -124,12 +140,14 @@ class Game(object):
         Обрабатывает события игры
         """
 
+        self.increase_tick_count()
         self.logic_engine.process()
         self.manage_graphics()
         self.manage_logic()
         if self.status == 'menu':
             self.menu.manage_graphics()
-            self.menu.manage_logic(self.graphic_engine.screen)
+            self.menu.manage_logic()
         elif self.status == 'run':
+            self.physical_engine.manage_physics()
             self.forest.process()
             self.hero.process()

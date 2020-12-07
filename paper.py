@@ -36,8 +36,8 @@ class Paper(object):
         graphical_y - Графическая координата y бумаги в [px]
         """
 
-        self.house.forest.game.graphic_engine.draw_image(self.image_paper, graphical_x, graphical_y, self.graphical_width,
-                                                   self.graphical_height)
+        self.house.forest.game.graphic_engine.draw_image_center(self.image_paper, graphical_x, graphical_y, self.graphical_width,
+                                                                self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):

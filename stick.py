@@ -51,8 +51,8 @@ class Stick(object):
         graphical_y - графическая координата палки в [px]
         """
 
-        self.forest.game.graphic_engine.draw_image(self.image_stick, graphical_x, graphical_y, self.graphical_width,
-                                                   self.graphical_height)
+        self.forest.game.graphic_engine.draw_image_center(self.image_stick, graphical_x, graphical_y, self.graphical_width,
+                                                          self.graphical_height)
 
     # --- Обработка ---
     def manage_logic(self):

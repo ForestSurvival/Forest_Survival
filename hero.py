@@ -5,8 +5,6 @@
 import math
 import pygame
 
-from pygame.draw import *
-
 from apple import Apple
 from campfire import Campfire
 from indicator import Indicator
@@ -26,7 +24,12 @@ class Hero(object):
         """
 
         # Физика
+        self.heat_capacity: float = 3470  # Теплоёмкость героя в [Дж / К]
         self.speed_max: float = 2  # Максимальная скорость героя в [м/с]
+        self.temperature: float = 309.6  # Температура героя в [К]
+        self.temperature_max: float = 329.6  # Максимальная температура героя в [К]
+        self.temperature_min: float = 289.6  # Температурав [К], при которой герой умирает
+        self.thermal_conductivity: float = 0.048  # Коэффициент теплопередачи в [Вт / К]
         self.thirst: float = 0.0009  # Жажда героя в [м^3]
         self.thirst_max: float = 0.0018  # Максимальная жажда героя в [м^3]
         self.thirst_increase: float = self.thirst_max / game.day_length  # Скорость увеличения жажды в [м^3/с]
@@ -37,6 +40,9 @@ class Hero(object):
         self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий определяется в hero.setup()
         self.actions_current_dict: dict = {None: None}  # Словарь продолжительных действий определяется в hero.setup()
         self.action_radius: float = 0.5  # Расстояние, в пределах которого герой может действовать на объект в [м]
+        self.button_last: str = 'S'
+        self.key: int = 0  # Номер изображения
+        self.key_last = self.key
         self.satiety: float = 4186.8  # Пищевая энергия в [Дж]
         self.satiety_max: float = 8373.6  # Максимальня пищевая энергия в [Дж]
         self.satiety_reduce: float = self.satiety_max / game.day_length  # Скорость голодания в [Дж/с]
@@ -45,6 +51,7 @@ class Hero(object):
 
         # Объекты
         self.game = game
+        self.indicator_heat = None  # Объект индикатора теплоты определяется в hero.setup()
         self.indicator_satiety = None  # Объект индикатора сытости определяется в hero.setup()
         self.indicator_thirst = None  # Объект индикатора жажды определяется в hero.setup()
         self.inventory = Inventory(self)  # Объект инвентаря
@@ -53,9 +60,44 @@ class Hero(object):
         self.color: tuple = (206, 181, 75)  # Цвет героя
         self.draw_list: list = [None]  # Графический список
         self.radius: int = 5  # Радиус в [px]
-        # self.screen = game.graphic_engine.screen
+        self.graphical_height: int = 36  # Графическая высота героя в [px]
+        self.graphical_width: int = 30  # Графическая ширина героя в [px]
+
+        # Изображения героя в формате bmp
+        self.image_hero_dict: dict = {'W': [pygame.image.load('Sprites/Heroes/hero_up_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_up_2.bmp')],
+                                      'S': [pygame.image.load('Sprites/Heroes/hero_down_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_down_2.bmp')],
+                                      'A': [pygame.image.load('Sprites/Heroes/hero_left_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_left_2.bmp')],
+                                      'D': [pygame.image.load('Sprites/Heroes/hero_right_1.bmp'),
+                                            pygame.image.load('Sprites/Heroes/hero_right_2.bmp')],
+                                      'WA': [pygame.image.load('Sprites/Heroes/hero_up_left_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_up_left_2.bmp')],
+                                      'WD': [pygame.image.load('Sprites/Heroes/hero_up_right_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_up_right_2.bmp')],
+                                      'SA': [pygame.image.load('Sprites/Heroes/hero_down_left_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_down_left_2.bmp')],
+                                      'SD': [pygame.image.load('Sprites/Heroes/hero_down_right_1.bmp'),
+                                             pygame.image.load('Sprites/Heroes/hero_down_right_2.bmp')]}
 
     # --- Инициализация ---
+    def set_indicator_heat(self):
+        """
+        Создаёт индикатор температуры
+        """
+
+        # Физика
+        t: float = self.temperature
+
+        indicator_heat_x: int = 400  # Координата x индикатора температуры
+        indicator_heat_y: int = 0  # Координата y индикатора температуры
+
+        # Температура героя в [%]
+        heat_percent: float = 100 * (t - self.temperature_min) / (self.temperature_max - self.temperature_min)
+
+        self.indicator_heat = Indicator('Температура', self, heat_percent, indicator_heat_x, indicator_heat_y)
+
     def set_indicator_satiety(self):
         """
         Создаёт индикатор сытости
@@ -83,6 +125,7 @@ class Hero(object):
 
         self.inventory.setup()
         self.set_actions_dicts()
+        self.set_indicator_heat()
         self.set_indicator_satiety()
         self.set_indicator_thirst()
 
@@ -121,10 +164,13 @@ class Hero(object):
         Герой ест яблоко
         """
 
-        if self.inventory.apples_amount > 0 and self.satiety < self.satiety_max:  # Если есть яблоки и герой хочет есть
-            apple = Apple(self.game.graphic_engine.screen, 0, 0)  # Тестовое яблоко
-            self.inventory.apples_amount -= 1  # Уменьшить количество яблок в инвентаре
-            self.satiety += apple.satiety
+        satiety_comfort: float = 0.9  # Если сытость больше 90 %, герой не хочет есть
+
+        if self.inventory.apples_amount > 0:  # Если есть яблоки
+            if self.satiety < self.satiety_max * satiety_comfort:  # Если герой хочет есть
+                apple = Apple(self.game.graphic_engine.screen, 0, 0)  # Тестовое яблоко
+                self.inventory.apples_amount -= 1  # Уменьшить количество яблок в инвентаре
+                self.satiety += apple.satiety
 
     def get_dead(self):
         """
@@ -132,6 +178,7 @@ class Hero(object):
         """
 
         self.status_current: str = 'dead'  # Герой мёртв
+        self.game.status = 'menu'  # Перевести игру в меню
         self.game.exit()
 
     def set_actions_dicts(self):
@@ -188,6 +235,7 @@ class Hero(object):
             if self.inventory.paper_amount >= self.inventory.campfire.paper_amount:  # Если хватает бумаги
                 if self.inventory.sticks_amount >= self.inventory.campfire.sticks_amount:  # Если хватает палок
                     campfire = Campfire(self.inventory, self.x, self.y)  # Объект костра
+                    campfire.setup()
                     self.game.forest.campfires_list.append(campfire)
                     self.inventory.matches_amount -= self.inventory.campfire.matches_amount  # Спички израсходованы
                     self.inventory.paper_amount -= self.inventory.campfire.paper_amount  # Бумага израсходована
@@ -198,7 +246,8 @@ class Hero(object):
         Проверяет жизненно важные параметры героя
         """
 
-        if self.satiety == 0 or self.thirst == self.thirst_max:  # Если герой смертельно голоден или хочет пить
+        # Если герой смертельно голоден, хочет пить или замёрз
+        if self.satiety == 0 or self.thirst == self.thirst_max or self.temperature == self.temperature_min:
             self.get_dead()
 
     def drink_water(self):
@@ -206,8 +255,10 @@ class Hero(object):
         Герой пьёт воду
         """
 
+        thirst_comfort: float = 10  # Если жажда составляет 1/10 от максимальной, герой не хочет пить
+
         if self.inventory.water_amount > 0:  # Если в инвентаре есть вода
-            if self.thirst > 0:  # Если герой хочет пить
+            if self.thirst > self.thirst_max / thirst_comfort:  # Если герой хочет пить
                 self.thirst: float = max(self.thirst - self.inventory.water.volume, 0)  # Жажда героя уменьшается
                 self.inventory.water_amount -= 1  # Вода тратится
 
@@ -283,6 +334,18 @@ class Hero(object):
         delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
         self.y -= delta_distance  # Координата y героя в [м]
 
+    def update_indicator_heat(self):
+        """
+        Обновляет значение индикатора температуры
+        """
+
+        # Физика
+        t: float = self.temperature  # Температура героя в [К]
+
+        # Температура героя в [%]
+        heat_percent: float = 100 * (t - self.temperature_min) / (self.temperature_max - self.temperature_min)
+        self.indicator_heat.value = heat_percent
+
     def update_indicator_satiety(self):
         """
         Обновляет значение индикатора сытости
@@ -307,8 +370,23 @@ class Hero(object):
 
         x: int = self.game.graphic_engine.screen.get_width() // 2  # Координата x героя на экране в [px]
         y: int = self.game.graphic_engine.screen.get_height() // 2  # Координата y героя на экране в [px]
+        flag = False  # Показывает, движется герой в данной итерации
 
-        circle(self.game.graphic_engine.screen, self.color, (x, y), self.radius)
+        for keys in self.image_hero_dict:
+            button = self.game.graphic_engine.key_pressed_hero(keys)
+            if button is not None:
+                if self.game.tick_count % 9 == 0:
+                    self.key = self.game.tick_count % 2
+
+                flag = True
+                image_load = self.image_hero_dict[button][self.key]
+                self.game.graphic_engine.draw_image_center(image_load, x, y, self.graphical_width, self.graphical_height)
+                self.button_last = button
+                self.key_last = self.key
+
+            elif not flag:
+                image_load = self.image_hero_dict[self.button_last][self.key_last]
+                self.game.graphic_engine.draw_image_center(image_load, x, y, self.graphical_width, self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self):
@@ -345,6 +423,7 @@ class Hero(object):
         self.get_thirsty()
         self.check_live_parameters()
         self.update_status()
+        self.update_indicator_heat()
         self.update_indicator_satiety()
         self.update_indicator_thirst()
 
@@ -352,8 +431,10 @@ class Hero(object):
         """
         Обрабатывает события героя
         """
+
         self.manage_logic()
         self.manage_physics()
         self.manage_graphics()
+        self.indicator_heat.process()
         self.indicator_satiety.process()
         self.indicator_thirst.process()

@@ -1,8 +1,9 @@
 """
 Модуль дерева
 """
+import pygame
 
-from pygame.draw import *
+from random import *
 
 
 class Tree(object):
@@ -20,8 +21,15 @@ class Tree(object):
         """
 
         # Графика
-        self.color: tuple = (255, 163, 136)  # Цвет дерева
-        self.graphical_radius: int = 5  # Графический радиус дерева в [px]
+        self.graphical_width: int = 126 * 2 // 3  # Графическая высота дерева в [px]
+        self.graphical_height: int = 167 * 2 // 3  # Графическая ширина дерева в [px]
+
+        # Изображения деревьев
+        self.images_trees_list = [pygame.image.load('Sprites/Trees/tree_1.bmp'),
+                                  pygame.image.load('Sprites/Trees/tree_2.bmp'),
+                                  pygame.image.load('Sprites/Trees/tree_3.bmp'),
+                                  pygame.image.load('Sprites/Trees/tree_4.bmp')]
+        self.image = None
 
         # Объекты
         self.forest = forest
@@ -29,6 +37,14 @@ class Tree(object):
         # Физика
         self.physical_x: float = physical_x
         self.physical_y: float = physical_y
+
+    # --- Инициализация ---
+    def setup(self):
+        """
+        Присваивает каждому дереву случайное изображение из списка
+        """
+
+        self.image = self.images_trees_list[randint(0, 3)]
 
     # --- Графика ---
     def draw(self, graphical_x: int, graphical_y: int):
@@ -39,7 +55,8 @@ class Tree(object):
         graphical_y - графическая координата y дерева в [px]
         """
 
-        circle(self.forest.game.graphic_engine.screen, self.color, (graphical_x, graphical_y), self.graphical_radius)
+        self.forest.game.graphic_engine.draw_image_center(self.image, graphical_x, graphical_y, self.graphical_width,
+                                                          self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):

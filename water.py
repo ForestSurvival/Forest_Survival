@@ -39,8 +39,8 @@ class Water(object):
         graphical_y - графическая координата y воды в [px]
         """
 
-        self.inventory.hero.game.graphic_engine.draw_image(self.image_water, graphical_x, graphical_y,
-                                                           self.graphical_width, self.graphical_height)
+        self.inventory.hero.game.graphic_engine.draw_image_center(self.image_water, graphical_x, graphical_y,
+                                                                  self.graphical_width, self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
