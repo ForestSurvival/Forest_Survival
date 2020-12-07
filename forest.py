@@ -170,7 +170,8 @@ class Forest(object):
         Создаёт деревья
         """
 
-        trees_amount: int = 100  # Количество деревьев
+        trees_amount: int = 100  # Максимальное количество деревьев
+        # draw_allowed: bool = True  # Флаг возможности рисования
         for tree_number in range(trees_amount):
             # Физическая координата x дерева в [м]
             tree_physical_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
@@ -181,6 +182,7 @@ class Forest(object):
             tree = Tree(self, tree_physical_x, tree_physical_y)  # Объект дерева
             tree.setup()
             self.trees_list.append(tree)
+        self.trees_list.sort(key=lambda sort_tree: sort_tree.physical_y)
 
     def generate_villages(self):
         """
@@ -385,7 +387,7 @@ class Forest(object):
         line_dict - словарь прямой
         """
 
-        if distance <= self.draw_distance_max:  # Если прямую надо прорисовывать
+        if distance <= self.draw_distance_max / 2:  # Если прямую надо прорисовывать
             return True
         else:
             return False

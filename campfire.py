@@ -102,8 +102,8 @@ class Campfire(object):
         """
 
         # Объекты
-        self.inventory.hero.game.graphic_engine.draw_image(self.image_campfire, graphical_x, graphical_y,
-                                                           self.graphical_width, self.graphical_height)
+        self.inventory.hero.game.graphic_engine.draw_image_center(self.image_campfire, graphical_x, graphical_y,
+                                                                  self.graphical_width, self.graphical_height)
 
     # --- Физика ---
     def melt_snow(self):

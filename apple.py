@@ -52,8 +52,8 @@ class Apple(object):
         graphical_y - Графическая координата y яблока в [px]
         """
 
-        self.forest.game.graphic_engine.draw_image(self.image_apple, graphical_x, graphical_y, self.graphical_width,
-                                                   self.graphical_height)
+        self.forest.game.graphic_engine.draw_image_center(self.image_apple, graphical_x, graphical_y, self.graphical_width,
+                                                          self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
