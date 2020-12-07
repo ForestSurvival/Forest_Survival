@@ -58,16 +58,16 @@ class Forest(object):
                                               self.draw_apples,
                                               self.draw_campfires,
                                               self.draw_houses,
-                                              self.draw_villages,
                                               self.draw_sticks,
-                                              self.draw_trees],
+                                              self.draw_trees,
+                                              self.draw_villages],
                                      'act': [self.draw_borders,
                                              self.draw_apples,
                                              self.draw_campfires,
                                              self.draw_houses,
-                                             self.draw_villages,
                                              self.draw_sticks,
-                                             self.draw_trees],
+                                             self.draw_trees,
+                                             self.draw_villages],
                                      'crafts': [None],
                                      'inventory': [None]}
 
@@ -108,13 +108,13 @@ class Forest(object):
         """
 
         down_border_dict: dict = {'coordinate': 'y',
-                                  'value': 20}  # Словарь нижней границы леса
+                                  'value': 50}  # Словарь нижней границы леса
         left_border_dict: dict = {'coordinate': 'x',
-                                  'value': -20}  # Словаь левой границы леса
+                                  'value': -50}  # Словаь левой границы леса
         right_border_dict: dict = {'coordinate': 'x',
-                                   'value': 20}  # Словарь правой границы леса
+                                   'value': 50}  # Словарь правой границы леса
         up_border_dict: dict = {'coordinate': 'y',
-                                'value': -20}  # Словарь верхней границы леса
+                                'value': -50}  # Словарь верхней границы леса
         self.borders_dict: dict = {'down': down_border_dict,  # Словарь границ
                                    'left': left_border_dict,
                                    'right': right_border_dict,
@@ -125,7 +125,7 @@ class Forest(object):
         Создаёт яблоки
         """
 
-        apples_amount: int = 10  # Количество яблок
+        apples_amount: int = 64  # Количество яблок
         for apple_number in range(apples_amount):
 
             # Координата x яблока в [м]
@@ -143,7 +143,7 @@ class Forest(object):
         """
 
         # Физика
-        houses_amount: int = 3  # Количество домов
+        houses_amount: int = 18  # Количество домов
         distance_min: float = 5  # Минимальное расстояние между домами в [м]
 
         for house_number in range(houses_amount):
@@ -170,7 +170,9 @@ class Forest(object):
         Создаёт деревья
         """
 
-        trees_amount: int = 100  # Максимальное количество деревьев
+        trees_amount: int = 1250  # Максимальное количество деревьев
+        min_distance_from_center: float = 5  # Минимальное расстояние от дерева до спавна в [м]
+
         # draw_allowed: bool = True  # Флаг возможности рисования
         for tree_number in range(trees_amount):
             # Физическая координата x дерева в [м]
@@ -179,9 +181,10 @@ class Forest(object):
             # Физическая координата y дерева в [м]
             tree_physical_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
 
-            tree = Tree(self, tree_physical_x, tree_physical_y)  # Объект дерева
-            tree.setup()
-            self.trees_list.append(tree)
+            if math.sqrt(tree_physical_x ** 2 + tree_physical_y ** 2) >= min_distance_from_center:
+                tree = Tree(self, tree_physical_x, tree_physical_y)  # Объект дерева
+                tree.setup()
+                self.trees_list.append(tree)
         self.trees_list.sort(key=lambda sort_tree: sort_tree.physical_y)
 
     def generate_villages(self):
@@ -205,7 +208,7 @@ class Forest(object):
         Создаёт палки
         """
 
-        sticks_amount: int = 20  # Количество палок
+        sticks_amount: int = 125  # Количество палок
         for stick_number in range(sticks_amount):
             # Координата x палки в [м]
             stick_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
