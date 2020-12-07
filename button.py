@@ -79,7 +79,7 @@ class Button(object):
 
         screen - экран Pygame
         """
-
+        
         if self.tick_count - self.tick_count_start >= 6:
             self.image = self.image_button
 

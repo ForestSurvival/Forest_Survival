@@ -35,6 +35,12 @@ class Tree(object):
         self.forest = forest
 
         # Физика
+        self.collision_radius: float = 1  # Радиус круга коллизии в [м]
+        self.stop_x: float = physical_x  # Координата x центра круга коллизии [м]
+
+        # Координата y центра круга коллизии в [м] находится ниже графического центра дерева
+        self.stop_y: float = physical_y + 1
+
         self.physical_x: float = physical_x
         self.physical_y: float = physical_y
 
