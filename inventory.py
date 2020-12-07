@@ -25,9 +25,9 @@ class Inventory(object):
 
         # Физика
         self.apples_amount: int = 0  # Количество яблок
-        self.matches_amount: int = 0  # Количество спичек
-        self.paper_amount: int = 0  # Количество бумаги
-        self.sticks_amount: int = 0  # Количество палок
+        self.matches_amount: int = 2  # Количество спичек
+        self.paper_amount: int = 2  # Количество бумаги
+        self.sticks_amount: int = 10  # Количество палок
         self.water_amount: int = 0  # Количество воды
         # self.screen_width: int = self.hero.game.graphic_engine.screen_width  # Ширина экрана в [px]
         # self.screen_height: int = self.hero.game.graphic_engine.screen_height  # Высота экрана в [px]

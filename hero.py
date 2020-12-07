@@ -26,10 +26,10 @@ class Hero(object):
         # Физика
         self.heat_capacity: float = 3470  # Теплоёмкость героя в [Дж / К]
         self.speed_max: float = 2  # Максимальная скорость героя в [м/с]
-        self.temperature: float = 309.6  # Температура героя в [К]
-        self.temperature_max: float = 329.6  # Максимальная температура героя в [К]
-        self.temperature_min: float = 289.6  # Температурав [К], при которой герой умирает
-        self.thermal_conductivity: float = 0.048  # Коэффициент теплопередачи в [Вт / К]
+        self.temperature: float = 289.6  # Температура героя в [К]
+        self.temperature_max: float = 309.6  # Максимальная температура героя в [К]
+        self.temperature_min: float = 269.6  # Температурав [К], при которой герой умирает
+        self.thermal_conductivity: float = 0.48  # Коэффициент теплопередачи в [Вт / К]
         self.thirst: float = 0.0009  # Жажда героя в [м^3]
         self.thirst_max: float = 0.0018  # Максимальная жажда героя в [м^3]
         self.thirst_increase: float = self.thirst_max / game.day_length  # Скорость увеличения жажды в [м^3/с]
