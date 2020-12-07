@@ -180,7 +180,6 @@ class Forest(object):
 
             # Физическая координата y дерева в [м]
             tree_physical_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
-
             if math.sqrt(tree_physical_x ** 2 + tree_physical_y ** 2) >= min_distance_from_center:
                 tree = Tree(self, tree_physical_x, tree_physical_y)  # Объект дерева
                 tree.setup()
