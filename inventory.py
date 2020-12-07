@@ -2,6 +2,8 @@
 Модуль инвентаря
 """
 
+import pygame
+
 from pygame.font import *
 
 from button import Button
@@ -27,6 +29,8 @@ class Inventory(object):
         self.paper_amount: int = 2  # Количество бумаги
         self.sticks_amount: int = 10  # Количество палок
         self.water_amount: int = 0  # Количество воды
+        # self.screen_width: int = self.hero.game.graphic_engine.screen_width  # Ширина экрана в [px]
+        # self.screen_height: int = self.hero.game.graphic_engine.screen_height  # Высота экрана в [px]
 
         # Графика
         self.apple_graphical_x: int = 5  # Графическая координата x запси о яблоке в [px]
@@ -41,6 +45,10 @@ class Inventory(object):
         self.stick_graphical_y: int = 120  # Графическая координата y записи о палке в [px]
         self.water_graphical_x: int = 5  # Графическая коордиата x записи о воде в [px]
         self.water_graphical_y: int = 80  # Графическая координата y записи о воде в [px]
+
+        self.graphical_height: int = 40  # Графическая высота кнопки в [px]
+        self.graphical_width: int = 400  # Графическая ширина кнопки в [px]
+        self.image_button = pygame.image.load('Sprites/blue_button.bmp')  # Изображение кнопки в формате bmp
 
         # Текст
         self.font_size = 30  # Размер шрифта
@@ -89,13 +97,19 @@ class Inventory(object):
         self.stick = self.get_object('stick')
 
         # Объект кнопки яблока
-        self.button_apple = Button(self.hero.eat_apple, self.hero.game.logic_engine, self.apple_graphical_x,
-                                   self.apple_graphical_y)
+        self.button_apple = Button(self.hero.eat_apple, self.hero.game.logic_engine, self.hero.game.graphic_engine,
+                                   self.image_button, self.apple_graphical_x, self.apple_graphical_y,
+                                   self.graphical_width, self.graphical_height)
 
-        self.button_campfire = Button(self.hero.burn_campfire, self.hero.game.logic_engine, self.campfire_graphical_x,
-                                      self.campfire_graphical_y)
-        self.button_water = Button(self.hero.drink_water, self.hero.game.logic_engine, self.water_graphical_x,
-                                   self.water_graphical_y)
+        # Объект кнопки костра
+        self.button_campfire = Button(self.hero.burn_campfire, self.hero.game.logic_engine,
+                                      self.hero.game.graphic_engine, self.image_button, self.campfire_graphical_x,
+                                      self.campfire_graphical_y, self.graphical_width, self.graphical_height)
+
+        # Объект кнопки воды
+        self.button_water = Button(self.hero.drink_water, self.hero.game.logic_engine, self.hero.game.graphic_engine,
+                                   self.image_button, self.water_graphical_x, self.water_graphical_y,
+                                   self.graphical_width, self.graphical_height)
 
     # --- Графика ---
     def print_text(self, graphical_x: int, graphical_y: int, text_str: str):
@@ -202,7 +216,7 @@ class Inventory(object):
         Обрабатывает события инвентаря
         """
 
-        self.button_apple.process(self.hero.game.graphic_engine.screen)
-        self.button_campfire.process(self.hero.game.graphic_engine.screen)
-        self.button_water.process(self.hero.game.graphic_engine.screen)
+        self.button_apple.process()
+        self.button_campfire.process()
+        self.button_water.process()
         self.manage_graphics()

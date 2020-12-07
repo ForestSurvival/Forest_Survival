@@ -109,8 +109,8 @@ class House(object):
         graphical_y - Графическая координата y дома в [px]
         """
 
-        self.forest.game.graphic_engine.draw_image(self.image_house, graphical_x, graphical_y, self.graphical_width,
-                                                   self.graphical_height)
+        self.forest.game.graphic_engine.draw_image_center(self.image_house, graphical_x, graphical_y, self.graphical_width,
+                                                          self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):

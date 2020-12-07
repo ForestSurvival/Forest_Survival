@@ -55,8 +55,8 @@ class Tree(object):
         graphical_y - графическая координата y дерева в [px]
         """
 
-        self.forest.game.graphic_engine.draw_image(self.image, graphical_x, graphical_y, self.graphical_width,
-                                                   self.graphical_height)
+        self.forest.game.graphic_engine.draw_image_center(self.image, graphical_x, graphical_y, self.graphical_width,
+                                                          self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):

@@ -146,7 +146,7 @@ class Game(object):
         self.manage_logic()
         if self.status == 'menu':
             self.menu.manage_graphics()
-            self.menu.manage_logic(self.graphic_engine.screen)
+            self.menu.manage_logic()
         elif self.status == 'run':
             self.physical_engine.manage_physics()
             self.forest.process()

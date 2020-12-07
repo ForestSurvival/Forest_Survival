@@ -380,13 +380,13 @@ class Hero(object):
 
                 flag = True
                 image_load = self.image_hero_dict[button][self.key]
-                self.game.graphic_engine.draw_image(image_load, x, y, self.graphical_width, self.graphical_height)
+                self.game.graphic_engine.draw_image_center(image_load, x, y, self.graphical_width, self.graphical_height)
                 self.button_last = button
                 self.key_last = self.key
 
             elif not flag:
                 image_load = self.image_hero_dict[self.button_last][self.key_last]
-                self.game.graphic_engine.draw_image(image_load, x, y, self.graphical_width, self.graphical_height)
+                self.game.graphic_engine.draw_image_center(image_load, x, y, self.graphical_width, self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self):
