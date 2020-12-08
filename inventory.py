@@ -2,16 +2,20 @@
 Модуль инвентаря
 """
 
+import pygame
+
 from pygame.font import *
 
-from apple import Apple
 from button import Button
+from campfire import Campfire
+from water import Water
 
 
 class Inventory(object):
     """
     Описывает инвентарь
     """
+    # screen_width: None
 
     def __init__(self, hero):
         """
@@ -20,79 +24,225 @@ class Inventory(object):
         hero - объект героя
         """
 
-        # Логика
-        self.apples_amount: int = 0  # В начале инвентарь пуст
+        # Физика
+        self.apples_amount: int = 0  # Количество яблок
+        self.matches_amount: int = 0  # Количество спичек
+        self.paper_amount: int = 0  # Количество бумаги
+        self.sticks_amount: int = 0  # Количество палок
+        self.water_amount: int = 0  # Количество воды
+        self.screen_width = None  # Ширина экрана в [px]
+        self.screen_height = None  # Высота экрана в [px]
 
         # Графика
-        self.apple_x: int = 5  # Координата x запси о яблоке в [px]
-        self.apple_y: int = 40  # Координата y записи о яблоке в [px]
-        self.screen = hero.game.screen
+        self.apple_graphical_x: int = 5  # Графическая координата x запси о яблоке в [px]
+        self.apple_graphical_y: int = 40  # Графическая координата y записи о яблоке в [px]
+        self.campfire_graphical_x: int = 400  # Графическая координата x записи о костре в [px]
+        self.campfire_graphical_y: int = 40  # Графическая координата y записи о косте в [px]
+        self.match_graphical_x: int = 200  # Графическая координата x запси о спичке в [px]
+        self.match_graphical_y: int = 40  # Графическая координата y запси о спичке в [px]
+        self.paper_graphical_x: int = 200  # Графическая координата x запси о бумаге в [px]
+        self.paper_graphical_y: int = 80  # Графическая координата y запси о бумаге в [px]
+        self.stick_graphical_x: int = 200  # Графическая коордиата x записи о палке в [px]
+        self.stick_graphical_y: int = 120  # Графическая координата y записи о палке в [px]
+        self.water_graphical_x: int = 5  # Графическая коордиата x записи о воде в [px]
+        self.water_graphical_y: int = 80  # Графическая координата y записи о воде в [px]
+
+        self.graphical_height: int = 40  # Графическая высота кнопки в [px]
+        self.graphical_width: int = 100  # Графическая ширина кнопки в [px]
+
+        self.image_inventory = pygame.image.load('Sprites/inventory.bmp')  # Изображение заставки в формате bmp
 
         # Текст
-        self.font = None  # Шрифт определяется в inventory.setup()
-        self.font_smoothing: bool = True  # Сглаживание шрифта
-        self.text_color: tuple = (79, 70, 202)  # Цвет текста
+        self.font_size = 30  # Размер шрифта
         self.text_space = 10  # Ширина пробела между изображением объекта и записью о количестве его копий в [px]
 
         # Объекты
-        self.apple = Apple(self.screen, 0, 0)  # Объект яблока
-        self.button_apple = Button(hero.eat_apple, self, self.apple_x, self.apple_y)  # Объект кнопки яблока
-        self.hero = hero  # Объект героя
+        self.apple = None  # Объект яблока определяется в inventory.setup()
 
-    # --- Логика ---
+        # Объект кнопки яблока
+        self.button_apple = None  # Объект кнопки яблока определяется в inventory.setup()
+
+        self.button_campfire = None  # Кнопка разведения костра определяется в inventory.setup()
+        self.button_water = None  # Кнопка воды определяется в inventory.setup()
+        self.campfire = Campfire(self, 0, 0)  # Объект костра
+        self.hero = hero  # Объект героя
+        self.match = None  # Объект спички определяется в inventory.setup()
+        self.paper = None  # Объект бумаги определяется в inventory.setup()
+        self.stick = None  # Объект палки определяется в inventory.setup()
+        self.water = Water(self)
+
+    # --- Инициализация ---
+    def get_object(self, item_name: str):
+        """
+        Определяет объекта
+
+        item_name - название объекта
+        """
+
+        # Объекты
+        items_dict: dict = {'apple': self.hero.game.forest.apples_list[0],  # Словарь объектов
+                            'match': self.hero.game.forest.houses_list[0].match,
+                            'paper': self.hero.game.forest.houses_list[0].paper,
+                            'stick': self.hero.game.forest.sticks_list[0]}
+
+        defined_object = items_dict[item_name]  # Определённый объект
+        return defined_object
+
     def setup(self):
         """
         Инициализация инвентаря
         """
 
-        self.set_font()
+        self.set_screen()
+
+        self.apple = self.get_object('apple')
+        self.match = self.get_object('match')
+        self.paper = self.get_object('paper')
+        self.stick = self.get_object('stick')
+
+        # Объект кнопки яблока
+        self.button_apple = Button(self.hero.eat_apple, self.hero.game.logic_engine, self.hero.game.graphic_engine,
+                                   self.hero.game, self.apple_graphical_x, self.apple_graphical_y,
+                                   self.graphical_width, self.graphical_height)
+
+        # Объект кнопки костра
+        self.button_campfire = Button(self.hero.burn_campfire, self.hero.game.logic_engine,
+                                      self.hero.game.graphic_engine, self.hero.game,
+                                      self.campfire_graphical_x, self.campfire_graphical_y,
+                                      self.graphical_width, self.graphical_height)
+
+        # Объект кнопки воды
+        self.button_water = Button(self.hero.drink_water, self.hero.game.logic_engine, self.hero.game.graphic_engine,
+                                   self.hero.game, self.water_graphical_x, self.water_graphical_y,
+                                   self.graphical_width, self.graphical_height)
+
+    def set_screen(self):
+        """
+        Определение параметров экрана
+        """
+
+        self.screen_width = self.hero.game.graphic_engine.screen_width
+        self.screen_height = self.hero.game.graphic_engine.screen_height
 
     # --- Графика ---
-    def print_amount(self, item, amount: int, y: int):
+    def draw_background(self):
         """
-        Печатает количество объектов
-
-        item - объект, количество копий которого надо напечатать
-        amount - количество копий объекта
-        y - координата y записи об объекте в [px]
+        Рисует фон
         """
 
-        text_x: int = self.apple_x + item.radius + self.text_space  # Координата x названия в [px]
-        amount_str: str = str(amount)  # Количество копий объекта
-        text = self.font.render(amount_str, self.font_smoothing, self.text_color)  # Текст о количестве копий объекта
+        height: int = self.hero.game.graphic_engine.screen.get_height()  # Высота экрана в [px]
+        width: int = self.hero.game.graphic_engine.screen.get_width()  # Ширина экрана в [px]
+        graphical_x: int = 0
+        graphical_y: int = 0
 
-        self.screen.blit(text, (text_x, y))
+        self.hero.game.graphic_engine.draw_image_corner(self.image_inventory, graphical_x, graphical_y, width, height)
 
-    def show(self):
+    def print_text(self, graphical_x: int, graphical_y: int, text_str: str):
         """
-        Показывает инвентарь
+        Печатает текст на экране
+
+        graphical_x - графическая координата x текста в [px]
+        graphical_y - графическая координата y текста в [px]
+        text_str - текст
         """
 
-        self.show_apple()
+        # Графика
+        font = self.set_font()
+        font_smoothing: bool = True  # Сглаживание шрифта
+        text_color: tuple = (192, 0, 64)  # Цвет текста
+
+        text = font.render(text_str, font_smoothing, text_color)  # Текст в формате Pygame
+        self.hero.game.graphic_engine.screen.blit(text, (graphical_x, graphical_y))
 
     def set_font(self):
         """
-        Устанавливает шрифт
+        Создаёт шрифт
         """
 
+        # Графика
         font_name = None  # Имя шрифта
-        font_size: int = 30  # Размер шрифта
-        self.font = Font(font_name, font_size)  # Шрифт Pygame
 
-    def show_apple(self):
+        font = Font(font_name, self.font_size)  # Шрифт
+        return font
+
+    def show_object(self, object_name):
         """
-        Показывает информацию о яблоках
+        Показывает информацию об объекте
+
+        object_name - название объекта
         """
 
-        self.apple.draw(self.apple_x, self.apple_y)
-        self.print_amount(self.apple, self.apples_amount, self.apple_y)
+        # Объекты
+        apple_dict: dict = {'amount': self.apples_amount,  # Словарь яблока
+                            'graphical_x': self.apple_graphical_x,
+                            'graphical_y': self.apple_graphical_y,
+                            'name': self.apple}
+        campfire_dict: dict = {'amount': None,  # Словарь яблока
+                               'graphical_x': self.campfire_graphical_x,
+                               'graphical_y': self.campfire_graphical_y,
+                               'name': self.campfire}
+        match_dict: dict = {'amount': self.matches_amount,  # Словарь спички
+                            'graphical_x': self.match_graphical_x,
+                            'graphical_y': self.match_graphical_y,
+                            'name': self.match}
+        paper_dict: dict = {'amount': self.paper_amount,  # Словарь бумаги
+                            'graphical_x': self.paper_graphical_x,
+                            'graphical_y': self.paper_graphical_y,
+                            'name': self.paper}
+        stick_dict: dict = {'amount': self.sticks_amount,  # Словарь палки
+                            'graphical_x': self.stick_graphical_x,
+                            'graphical_y': self.stick_graphical_y,
+                            'name': self.stick}
+        water_dict: dict = {'amount': self.water_amount,  # Словарь воды
+                            'graphical_x': self.water_graphical_x,
+                            'graphical_y': self.water_graphical_y,
+                            'name': self.water}
+        objects_dict: dict = {'apple': apple_dict,  # Словарь объектов
+                              'campfire': campfire_dict,
+                              'match': match_dict,
+                              'paper': paper_dict,
+                              'stick': stick_dict,
+                              'water': water_dict}
+
+        item_dict: dict = objects_dict[object_name]  # Словарь объекта, информацию о котором нужно показать
+        item_dict['name'].draw(item_dict['graphical_x'], item_dict['graphical_y'])
+
+        # Графическая координата x текста в [px]
+        text_graphical_x = item_dict['graphical_x'] + item_dict['name'].graphical_width + self.text_space
+
+        item_dict['name'].draw(item_dict['graphical_x'], item_dict['graphical_y'])
+        if item_dict['amount'] is not None:  # Если у объекта определено количество
+            amount_str: str = str(item_dict['amount'])  # Количество объектов
+            self.print_text(text_graphical_x, item_dict['graphical_y'], amount_str)
 
     # --- Обработка ---
+    def manage_graphics(self):
+        """
+        Обабатывает графические события инвентаря
+        """
+
+        self.draw_background()
+        self.button_apple.process()
+        self.button_campfire.process()
+        self.button_water.process()
+        self.show_object('apple')
+        self.show_object('campfire')
+        self.show_object('match')
+        self.show_object('paper')
+        self.show_object('stick')
+        self.show_object('water')
+        temperature: float = self.hero.game.physical_engine.get_local_temperature()  # Температура среды в [К]
+
+        # Температура среды в [С*]
+        temperature_celsius: float = temperature + self.hero.game.physical_engine.absolute_zero_celsius
+
+        temperature_round: int = round(temperature_celsius)  # Округлённая температура среды в [С*]
+        temperature_str: str = str(temperature_round)  # Строка с температурой среды в [С*]
+        self.print_text(600, 40, 'Температура: ' + temperature_str + ' C*')
 
     def process(self):
         """
         Обрабатывает события инвентаря
         """
 
-        self.button_apple.process()
-        self.show()
+        self.manage_graphics()

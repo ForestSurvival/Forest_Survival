@@ -2,7 +2,7 @@
 Модуль кнопки
 """
 
-from pygame.draw import *
+import pygame
 
 
 class Button(object):
@@ -10,51 +10,90 @@ class Button(object):
     Описывает кнопку
     """
 
-    def __init__(self, function, inventory, x: int, y: int):
+    def __init__(self, function, logic_engine, graphic_engine, game, graphical_x: int, graphical_y: int,
+                 width: int, height: int):
         """
         Параметры
 
         function - функция кнопки
-        inventory - объект инвентаря
-        x - координата x копки в [px]
-        y - координата y кнопки в [px]
+        logic_engine - объект логического движка
+        graphic_engine - объект графического движка
+        graphical_x - графическая координата x кнопки в [px]
+        graphical_y - графическая координата y кнопки в [px]
+        width - ширина изображения кнопки в [px]
+        height - высота изображения кнопки в [px]
         """
 
-        self.color: tuple = (203, 247, 72)  # Цвет кнопки
+        # Логика
         self.function = function
-        self.height: int = 30  # Высота кнопки в [px]
-        self.inventory = inventory
-        self.width: int = 100  # Ширина кнопки в [px]
-        self.x: int = x
-        self.y: int = y
 
-    # --- Физика ---
+        # Физика
+        self.graphical_height: int = height  # Графическая высота кнопки в [px]
+        self.graphical_width: int = width  # Графическая ширина кнопки в [px]
+        self.graphical_x: int = graphical_x
+        self.graphical_y: int = graphical_y
+        self.tick_count = None
+        self.tick_count_start = 0
+
+        # Объекты
+        self.graphic_engine = graphic_engine
+        self.logic_engine = logic_engine
+        self.game = game
+
+        # Графика
+        self.image_button = pygame.image.load('Sprites/blue_button.bmp')  # Изображение ненажатой кнопки в формате bmp
+
+        # Изображение нажатой кнопки в формате bmp
+        self.image_button_pressed = pygame.image.load('Sprites/blue_button_pressed.bmp')
+        self.image = self.image_button
+
+    # --- Инициализация ---
+    def setup(self):
+        """
+        Определяет количество циклов, прошедших с начала игры
+        """
+
+        self.tick_count = self.game.tick_count
+
+    # --- Логика ---
     def manage_click(self):
         """
         Обрабатывает нажатие
         """
 
-        mouse_pos: list = self.inventory.hero.game.logic_engine.mouse_pos_list  # Список координат мыши
+        mouse_pos: list = self.logic_engine.mouse_pos_list  # Список координат мыши
         if mouse_pos != [None]:  # Если кнопка мыши нажата
             mouse_x: int = mouse_pos[0]  # Координата x мыши в [px]
             mouse_y: int = mouse_pos[1]  # Координата y мыши в [px]
-            if self.x <= mouse_x <= self.x + self.width:
-                if self.y <= mouse_y <= self.y + self.height:  # Если клик внутри кнопки
+            if self.graphical_x <= mouse_x <= self.graphical_x + self.graphical_width:
+                if self.graphical_y <= mouse_y <= self.graphical_y + self.graphical_height:  # Если клик внутри кнопки
                     self.function()
+                    if self.graphical_width <= 200:
+                        self.image = self.image_button_pressed
+                        self.tick_count_start = self.tick_count
 
     # --- Графика ---
     def draw(self):
         """
         Рисует кнопку
-        """
 
-        rect(self.inventory.hero.game.screen, self.color, (self.x, self.y, self.width, self.height))
+        screen - экран Pygame
+        """
+        
+        if self.tick_count - self.tick_count_start >= 6:
+            self.image = self.image_button
+
+        self.graphic_engine.draw_image_corner(self.image, self.graphical_x, self.graphical_y,
+                                              self.graphical_width, self.graphical_height)
 
     # --- Обработка ---
     def process(self):
         """
         Обрабатывает события кнопки
+
+        screen - экран Pygame
         """
 
+        self.setup()
         self.draw()
         self.manage_click()

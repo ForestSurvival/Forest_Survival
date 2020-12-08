@@ -15,14 +15,14 @@ class Indicator(object):
     Описывает индикатор
     """
 
-    def __init__(self, name, screen, value: float, x: int, y: int):
+    def __init__(self, name, hero, value: float, x: int, y: int):
         """
         Параметры
 
         Координаты левого верхнего угла индикатора
 
         name - название индикатора
-        screen - экран pygame
+        hero - объект героя
         value - значение индицируемой величины в [%]
         x - координата x индикатора в [px]
         y - координата y индикатора в [px]
@@ -30,6 +30,7 @@ class Indicator(object):
 
         # Логика
         self.value: float = value
+        self.hero = hero
 
         # Графика
         self.color_active: tuple = (27, 60, 24)  # Цвет активной части
@@ -38,7 +39,6 @@ class Indicator(object):
         self.width_full: int = 100  # Полная длина индикатора в [px]
         self.x: int = x
         self.y: int = y
-        self.screen = screen
 
         # Текст
         self.font_name = None  # Название шрифта
@@ -56,10 +56,10 @@ class Indicator(object):
         width_active_int: int = round(width_active)  # Округлённая длина активной части в [px]
 
         # Пассивная часть индикатора
-        rect(self.screen, self.color_passive, (self.x, self.y, self.width_full, self.height))
+        rect(self.hero.game.graphic_engine.screen, self.color_passive, (self.x, self.y, self.width_full, self.height))
 
         # Активная часть индикатора
-        rect(self.screen, self.color_active, (self.x, self.y, width_active_int, self.height))
+        rect(self.hero.game.graphic_engine.screen, self.color_active, (self.x, self.y, width_active_int, self.height))
 
     def print_name(self):
         """
@@ -70,7 +70,7 @@ class Indicator(object):
         text_x: int = self.x + self.width_full + self.text_space  # Координата x названия в [px]
         text = font.render(self.name, self.font_smoothing, self.color_active)
 
-        self.screen.blit(text, (text_x, self.y))
+        self.hero.game.graphic_engine.screen.blit(text, (text_x, self.y))
 
     # --- Обработка ---
     def log(self):
