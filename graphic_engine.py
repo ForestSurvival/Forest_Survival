@@ -17,8 +17,8 @@ class GraphicEngine(object):
         game - объект игры
         """
 
-        self.screen_height: int = 700  # Высота экрана в пикселях
-        self.screen_width: int = 1200  # Ширина экрана в пикселях
+        self.screen_height: int = 700  # Высота экрана в [px]
+        self.screen_width: int = 1200  # Ширина экрана в [px]
         self.screen = None  # Определяется в game.setup()
 
         # Объекты
@@ -38,12 +38,12 @@ class GraphicEngine(object):
         """
 
         # Объект экрана pygame
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
 
     # --- Графика ---
-    def draw_image(self, image_load, graphical_x: int, graphical_y: int, width: int, height: int):
+    def draw_image_center(self, image_load, graphical_x: int, graphical_y: int, width: int, height: int):
         """
-        Рисует объект
+        Рисует объект, если заданые координаты центра
 
         image_load - Загруженное изображение
         graphical_x - Графическая координата x объекта в [px]
@@ -57,6 +57,20 @@ class GraphicEngine(object):
         graphical_x -= width // 2
         graphical_y -= height // 2
 
+        self.screen.blit(image_transformed, (graphical_x, graphical_y))  # Вставляет изображение объекта
+
+    def draw_image_corner(self, image_load, graphical_x: int, graphical_y: int, width: int, height: int):
+        """
+        Рисует объект, если заданые координаты левого верхнего угла
+
+        image_load - Загруженное изображение
+        graphical_x - Графическая координата x объекта в [px]
+        graphical_y - Графическая координата y объекта в [px]
+        width - Необходимая ширина изображения в [px]
+        height - Необходимая высота изображения в [px]
+        """
+
+        image_transformed = self.transform(image_load, width, height)  # Изменяет размеры изображения
         self.screen.blit(image_transformed, (graphical_x, graphical_y))  # Вставляет изображение объекта
 
     @staticmethod

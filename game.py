@@ -60,9 +60,8 @@ class Game(object):
         self.physical_engine = PhysicalEngine(self)  # Объект физческого движка
 
         # Объекты
-        self.forest = Forest(self)  # Объект леса
-
         self.hero = Hero(self)  # Объект героя
+        self.forest = Forest(self)  # Объект леса
 
         self.forest.setup()
 
@@ -115,7 +114,7 @@ class Game(object):
 
         pygame.display.update()
         self.clock.tick(self.fps)
-        self.graphic_engine.screen.fill((255, 100, 210))
+        self.graphic_engine.screen.fill((255, 255, 255))
 
     def manage_logic(self):
         """
@@ -139,7 +138,7 @@ class Game(object):
         self.manage_logic()
         if self.status == 'menu':
             self.menu.manage_graphics()
-            self.menu.manage_logic(self.graphic_engine.screen)
+            self.menu.manage_logic()
         elif self.status == 'run':
             self.physical_engine.manage_physics()
             self.forest.process()
