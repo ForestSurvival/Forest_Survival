@@ -24,15 +24,17 @@ class Hero(object):
         """
 
         # Физика
+        self.heat_bonus_clothes: float = 30  # Такую температуру в [К] даёт герою одежда
         self.heat_capacity: float = 3470  # Теплоёмкость героя в [Дж / К]
-        self.speed_max: float = 2  # Максимальная скорость героя в [м/с]
-        self.temperature: float = 289.6  # Температура героя в [К]
-        self.temperature_max: float = 309.6  # Максимальная температура героя в [К]
-        self.temperature_min: float = 269.6  # Температурав [К], при которой герой умирает
+        self.speed_max: float = 2.5  # Максимальная скорость героя в [м/с]
+        self.temperature: float = 309.6  # Температура героя в [К]
+        self.temperature_max: float = 329.6  # Максимальная температура героя в [К]
+        self.temperature_min: float = 289.6  # Температурав [К], при которой герой умирает
         self.thermal_conductivity: float = 0.48  # Коэффициент теплопередачи в [Вт / К]
         self.thirst: float = 0.0009  # Жажда героя в [м^3]
         self.thirst_max: float = 0.0018  # Максимальная жажда героя в [м^3]
         self.thirst_increase: float = self.thirst_max / game.day_length  # Скорость увеличения жажды в [м^3/с]
+        self.tick_count_start: int = 0  # Количесто циклов, прошедших с начала ходьбы героя в одну сторону
         self.x: float = 0  # Координата x героя в [м]
         self.y: float = 0  # Координата y героя в [м]
 
@@ -179,7 +181,7 @@ class Hero(object):
 
         self.status_current: str = 'dead'  # Герой мёртв
         self.game.status = 'menu'  # Перевести игру в меню
-        self.game.exit()
+        self.game.menu.status = 'dead'  # Сообщение о смерти
 
     def set_actions_dicts(self):
         """
@@ -270,8 +272,7 @@ class Hero(object):
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
         delta_satiety: float = self.satiety_reduce * time_step  # Квант голодания в [Дж]
         new_satiety: float = self.satiety - delta_satiety  # Новая пищевая энергия в [Дж]
-        new_satiety_int: int = round(new_satiety)  # Округлённая новая пищевая энергия в [Дж]
-        self.satiety = max(0, new_satiety_int)  # Пищевая энергия не может быть отрицательной
+        self.satiety: float = max(0.0, new_satiety)  # Пищевая энергия не может быть отрицательной
 
     def get_inventory(self):
         """
@@ -295,44 +296,82 @@ class Hero(object):
         Перемещает героя вниз
         """
 
+        move_allowed: bool = True  # Разрешено ли перемещаться
         speed_reduce: float = self.calculate_speed_reduce()
         speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
         delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
-        self.y += delta_distance  # Координата y героя в [м]
+        new_y: float = self.y + delta_distance  # Предпологаемая координата y в [м] после шага
+        for tree in self.game.forest.trees_list:
+
+            # Расстояние до центра круга коллизии дерева в [м]
+            distance: float = self.game.physical_engine.get_physical_distance(self.x, new_y, tree.stop_x, tree.stop_y)
+            if distance <= tree.collision_radius:
+                move_allowed: bool = False  # Идти запрещено
+
+        if move_allowed:
+            self.y: float = new_y  # Координата y героя в [м]
 
     def move_left(self):
         """
         Перемещает героя влево
         """
 
+        move_allowed: bool = True  # Разрешено ли перемещаться
         speed_reduce: float = self.calculate_speed_reduce()
         speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
         delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
-        self.x -= delta_distance  # Координата y героя в [м]
+        new_x: float = self.x - delta_distance  # Предпологаемая координата x в [м] после шага
+        for tree in self.game.forest.trees_list:
+
+            # Расстояние до центра круга коллизии дерева в [м]
+            distance: float = self.game.physical_engine.get_physical_distance(new_x, self.y, tree.stop_x, tree.stop_y)
+            if distance <= tree.collision_radius:
+                move_allowed: bool = False  # Идти запрещено
+        if move_allowed:
+            self.x: float = new_x  # Координата y героя в [м]
 
     def move_right(self):
         """
         Перемещает героя вправо
         """
 
+        move_allowed: bool = True  # Разрешено ли перемещаться
         speed_reduce: float = self.calculate_speed_reduce()
         speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
         delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
-        self.x += delta_distance  # Координата y героя в [м]
+        new_x: float = self.x + delta_distance  # Предпологаемая координата x в [м] после шага
+        for tree in self.game.forest.trees_list:
+
+            # Расстояние до центра круга коллизии дерева в [м]
+            distance: float = self.game.physical_engine.get_physical_distance(new_x, self.y, tree.stop_x, tree.stop_y)
+            if distance <= tree.collision_radius:
+                move_allowed: bool = False  # Идти запрещено
+        if move_allowed:
+            self.x: float = new_x  # Координата y героя в [м]
 
     def move_up(self):
         """
         Перемещает героя вверх
         """
 
+        move_allowed: bool = True  # Разрешено ли перемещаться
         speed_reduce: float = self.calculate_speed_reduce()
         speed_actual: float = self.speed_max / speed_reduce
         time_step: float = 1 / self.game.fps  # Квант времени в [с]
         delta_distance: float = speed_actual * time_step  # Квант перемещения в [м]
-        self.y -= delta_distance  # Координата y героя в [м]
+        new_y: float = self.y - delta_distance  # Предпологаемая координата y в [м] после шага
+        for tree in self.game.forest.trees_list:
+
+            # Расстояние до центра круга коллизии дерева в [м]
+            distance: float = self.game.physical_engine.get_physical_distance(self.x, new_y, tree.stop_x, tree.stop_y)
+            if distance <= tree.collision_radius:
+                move_allowed: bool = False  # Идти запрещено
+
+        if move_allowed:
+            self.y: float = new_y  # Координата y героя в [м]
 
     def update_indicator_heat(self):
         """
@@ -375,18 +414,24 @@ class Hero(object):
         for keys in self.image_hero_dict:
             button = self.game.graphic_engine.key_pressed_hero(keys)
             if button is not None:
-                if self.game.tick_count % 9 == 0:
-                    self.key = self.game.tick_count % 2
+                if self.game.tick_count - self.tick_count_start >= 13:
+                    if self.key == 0:
+                        self.key = 1
+                    else:
+                        self.key = 0
+                    self.tick_count_start = self.game.tick_count
 
                 flag = True
                 image_load = self.image_hero_dict[button][self.key]
-                self.game.graphic_engine.draw_image_center(image_load, x, y, self.graphical_width, self.graphical_height)
+                self.game.graphic_engine.draw_image_center(image_load, x, y,
+                                                           self.graphical_width, self.graphical_height)
                 self.button_last = button
                 self.key_last = self.key
 
             elif not flag:
                 image_load = self.image_hero_dict[self.button_last][self.key_last]
-                self.game.graphic_engine.draw_image_center(image_load, x, y, self.graphical_width, self.graphical_height)
+                self.game.graphic_engine.draw_image_center(image_load, x, y,
+                                                           self.graphical_width, self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self):
@@ -413,6 +458,7 @@ class Hero(object):
                 # Если клавиша нажата строго в текущем цикле
                 if self.game.logic_engine.keys_moment_list[key_index] == 1:
                     self.actions_moment_dict[key_index]()
+                    self.tick_count_start = self.game.tick_count
 
     def manage_physics(self):
         """
@@ -434,7 +480,6 @@ class Hero(object):
 
         self.manage_logic()
         self.manage_physics()
-        self.manage_graphics()
         self.indicator_heat.process()
         self.indicator_satiety.process()
         self.indicator_thirst.process()

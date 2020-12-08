@@ -38,7 +38,7 @@ class Game(object):
         self.fps: int = 60  # Частота обновления экарана в [Гц]
 
         # Физика
-        self.day_length: int = 600  # Длинна дня в [с]
+        self.day_length: int = 60  # Длинна дня в [с]
         self.tick_count: int = 0  # Количесто циклов, прошедших с начала игры
 
         # Объекты
@@ -60,14 +60,15 @@ class Game(object):
         self.physical_engine = PhysicalEngine(self)  # Объект физческого движка
 
         # Объекты
-        self.forest = Forest(self)  # Объект леса
-
         self.hero = Hero(self)  # Объект героя
+        self.forest = Forest(self)  # Объект леса
 
         self.forest.setup()
 
         self.hero.setup()
         self.menu.setup()
+
+        self.menu.status = 'main'  # Главное меню
 
     # --- Логика ---
     def exit(self):
@@ -79,13 +80,6 @@ class Game(object):
             self.status: str = 'menu'  # Выйти в меню
         elif self.status == 'menu':  # Если открыто меню
             self.status: str = 'exit'  # Выйти из игры
-
-    def play(self):
-        """
-        Запускает игру
-        """
-
-        self.status: str = 'run'  # Игра запущена
 
     def play(self):
         """
