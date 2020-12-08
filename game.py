@@ -38,7 +38,7 @@ class Game(object):
         self.fps: int = 60  # Частота обновления экарана в [Гц]
 
         # Физика
-        self.day_length: int = 60  # Длинна дня в [с]
+        self.day_length: int = 600  # Длинна дня в [с]
         self.tick_count: int = 0  # Количесто циклов, прошедших с начала игры
 
         # Объекты
