@@ -60,9 +60,8 @@ class Game(object):
         self.physical_engine = PhysicalEngine(self)  # Объект физческого движка
 
         # Объекты
-        self.forest = Forest(self)  # Объект леса
-
         self.hero = Hero(self)  # Объект героя
+        self.forest = Forest(self)  # Объект леса
 
         self.forest.setup()
 
