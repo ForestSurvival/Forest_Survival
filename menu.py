@@ -25,7 +25,6 @@ class Menu(object):
         self.graphical_width: int = 400  # Графическая ширина кнопки в [px]
         self.font = None  # Шрифт определяется в menu.setup()
         self.image_intro = pygame.image.load('Sprites/intro.bmp')  # Изображение заставки в формате bmp
-        self.image_button = pygame.image.load('Sprites/blue_button.bmp')  # Изображение кнопки в формате bmp
 
         self.play_graphical_x = None  # Графическая координата x кнопки play в [px]
         self.play_graphical_y = None  # Графическая координата y кнопки play в [px]
@@ -80,22 +79,22 @@ class Menu(object):
 
         # Кнопка выхода из игры
         self.button_exit = Button(self.game.exit, self.game.logic_engine, self.game.graphic_engine,
-                                  self.image_button, self.exit_graphical_x, self.exit_graphical_y,
+                                  self.game, self.exit_graphical_x, self.exit_graphical_y,
                                   self.graphical_width, self.graphical_height)
 
         # Кнопка запуска игры
         self.button_play = Button(self.game.play, self.game.logic_engine, self.game.graphic_engine,
-                                  self.image_button, self.play_graphical_x, self.play_graphical_y,
+                                  self.game, self.play_graphical_x, self.play_graphical_y,
                                   self.graphical_width, self.graphical_height)
 
         # Кнопка правил
         self.button_rules = Button(self.switch_to_rules, self.game.logic_engine, self.game.graphic_engine,
-                                   self.image_button, self.rules_graphical_x, self.rules_graphical_y,
+                                   self.game, self.rules_graphical_x, self.rules_graphical_y,
                                    self.graphical_width, self.graphical_height)
 
         # Кнопка закрытия окна с правилами
         self.button_rules_exit = Button(self.switch_to_main, self.game.logic_engine, self.game.graphic_engine,
-                                        self.image_button, self.rules_exit_graphical_x, self.rules_exit_graphical_y,
+                                        self.game, self.rules_exit_graphical_x, self.rules_exit_graphical_y,
                                         self.graphical_width, self.graphical_height)
 
     def set_coordinates(self):
@@ -108,7 +107,7 @@ class Menu(object):
         self.rules_graphical_x: int = (self.screen_width - self.graphical_width) // 4
         self.rules_graphical_y = 350
         self.rules_exit_graphical_x: int = (self.screen_width - self.graphical_width) // 2
-        self.rules_exit_graphical_y = 120
+        self.rules_exit_graphical_y = 350
         self.exit_graphical_x: int = (self.screen_width - self.graphical_width) * 3 // 4
         self.exit_graphical_y = 500
 

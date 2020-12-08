@@ -25,7 +25,7 @@ class Hero(object):
 
         # Физика
         self.heat_capacity: float = 3470  # Теплоёмкость героя в [Дж / К]
-        self.speed_max: float = 3  # Максимальная скорость героя в [м/с]
+        self.speed_max: float = 2.5  # Максимальная скорость героя в [м/с]
         self.temperature: float = 289.6  # Температура героя в [К]
         self.temperature_max: float = 309.6  # Максимальная температура героя в [К]
         self.temperature_min: float = 269.6  # Температурав [К], при которой герой умирает
@@ -33,6 +33,7 @@ class Hero(object):
         self.thirst: float = 0.0009  # Жажда героя в [м^3]
         self.thirst_max: float = 0.0018  # Максимальная жажда героя в [м^3]
         self.thirst_increase: float = self.thirst_max / game.day_length  # Скорость увеличения жажды в [м^3/с]
+        self.tick_count_start: int = 0  # Количесто циклов, прошедших с начала ходьбы героя в одну сторону
         self.x: float = 0  # Координата x героя в [м]
         self.y: float = 0  # Координата y героя в [м]
 
@@ -383,6 +384,18 @@ class Hero(object):
         heat_percent: float = 100 * (t - self.temperature_min) / (self.temperature_max - self.temperature_min)
         self.indicator_heat.value = heat_percent
 
+    def update_indicator_heat(self):
+        """
+        Обновляет значение индикатора температуры
+        """
+
+        # Физика
+        t: float = self.temperature  # Температура героя в [К]
+
+        # Температура героя в [%]
+        heat_percent: float = 100 * (t - self.temperature_min) / (self.temperature_max - self.temperature_min)
+        self.indicator_heat.value = heat_percent
+
     def update_indicator_satiety(self):
         """
         Обновляет значение индикатора сытости
@@ -412,8 +425,12 @@ class Hero(object):
         for keys in self.image_hero_dict:
             button = self.game.graphic_engine.key_pressed_hero(keys)
             if button is not None:
-                if self.game.tick_count % 9 == 0:
-                    self.key = self.game.tick_count % 2
+                if self.game.tick_count - self.tick_count_start >= 13:
+                    if self.key == 0:
+                        self.key = 1
+                    else:
+                        self.key = 0
+                    self.tick_count_start = self.game.tick_count
 
                 flag = True
                 image_load = self.image_hero_dict[button][self.key]
@@ -452,6 +469,8 @@ class Hero(object):
                 # Если клавиша нажата строго в текущем цикле
                 if self.game.logic_engine.keys_moment_list[key_index] == 1:
                     self.actions_moment_dict[key_index]()
+                    self.tick_count_start = self.game.tick_count
+
 
     def manage_physics(self):
         """
