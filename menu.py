@@ -194,21 +194,18 @@ class Menu(object):
             self.button_play.process()
             self.button_rules.process()
             self.button_exit.process()
-            self.print_text('Play', self.play_graphical_x, self.play_graphical_y)
-            self.print_text('Rules', self.rules_graphical_x, self.rules_graphical_y)
-            self.print_text('Exit', self.exit_graphical_x, self.exit_graphical_y)
+            self.print_text('Играть', self.play_graphical_x, self.play_graphical_y)
+            self.print_text('Правила', self.rules_graphical_x, self.rules_graphical_y)
+            self.print_text('Выход', self.exit_graphical_x, self.exit_graphical_y)
         elif self.status == 'rules':  # Если игрок читает правила
-            self.print_text('Rules', 0, 40)
-            self.print_text('1) You can be dead from starvation. Find food in the forest and eat it to increase your '
-                            'satiety', 0, 80)
-            self.print_text('2) You can be dead from thirst. You need to burn the campfire and melt the snow down to '
-                            'get water', 0, 120)
-            self.print_text('3) To burn the campfire you need to find 5 sticks in the forest, 1 match and 1 piece of '
-                            'paper', 0, 160)
-            self.print_text('   in the house', 0, 200)
-            self.print_text('4) To win the game you need to find the village and get out of the forest', 0, 240)
+            self.print_text('Правила', 0, 40)
+            self.print_text('1) Вы можете емереть от голода. Находите еду в лесу и ешьте её', 0, 80)
+            self.print_text('2) Вы можете умереть от жажды. Разводите костры, топите снег и пейте воду', 0, 120)
+            self.print_text('3) Чтобы развести костёр, вам нужно найти 5 палок в лесу, одну спичку и один лист бумаги ' 
+                            ' в домах', 0, 160)
+            self.print_text('4) Для победы вам нужно найти деревню и зайти в неё', 0, 200)
             self.button_rules_exit.process()
-            self.print_text('Menu', self.rules_exit_graphical_x, self.rules_exit_graphical_y)
+            self.print_text('Меню', self.rules_exit_graphical_x, self.rules_exit_graphical_y)
         elif self.status == 'dead':  # Если герой мёртв
             self.button_setup.process()
             self.print_text('Вы мертвы', 0, 40)

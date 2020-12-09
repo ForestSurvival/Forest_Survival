@@ -24,7 +24,7 @@ class Hero(object):
         """
 
         # Физика
-        self.heat_bonus_clothes: float = 30  # Такую температуру в [К] даёт герою одежда
+        self.heat_bonus_clothes: float = 23  # Такую температуру в [К] даёт герою одежда
         self.heat_capacity: float = 3470  # Теплоёмкость героя в [Дж / К]
         self.speed_max: float = 2.5  # Максимальная скорость героя в [м/с]
         self.temperature: float = 309.6  # Температура героя в [К]
