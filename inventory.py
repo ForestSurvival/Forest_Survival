@@ -15,6 +15,7 @@ class Inventory(object):
     """
     Описывает инвентарь
     """
+    # screen_width: None
 
     def __init__(self, hero):
         """
@@ -29,8 +30,8 @@ class Inventory(object):
         self.paper_amount: int = 0  # Количество бумаги
         self.sticks_amount: int = 0  # Количество палок
         self.water_amount: int = 0  # Количество воды
-        # self.screen_width: int = self.hero.game.graphic_engine.screen_width  # Ширина экрана в [px]
-        # self.screen_height: int = self.hero.game.graphic_engine.screen_height  # Высота экрана в [px]
+        self.screen_width = None  # Ширина экрана в [px]
+        self.screen_height = None  # Высота экрана в [px]
 
         # Графика
         self.apple_graphical_x: int = 5  # Графическая координата x запси о яблоке в [px]
@@ -47,8 +48,9 @@ class Inventory(object):
         self.water_graphical_y: int = 80  # Графическая координата y записи о воде в [px]
 
         self.graphical_height: int = 40  # Графическая высота кнопки в [px]
-        self.graphical_width: int = 400  # Графическая ширина кнопки в [px]
-        self.image_button = pygame.image.load('Sprites/blue_button.bmp')  # Изображение кнопки в формате bmp
+        self.graphical_width: int = 100  # Графическая ширина кнопки в [px]
+
+        self.image_inventory = pygame.image.load('Sprites/inventory.bmp')  # Изображение заставки в формате bmp
 
         # Текст
         self.font_size = 30  # Размер шрифта
@@ -91,6 +93,8 @@ class Inventory(object):
         Инициализация инвентаря
         """
 
+        self.set_screen()
+
         self.apple = self.get_object('apple')
         self.match = self.get_object('match')
         self.paper = self.get_object('paper')
@@ -98,20 +102,41 @@ class Inventory(object):
 
         # Объект кнопки яблока
         self.button_apple = Button(self.hero.eat_apple, self.hero.game.logic_engine, self.hero.game.graphic_engine,
-                                   self.image_button, self.apple_graphical_x, self.apple_graphical_y,
+                                   self.hero.game, self.apple_graphical_x, self.apple_graphical_y,
                                    self.graphical_width, self.graphical_height)
 
         # Объект кнопки костра
         self.button_campfire = Button(self.hero.burn_campfire, self.hero.game.logic_engine,
-                                      self.hero.game.graphic_engine, self.image_button, self.campfire_graphical_x,
-                                      self.campfire_graphical_y, self.graphical_width, self.graphical_height)
+                                      self.hero.game.graphic_engine, self.hero.game,
+                                      self.campfire_graphical_x, self.campfire_graphical_y,
+                                      self.graphical_width, self.graphical_height)
 
         # Объект кнопки воды
         self.button_water = Button(self.hero.drink_water, self.hero.game.logic_engine, self.hero.game.graphic_engine,
-                                   self.image_button, self.water_graphical_x, self.water_graphical_y,
+                                   self.hero.game, self.water_graphical_x, self.water_graphical_y,
                                    self.graphical_width, self.graphical_height)
 
+    def set_screen(self):
+        """
+        Определение параметров экрана
+        """
+
+        self.screen_width = self.hero.game.graphic_engine.screen_width
+        self.screen_height = self.hero.game.graphic_engine.screen_height
+
     # --- Графика ---
+    def draw_background(self):
+        """
+        Рисует фон
+        """
+
+        height: int = self.hero.game.graphic_engine.screen.get_height()  # Высота экрана в [px]
+        width: int = self.hero.game.graphic_engine.screen.get_width()  # Ширина экрана в [px]
+        graphical_x: int = 0
+        graphical_y: int = 0
+
+        self.hero.game.graphic_engine.draw_image_corner(self.image_inventory, graphical_x, graphical_y, width, height)
+
     def print_text(self, graphical_x: int, graphical_y: int, text_str: str):
         """
         Печатает текст на экране
@@ -124,7 +149,7 @@ class Inventory(object):
         # Графика
         font = self.set_font()
         font_smoothing: bool = True  # Сглаживание шрифта
-        text_color: tuple = (79, 70, 202)  # Цвет текста
+        text_color: tuple = (192, 0, 64)  # Цвет текста
 
         text = font.render(text_str, font_smoothing, text_color)  # Текст в формате Pygame
         self.hero.game.graphic_engine.screen.blit(text, (graphical_x, graphical_y))
@@ -196,6 +221,10 @@ class Inventory(object):
         Обабатывает графические события инвентаря
         """
 
+        self.draw_background()
+        self.button_apple.process()
+        self.button_campfire.process()
+        self.button_water.process()
         self.show_object('apple')
         self.show_object('campfire')
         self.show_object('match')
@@ -216,7 +245,4 @@ class Inventory(object):
         Обрабатывает события инвентаря
         """
 
-        self.button_apple.process()
-        self.button_campfire.process()
-        self.button_water.process()
         self.manage_graphics()

@@ -60,14 +60,15 @@ class Game(object):
         self.physical_engine = PhysicalEngine(self)  # Объект физческого движка
 
         # Объекты
-        self.forest = Forest(self)  # Объект леса
-
         self.hero = Hero(self)  # Объект героя
+        self.forest = Forest(self)  # Объект леса
 
         self.forest.setup()
 
         self.hero.setup()
         self.menu.setup()
+
+        self.menu.status = 'main'  # Главное меню
 
     # --- Логика ---
     def exit(self):

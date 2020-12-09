@@ -25,7 +25,6 @@ class Menu(object):
         self.graphical_width: int = 400  # Графическая ширина кнопки в [px]
         self.font = None  # Шрифт определяется в menu.setup()
         self.image_intro = pygame.image.load('Sprites/intro.bmp')  # Изображение заставки в формате bmp
-        self.image_button = pygame.image.load('Sprites/blue_button.bmp')  # Изображение кнопки в формате bmp
 
         self.play_graphical_x = None  # Графическая координата x кнопки play в [px]
         self.play_graphical_y = None  # Графическая координата y кнопки play в [px]
@@ -35,6 +34,8 @@ class Menu(object):
         self.rules_exit_graphical_y = None  # Графическая координата y кнопки rules exit в [px]
         self.exit_graphical_x = None  # Графическая координата x кнопки exit в [px]
         self.exit_graphical_y = None  # Графическая координата y кнопки exit в [px]
+        self.setup_graphical_x = None  # Графическая координата x кнопки новой игры в [px]
+        self.setup_graphical_y = None  # Графическая координата y кнопки новой игры в [px]
 
         # Логика
         self.status: str = 'main'  # Определяет окно, которое открыто
@@ -43,6 +44,7 @@ class Menu(object):
         self.button_play = None  # Кнопка запуска игры определяется в menu.setup()
         self.button_rules = None  # Кнопка правил определяется в menu.setup()
         self.button_rules_exit = None  # Кнопка закрытия окна с правилами определяется в menu.setup()
+        self.button_setup = None  # Кнопка новой игры определяется в menu.setup()
         self.button_exit = None  # Кнопка выхода из игры определяется в menu.setup()
         self.game = game
 
@@ -80,23 +82,28 @@ class Menu(object):
 
         # Кнопка выхода из игры
         self.button_exit = Button(self.game.exit, self.game.logic_engine, self.game.graphic_engine,
-                                  self.image_button, self.exit_graphical_x, self.exit_graphical_y,
+                                  self.game, self.exit_graphical_x, self.exit_graphical_y,
                                   self.graphical_width, self.graphical_height)
 
         # Кнопка запуска игры
         self.button_play = Button(self.game.play, self.game.logic_engine, self.game.graphic_engine,
-                                  self.image_button, self.play_graphical_x, self.play_graphical_y,
+                                  self.game, self.play_graphical_x, self.play_graphical_y,
                                   self.graphical_width, self.graphical_height)
 
         # Кнопка правил
         self.button_rules = Button(self.switch_to_rules, self.game.logic_engine, self.game.graphic_engine,
-                                   self.image_button, self.rules_graphical_x, self.rules_graphical_y,
+                                   self.game, self.rules_graphical_x, self.rules_graphical_y,
                                    self.graphical_width, self.graphical_height)
 
         # Кнопка закрытия окна с правилами
         self.button_rules_exit = Button(self.switch_to_main, self.game.logic_engine, self.game.graphic_engine,
-                                        self.image_button, self.rules_exit_graphical_x, self.rules_exit_graphical_y,
+                                        self.game, self.rules_exit_graphical_x, self.rules_exit_graphical_y,
                                         self.graphical_width, self.graphical_height)
+
+        # Кнопка новой игры
+        self.button_setup = Button(self.game.setup, self.game.logic_engine, self.game.graphic_engine,
+                                   self.game, self.setup_graphical_x, self.setup_graphical_y,
+                                   self.graphical_width, self.graphical_height)
 
     def set_coordinates(self):
         """
@@ -108,9 +115,11 @@ class Menu(object):
         self.rules_graphical_x: int = (self.screen_width - self.graphical_width) // 4
         self.rules_graphical_y = 350
         self.rules_exit_graphical_x: int = (self.screen_width - self.graphical_width) // 2
-        self.rules_exit_graphical_y = 120
+        self.rules_exit_graphical_y = 350
         self.exit_graphical_x: int = (self.screen_width - self.graphical_width) * 3 // 4
         self.exit_graphical_y = 500
+        self.setup_graphical_x: int = 0
+        self.setup_graphical_y: int = 80
 
     def set_screen(self):
         """
@@ -200,3 +209,7 @@ class Menu(object):
             self.print_text('4) To win the game you need to find the village and get out of the forest', 0, 240)
             self.button_rules_exit.process()
             self.print_text('Menu', self.rules_exit_graphical_x, self.rules_exit_graphical_y)
+        elif self.status == 'dead':  # Если герой мёртв
+            self.button_setup.process()
+            self.print_text('Вы мертвы', 0, 40)
+            self.print_text('Вернуться в меню', 0, 80)
