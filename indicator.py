@@ -39,6 +39,11 @@ class Indicator(object):
         self.width_full: int = 100  # Полная длина индикатора в [px]
         self.x: int = x
         self.y: int = y
+        self.graphical_height: int = 124  # Графическая высота индикатора в [px]
+        self.graphical_width: int = 0  # Графическая ширина индикатора в текущий момент в [px]
+
+        # Изображение деревни в формате bmp
+        self.image_village = pygame.image.load('Sprites/village.bmp')
 
         # Текст
         self.font_name = None  # Название шрифта
