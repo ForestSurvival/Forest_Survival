@@ -26,8 +26,6 @@ class Menu(object):
         self.font = None  # Шрифт определяется в menu.setup()
         self.image_intro = pygame.image.load('Sprites/intro.bmp')  # Изображение заставки в формате bmp
 
-        self.controls_graphical_x = None  # Координата x кнопки управления в [px]
-        self.controls_graphical_y = None  # Координата y кнопки управления в [px]
         self.play_graphical_x = None  # Графическая координата x кнопки play в [px]
         self.play_graphical_y = None  # Графическая координата y кнопки play в [px]
         self.rules_graphical_x = None  # Графическая координата x кнопки rules в [px]
@@ -36,18 +34,14 @@ class Menu(object):
         self.rules_exit_graphical_y = None  # Графическая координата y кнопки rules exit в [px]
         self.exit_graphical_x = None  # Графическая координата x кнопки exit в [px]
         self.exit_graphical_y = None  # Графическая координата y кнопки exit в [px]
-        self.setup_graphical_x = None  # Графическая координата x кнопки новой игры в [px]
-        self.setup_graphical_y = None  # Графическая координата y кнопки новой игры в [px]
 
         # Логика
         self.status: str = 'main'  # Определяет окно, которое открыто
 
         # Объекты
-        self.button_controls = None  # Кнопка управления определяется в menu.setup()
         self.button_play = None  # Кнопка запуска игры определяется в menu.setup()
         self.button_rules = None  # Кнопка правил определяется в menu.setup()
         self.button_rules_exit = None  # Кнопка закрытия окна с правилами определяется в menu.setup()
-        self.button_setup = None  # Кнопка новой игры определяется в menu.setup()
         self.button_exit = None  # Кнопка выхода из игры определяется в menu.setup()
         self.game = game
 
@@ -83,11 +77,6 @@ class Menu(object):
         Создание кнопок
         """
 
-        # Кнопка управления
-        self.button_controls = Button(self.switch_to_controls, self.game.logic_engine, self.game.graphic_engine,
-                                      self.game, self.controls_graphical_x, self.controls_graphical_y,
-                                      self.graphical_width, self.graphical_height)
-
         # Кнопка выхода из игры
         self.button_exit = Button(self.game.exit, self.game.logic_engine, self.game.graphic_engine,
                                   self.game, self.exit_graphical_x, self.exit_graphical_y,
@@ -108,18 +97,11 @@ class Menu(object):
                                         self.game, self.rules_exit_graphical_x, self.rules_exit_graphical_y,
                                         self.graphical_width, self.graphical_height)
 
-        # Кнопка новой игры
-        self.button_setup = Button(self.game.setup, self.game.logic_engine, self.game.graphic_engine,
-                                   self.game, self.setup_graphical_x, self.setup_graphical_y,
-                                   self.graphical_width, self.graphical_height)
-
     def set_coordinates(self):
         """
         Определение координат кнопок
         """
 
-        self.controls_graphical_x: int = (self.screen_width - self.graphical_width) * 7 // 8
-        self.controls_graphical_y: int = 275
         self.play_graphical_x: int = (self.screen_width - self.graphical_width) // 2
         self.play_graphical_y = 200
         self.rules_graphical_x: int = (self.screen_width - self.graphical_width) // 4
@@ -128,8 +110,6 @@ class Menu(object):
         self.rules_exit_graphical_y = 350
         self.exit_graphical_x: int = (self.screen_width - self.graphical_width) * 3 // 4
         self.exit_graphical_y = 500
-        self.setup_graphical_x: int = 0
-        self.setup_graphical_y: int = 80
 
     def set_screen(self):
         """
@@ -170,13 +150,6 @@ class Menu(object):
         self.game.graphic_engine.screen.blit(text, (graphical_x, graphical_y))
 
     # --- Логика ---
-    def switch_to_controls(self):
-        """
-        Показывает управление
-        """
-
-        self.status: str = 'controls'  # Показать управление
-
     def switch_to_main(self):
         """
         Выходит в главное меню
@@ -208,31 +181,21 @@ class Menu(object):
         """
 
         if self.status == 'main':  # Если игрок в главном меню
-            self.button_controls.process()
             self.button_play.process()
             self.button_rules.process()
             self.button_exit.process()
-            self.print_text('Управление', self.controls_graphical_x, self.controls_graphical_y)
-            self.print_text('Играть', self.play_graphical_x, self.play_graphical_y)
-            self.print_text('Правила', self.rules_graphical_x, self.rules_graphical_y)
-            self.print_text('Выход', self.exit_graphical_x, self.exit_graphical_y)
-        elif self.status == 'controls':  # Если игрок смотрит управление
-            self.button_rules_exit.process()
-            self.print_text('Меню', self.rules_exit_graphical_x, self.rules_exit_graphical_y)
-            self.print_text('W, A, S, D - перемещение', 0, 40)
-            self.print_text('E - действие. Подобрать предмет, обыскать дом, растопить снег', 0, 80)
-            self.print_text('I - открыть инвентарь', 0, 120)
-            self.print_text('Esc - выйти в меню', 0, 160)
+            self.print_text('Play', self.play_graphical_x, self.play_graphical_y)
+            self.print_text('Rules', self.rules_graphical_x, self.rules_graphical_y)
+            self.print_text('Exit', self.exit_graphical_x, self.exit_graphical_y)
         elif self.status == 'rules':  # Если игрок читает правила
-            self.print_text('Правила', 0, 40)
-            self.print_text('1) Вы можете емереть от голода. Находите еду в лесу и ешьте её', 0, 80)
-            self.print_text('2) Вы можете умереть от жажды. Разводите костры, топите снег и пейте воду', 0, 120)
-            self.print_text('3) Чтобы развести костёр, вам нужно найти 5 палок в лесу, одну спичку и один лист бумаги ' 
-                            ' в домах', 0, 160)
-            self.print_text('4) Для победы вам нужно найти деревню и зайти в неё', 0, 200)
+            self.print_text('Rules', 0, 40)
+            self.print_text('1) You can be dead from starvation. Find food in the forest and eat it to increase your '
+                            'satiety', 0, 80)
+            self.print_text('2) You can be dead from thirst. You need to burn the campfire and melt the snow down to '
+                            'get water', 0, 120)
+            self.print_text('3) To burn the campfire you need to find 5 sticks in the forest, 1 match and 1 piece of '
+                            'paper', 0, 160)
+            self.print_text('   in the house', 0, 200)
+            self.print_text('4) To win the game you need to find the village and get out of the forest', 0, 240)
             self.button_rules_exit.process()
-            self.print_text('Меню', self.rules_exit_graphical_x, self.rules_exit_graphical_y)
-        elif self.status == 'dead':  # Если герой мёртв
-            self.button_setup.process()
-            self.print_text('Вы мертвы', 0, 40)
-            self.print_text('Вернуться в меню', 0, 80)
+            self.print_text('Menu', self.rules_exit_graphical_x, self.rules_exit_graphical_y)
