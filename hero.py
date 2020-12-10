@@ -24,11 +24,12 @@ class Hero(object):
         """
 
         # Физика
+        self.heat_bonus_clothes: float = 23  # Такую температуру в [К] даёт герою одежда
         self.heat_capacity: float = 3470  # Теплоёмкость героя в [Дж / К]
         self.speed_max: float = 2.5  # Максимальная скорость героя в [м/с]
-        self.temperature: float = 289.6  # Температура героя в [К]
-        self.temperature_max: float = 309.6  # Максимальная температура героя в [К]
-        self.temperature_min: float = 269.6  # Температурав [К], при которой герой умирает
+        self.temperature: float = 309.6  # Температура героя в [К]
+        self.temperature_max: float = 329.6  # Максимальная температура героя в [К]
+        self.temperature_min: float = 289.6  # Температурав [К], при которой герой умирает
         self.thermal_conductivity: float = 0.48  # Коэффициент теплопередачи в [Вт / К]
         self.thirst: float = 0.0009  # Жажда героя в [м^3]
         self.thirst_max: float = 0.0018  # Максимальная жажда героя в [м^3]
@@ -180,7 +181,7 @@ class Hero(object):
 
         self.status_current: str = 'dead'  # Герой мёртв
         self.game.status = 'menu'  # Перевести игру в меню
-        self.game.exit()
+        self.game.menu.status = 'dead'  # Сообщение о смерти
 
     def set_actions_dicts(self):
         """
@@ -384,18 +385,6 @@ class Hero(object):
         heat_percent: float = 100 * (t - self.temperature_min) / (self.temperature_max - self.temperature_min)
         self.indicator_heat.value = heat_percent
 
-    def update_indicator_heat(self):
-        """
-        Обновляет значение индикатора температуры
-        """
-
-        # Физика
-        t: float = self.temperature  # Температура героя в [К]
-
-        # Температура героя в [%]
-        heat_percent: float = 100 * (t - self.temperature_min) / (self.temperature_max - self.temperature_min)
-        self.indicator_heat.value = heat_percent
-
     def update_indicator_satiety(self):
         """
         Обновляет значение индикатора сытости
@@ -470,7 +459,6 @@ class Hero(object):
                 if self.game.logic_engine.keys_moment_list[key_index] == 1:
                     self.actions_moment_dict[key_index]()
                     self.tick_count_start = self.game.tick_count
-
 
     def manage_physics(self):
         """

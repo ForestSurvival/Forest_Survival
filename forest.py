@@ -172,20 +172,33 @@ class Forest(object):
         Создаёт деревья
         """
 
+        # Объекты
+        physical_engine = self.game.physical_engine  # Объект физического движка
+
         trees_amount: int = 1250  # Максимальное количество деревьев
         min_distance_from_center: float = 5  # Минимальное расстояние от дерева до спавна в [м]
 
         # draw_allowed: bool = True  # Флаг возможности рисования
         for tree_number in range(trees_amount):
+            generation_allowed: bool = True  # Флаг генерации
             # Физическая координата x дерева в [м]
             tree_physical_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
 
             # Физическая координата y дерева в [м]
             tree_physical_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
             if math.sqrt(tree_physical_x ** 2 + tree_physical_y ** 2) >= min_distance_from_center:
-                tree = Tree(self, tree_physical_x, tree_physical_y)  # Объект дерева
-                tree.setup()
-                self.trees_list.append(tree)
+                for house in self.houses_list:
+
+                    # Расстояние от дерева до дома в [м]
+                    distance: float = physical_engine.get_physical_distance(tree_physical_x, tree_physical_y,
+                                                                            house.physical_x, house.physical_y)
+
+                    if distance < house.safe_radius:
+                        generation_allowed: bool = False  # Генерация завершена
+                if generation_allowed:
+                    tree = Tree(self, tree_physical_x, tree_physical_y)  # Объект дерева
+                    tree.setup()
+                    self.trees_list.append(tree)
         self.trees_list.sort(key=lambda sort_tree: sort_tree.physical_y)
 
     def generate_villages(self):

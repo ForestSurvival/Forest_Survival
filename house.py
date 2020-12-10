@@ -34,6 +34,7 @@ class House(object):
         self.paper_generation_chance: float = 0.5  # Шанс нахождения бумаги в доме
         self.physical_x: float = physical_x
         self.physical_y: float = physical_y
+        self.safe_radius: float = 2  # Радиус вокруг дома в [м], в пределах которого не генерируются деревья
         self.temperature: float = 28  # Разница температуры внктри дома и снаружи в [К]
 
         # Изображение дома в формате bmp
@@ -109,8 +110,8 @@ class House(object):
         graphical_y - Графическая координата y дома в [px]
         """
 
-        self.forest.game.graphic_engine.draw_image_center(self.image_house, graphical_x, graphical_y, self.graphical_width,
-                                                          self.graphical_height)
+        self.forest.game.graphic_engine.draw_image_center(self.image_house, graphical_x, graphical_y,
+                                                          self.graphical_width, self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
