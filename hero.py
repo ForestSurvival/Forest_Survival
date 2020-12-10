@@ -480,7 +480,6 @@ class Hero(object):
 
         self.manage_logic()
         self.manage_physics()
-        self.manage_graphics()
         self.indicator_heat.process()
         self.indicator_satiety.process()
         self.indicator_thirst.process()
