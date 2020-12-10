@@ -69,6 +69,8 @@ class Game(object):
         self.hero.setup()
         self.menu.setup()
 
+        self.menu.status = 'main'  # Главное меню
+
     # --- Логика ---
     def exit(self):
         """
