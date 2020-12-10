@@ -114,8 +114,7 @@ class PhysicalEngine(object):
         # Объекты
         hero = self.game.hero  # Объект героя
 
-        clothes_temperature: float = temperature + hero.heat_bonus_clothes  # Температура с учётом одежды [К]
-        temperature_delta: float = clothes_temperature - hero.temperature  # Разность температур среды и героя в [К]
+        temperature_delta: float = temperature - hero.temperature  # Разность температур среды и героя в [К]
         heat_power: float = temperature_delta * hero.thermal_conductivity  # Мощность теплообмена в [Вт]
         game_time_delta: float = self.time_step * self.time_scale  # Шаг игрового времени в [с]
         thermal_energy_delta: float = heat_power * game_time_delta  # Расход теплоты в [Дж]
