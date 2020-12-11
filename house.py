@@ -26,10 +26,6 @@ class House(object):
         self.graphical_height: int = 60  # Графическая высота дома в [px]
         self.graphical_width: int = 75  # Графическая ширина дома в [px]
 
-        # Изображение дома в формате bmp
-        self.image_house = pygame.image.load('Sprites/snow_house.bmp')
-        self.image_house_light = pygame.image.load('Sprites/house_light.bmp')
-
         # Физика
         self.action_radius: float = 1  # Радиус в [м], внутри которого герой может взаимодействовать
         self.matches_amount: int = 0  # Количество спичек
@@ -38,7 +34,11 @@ class House(object):
         self.paper_generation_chance: float = 0.5  # Шанс нахождения бумаги в доме
         self.physical_x: float = physical_x
         self.physical_y: float = physical_y
+        self.safe_radius: float = 2  # Радиус вокруг дома в [м], в пределах которого не генерируются деревья
         self.temperature: float = 28  # Разница температуры внктри дома и снаружи в [К]
+
+        # Изображение дома в формате bmp
+        self.image_house = pygame.image.load('Sprites/snow_house.bmp')
 
         # Объекты
         self.forest = forest
@@ -102,22 +102,16 @@ class House(object):
         self.paper_amount: int = 0  # Бумаги не осталось
 
     # --- Графика ---
-    def draw(self, x: int, y: int):
+    def draw(self, graphical_x: int, graphical_y: int):
         """
         Рисует дом
 
-        x - Графическая координата x дома в [px]
-        y - Графическая координата y дома в [px]
+        graphical_x - Графическая координата x дома в [px]
+        graphical_y - Графическая координата y дома в [px]
         """
-        hero_x = self.forest.game.hero.x
-        hero_y = self.forest.game.hero.y
 
-        if (hero_x - self.physical_x) ** 2 + (hero_y - self.physical_y) ** 2 <= 2:
-            self.forest.game.graphic_engine.draw_image_center(self.image_house_light, x, y,
-                                                              self.graphical_width, self.graphical_height)
-        else:
-            self.forest.game.graphic_engine.draw_image_center(self.image_house, x, y,
-                                                              self.graphical_width, self.graphical_height)
+        self.forest.game.graphic_engine.draw_image_center(self.image_house, graphical_x, graphical_y,
+                                                          self.graphical_width, self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
