@@ -26,6 +26,10 @@ class House(object):
         self.graphical_height: int = 60  # Графическая высота дома в [px]
         self.graphical_width: int = 75  # Графическая ширина дома в [px]
 
+        # Изображение дома в формате bmp
+        self.image_house = pygame.image.load('Sprites/snow_house.bmp')
+        self.image_house_light = pygame.image.load('Sprites/house_light.bmp')
+
         # Физика
         self.action_radius: float = 1  # Радиус в [м], внутри которого герой может взаимодействовать
         self.matches_amount: int = 0  # Количество спичек
@@ -109,9 +113,17 @@ class House(object):
         graphical_x - Графическая координата x дома в [px]
         graphical_y - Графическая координата y дома в [px]
         """
+        hero_x = self.forest.game.hero.x
+        hero_y = self.forest.game.hero.y
 
         self.forest.game.graphic_engine.draw_image_center(self.image_house, graphical_x, graphical_y,
                                                           self.graphical_width, self.graphical_height)
+        if (hero_x - self.physical_x) ** 2 + (hero_y - self.physical_y) ** 2 <= 2:
+            self.forest.game.graphic_engine.draw_image_center(self.image_house_light, graphical_x, graphical_y,
+                                                              self.graphical_width, self.graphical_height)
+        else:
+            self.forest.game.graphic_engine.draw_image_center(self.image_house, graphical_x, graphical_y,
+                                                              self.graphical_width, self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):

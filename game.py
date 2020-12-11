@@ -62,9 +62,7 @@ class Game(object):
         # Объекты
         self.hero = Hero(self)  # Объект героя
         self.forest = Forest(self)  # Объект леса
-
         self.forest.setup()
-
         self.hero.setup()
         self.menu.setup()
 

@@ -39,6 +39,11 @@ class Indicator(object):
         self.width_full: int = 100  # Полная длина индикатора в [px]
         self.x: int = x
         self.y: int = y
+        self.graphical_height: int = 30  # Графическая высота индикатора в [px]
+        self.graphical_width: int = 0  # Графическая ширина индикатора в текущий момент в [px]
+
+        # Изображение индикатора в формате bmp
+        self.image_indicator = pygame.image.load('Sprites/indicator.bmp')
 
         # Текст
         self.font_name = None  # Название шрифта
@@ -60,6 +65,9 @@ class Indicator(object):
 
         # Активная часть индикатора
         rect(self.hero.game.graphic_engine.screen, self.color_active, (self.x, self.y, width_active_int, self.height))
+        self.hero.game.graphic_engine.draw_image_corner(self.image_indicator, self.x, self.y,
+                                                        width_active_int, self.graphical_height)
+        # rect(self.hero.game.graphic_engine.screen, self.color_active, (self.x, self.y, width_active_int, self.height))
 
     def print_name(self):
         """

@@ -181,6 +181,7 @@ class Forest(object):
         # draw_allowed: bool = True  # Флаг возможности рисования
         for tree_number in range(trees_amount):
             generation_allowed: bool = True  # Флаг генерации
+
             # Физическая координата x дерева в [м]
             tree_physical_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
 
