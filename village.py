@@ -2,7 +2,7 @@
 Модуль деревни
 """
 
-from pygame.draw import *
+import pygame
 
 
 class Village(object):
@@ -20,8 +20,11 @@ class Village(object):
         """
 
         # Графика
-        self.color: tuple = (39, 72, 224)  # Цвет деревни
-        self.graphical_radius: int = 5  # Графический радиус деревни в [м]
+        self.graphical_height: int = 124  # Графическая высота деревни в [px]
+        self.graphical_width: int = 182  # Графическая ширина деревни в [px]
+
+        # Изображение деревни в формате bmp
+        self.image_village = pygame.image.load('Sprites/village.bmp')
 
         # Объекты
         self.forest = forest
@@ -42,10 +45,8 @@ class Village(object):
         graphical_y - графическая координата y деревни в [м]
         """
 
-        # Объекты
-        screen = self.forest.game.graphic_engine.screen  # Объект экрана Pygame
-
-        circle(screen, self.color, (graphical_x, graphical_y), self.graphical_radius)
+        self.forest.game.graphic_engine.draw_image_center(self.image_village, graphical_x, graphical_y,
+                                                          self.graphical_width, self.graphical_height)
 
     # --- Логика ---
     def get_found(self):

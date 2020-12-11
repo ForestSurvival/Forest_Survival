@@ -67,8 +67,6 @@ class LogicEngine(object):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:  # Если совершён клик мышю
                 self.mouse_pos_list: list = event.pos  # Список координат клика мыши
-            elif event.type == pygame.QUIT:  # Если игрок закрыл окно
-                self.game.exit()
 
     def set_keys_lists(self):
         """

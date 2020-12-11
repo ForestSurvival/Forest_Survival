@@ -149,7 +149,7 @@ class Inventory(object):
         # Графика
         font = self.set_font()
         font_smoothing: bool = True  # Сглаживание шрифта
-        text_color: tuple = (192, 0, 64)  # Цвет текста
+        text_color: tuple = (179, 170, 202)  # Цвет текста
 
         text = font.render(text_str, font_smoothing, text_color)  # Текст в формате Pygame
         self.hero.game.graphic_engine.screen.blit(text, (graphical_x, graphical_y))
@@ -222,9 +222,6 @@ class Inventory(object):
         """
 
         self.draw_background()
-        self.button_apple.process()
-        self.button_campfire.process()
-        self.button_water.process()
         self.show_object('apple')
         self.show_object('campfire')
         self.show_object('match')
@@ -246,3 +243,6 @@ class Inventory(object):
         """
 
         self.manage_graphics()
+        self.button_apple.process()
+        self.button_campfire.process()
+        self.button_water.process()
