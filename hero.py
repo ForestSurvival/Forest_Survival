@@ -59,9 +59,7 @@ class Hero(object):
         self.inventory = Inventory(self)  # Объект инвентаря
 
         # Графика
-        self.color: tuple = (206, 181, 75)  # Цвет героя
         self.draw_list: list = [None]  # Графический список
-        self.radius: int = 5  # Радиус в [px]
         self.graphical_height: int = 36  # Графическая высота героя в [px]
         self.graphical_width: int = 30  # Графическая ширина героя в [px]
 
@@ -92,8 +90,8 @@ class Hero(object):
         # Физика
         t: float = self.temperature
 
-        indicator_heat_x: int = 400  # Координата x индикатора температуры
-        indicator_heat_y: int = 0  # Координата y индикатора температуры
+        indicator_heat_x: int = 490  # Координата x индикатора температуры
+        indicator_heat_y: int = 5  # Координата y индикатора температуры
 
         # Температура героя в [%]
         heat_percent: float = 100 * (t - self.temperature_min) / (self.temperature_max - self.temperature_min)
@@ -105,8 +103,8 @@ class Hero(object):
         Создаёт индикатор сытости
         """
 
-        indicator_satiety_x: int = 0  # Координата x индикатора сытости
-        indicator_satiety_y: int = 0  # Координата y индикатора сытости
+        indicator_satiety_x: int = 30  # Координата x индикатора сытости
+        indicator_satiety_y: int = 5  # Координата y индикатора сытости
         satiety_percent: float = 100 * self.satiety / self.satiety_max  # Сытость героя в [%]
         self.indicator_satiety = Indicator('Сытость', self, satiety_percent, indicator_satiety_x, indicator_satiety_y)
 
@@ -115,8 +113,8 @@ class Hero(object):
         Создаёт индикатор жажды
         """
 
-        indicator_thirst_x: int = 200  # Координата x индикатора жажды
-        indicator_thirst_y: int = 0  # Координата y индикатора жажды
+        indicator_thirst_x: int = 260  # Координата x индикатора жажды
+        indicator_thirst_y: int = 5  # Координата y индикатора жажды
         thirst_percent: float = 100 * self.thirst / self.thirst_max  # Жажда героя в [%]
         self.indicator_thirst = Indicator('Жажда', self, thirst_percent, indicator_thirst_x, indicator_thirst_y)
 

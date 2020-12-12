@@ -18,8 +18,8 @@ class Paper(object):
         """
 
         # Графика
-        self.graphical_height: int = 20  # Графическая высота бумаги в [px]
-        self.graphical_width: int = 20  # Графическая ширина бумаги в [px]
+        self.graphical_height: int = 25  # Графическая высота бумаги в [px]
+        self.graphical_width: int = 25  # Графическая ширина бумаги в [px]
 
         # Изображение палки в формате bmp
         self.image_paper = pygame.image.load('Sprites/paper.bmp')

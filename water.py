@@ -18,8 +18,8 @@ class Water(object):
         """
 
         # Графика
-        self.graphical_height: int = 20  # Графическая высота воды в [px]
-        self.graphical_width: int = 20  # Графическая ширина воды в [px]
+        self.graphical_height: int = 25  # Графическая высота воды в [px]
+        self.graphical_width: int = 25  # Графическая ширина воды в [px]
 
         # Изображение палки в формате bmp
         self.image_water = pygame.image.load('Sprites/water.bmp')

@@ -20,8 +20,8 @@ class Apple(object):
         """
 
         # Графика
-        self.graphical_height: int = 20  # Графическая высота яблока в [px]
-        self.graphical_width: int = 20  # Графическая ширина яблока в [px]
+        self.graphical_height: int = 25  # Графическая высота яблока в [px]
+        self.graphical_width: int = 25  # Графическая ширина яблока в [px]
 
         # Изображение палки в формате bmp
         self.image_apple = pygame.image.load('Sprites/apple.bmp')
