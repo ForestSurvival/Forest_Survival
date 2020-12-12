@@ -172,15 +172,32 @@ class Hero(object):
                 self.inventory.apples_amount -= 1  # Уменьшить количество яблок в инвентаре
                 self.satiety += apple.satiety
 
-    def get_dead(self):
+    def get_dead_from_frost(self):
         """
-        Убивает героя
+        Убивает героя от переохлаждения
         """
 
         self.status_current: str = 'dead'  # Герой мёртв
         self.game.status = 'menu'  # Перевести игру в меню
-        self.game.menu.status = 'dead'  # Сообщение о смерти
-        self.game.exit()
+        self.game.menu.status = 'frost'  # Сообщение о смерти
+
+    def get_dead_from_starvation(self):
+        """
+        Убивает героя от голода
+        """
+
+        self.status_current: str = 'dead'  # Герой мёртв
+        self.game.status = 'menu'  # Перевести игру в меню
+        self.game.menu.status = 'starvation'  # Сообщение о смерти
+
+    def get_dead_from_thirst(self):
+        """
+        Убивает героя от жажды
+        """
+
+        self.status_current: str = 'dead'  # Герой мёртв
+        self.game.status = 'menu'  # Перевести игру в меню
+        self.game.menu.status = 'thirst'  # Сообщение о смерти
 
     def set_actions_dicts(self):
         """
@@ -247,9 +264,12 @@ class Hero(object):
         Проверяет жизненно важные параметры героя
         """
 
-        # Если герой смертельно голоден, хочет пить или замёрз
-        if self.satiety == 0 or self.thirst == self.thirst_max or self.temperature == self.temperature_min:
-            self.get_dead()
+        if self.satiety == 0:  # Если герой голоден
+            self.get_dead_from_starvation()
+        if self.thirst == self.thirst_max:  # Если герой испытывает жажду
+            self.get_dead_from_thirst()
+        if self.temperature == self.temperature_min:  # Если герой замёрх
+            self.get_dead_from_frost()
 
     def drink_water(self):
         """
