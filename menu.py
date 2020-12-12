@@ -232,7 +232,19 @@ class Menu(object):
             self.print_text('4) Для победы вам нужно найти деревню и зайти в неё', 0, 200)
             self.button_rules_exit.process()
             self.print_text('Меню', self.rules_exit_graphical_x, self.rules_exit_graphical_y)
-        elif self.status == 'dead':  # Если герой мёртв
+        elif self.status == 'frost':  # Если герой погиб от переохлаждения
             self.button_setup.process()
-            self.print_text('Вы мертвы', 0, 40)
+            self.print_text('Вы погибли от переохлаждения', 0, 40)
+            self.print_text('Вернуться в меню', 0, 80)
+        elif self.status == 'thirst':  # Если герой погиб от жажды
+            self.button_setup.process()
+            self.print_text('Вы погибли от жажды', 0, 40)
+            self.print_text('Вернуться в меню', 0, 80)
+        elif self.status == 'starvation':  # Если герой погиб от голода
+            self.button_setup.process()
+            self.print_text('Вы погибли от голода', 0, 40)
+            self.print_text('Вернуться в меню', 0, 80)
+        elif self.status == 'village':  # Если герой нашёл деревню
+            self.button_setup.process()
+            self.print_text('Вы нашли деревню, поздравляем с победой!', 0, 40)
             self.print_text('Вернуться в меню', 0, 80)
