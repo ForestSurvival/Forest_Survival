@@ -18,7 +18,7 @@ class GraphicEngine(object):
         """
 
         self.screen_height: int = 700  # Высота экрана в [px]
-        self.screen_width: int = 1200  # Ширина экрана в [px]
+        self.screen_width: int = 1300  # Ширина экрана в [px]
         self.screen = None  # Определяется в game.setup()
 
         # Объекты
@@ -43,7 +43,7 @@ class GraphicEngine(object):
     # --- Графика ---
     def draw_image_center(self, image_load, graphical_x: int, graphical_y: int, width: int, height: int):
         """
-        Рисует объект, если заданые координаты центра
+        Рисует объект, если заданы координаты центра
 
         image_load - Загруженное изображение
         graphical_x - Графическая координата x объекта в [px]

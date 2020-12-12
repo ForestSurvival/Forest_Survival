@@ -20,8 +20,8 @@ class Stick(object):
         """
 
         # Графика
-        self.graphical_height: int = 20  # Графическая высота палки в [px]
-        self.graphical_width: int = 20  # Графическая ширина палки в [px]
+        self.graphical_height: int = 25  # Графическая высота палки в [px]
+        self.graphical_width: int = 25  # Графическая ширина палки в [px]
 
         # Изображение палки в формате bmp
         self.image_stick = pygame.image.load('Sprites/stick.bmp')
@@ -51,8 +51,8 @@ class Stick(object):
         graphical_y - графическая координата палки в [px]
         """
 
-        self.forest.game.graphic_engine.draw_image_center(self.image_stick, graphical_x, graphical_y, self.graphical_width,
-                                                          self.graphical_height)
+        self.forest.game.graphic_engine.draw_image_center(self.image_stick, graphical_x, graphical_y,
+                                                          self.graphical_width, self.graphical_height)
 
     # --- Обработка ---
     def manage_logic(self):

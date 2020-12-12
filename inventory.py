@@ -15,7 +15,6 @@ class Inventory(object):
     """
     Описывает инвентарь
     """
-    # screen_width: None
 
     def __init__(self, hero):
         """
@@ -34,18 +33,20 @@ class Inventory(object):
         self.screen_height = None  # Высота экрана в [px]
 
         # Графика
-        self.apple_graphical_x: int = 5  # Графическая координата x запси о яблоке в [px]
-        self.apple_graphical_y: int = 40  # Графическая координата y записи о яблоке в [px]
-        self.campfire_graphical_x: int = 400  # Графическая координата x записи о костре в [px]
-        self.campfire_graphical_y: int = 40  # Графическая координата y записи о косте в [px]
-        self.match_graphical_x: int = 200  # Графическая координата x запси о спичке в [px]
-        self.match_graphical_y: int = 40  # Графическая координата y запси о спичке в [px]
-        self.paper_graphical_x: int = 200  # Графическая координата x запси о бумаге в [px]
-        self.paper_graphical_y: int = 80  # Графическая координата y запси о бумаге в [px]
-        self.stick_graphical_x: int = 200  # Графическая коордиата x записи о палке в [px]
-        self.stick_graphical_y: int = 120  # Графическая координата y записи о палке в [px]
-        self.water_graphical_x: int = 5  # Графическая коордиата x записи о воде в [px]
+        self.apple_graphical_x: int = 30  # Графическая координата x записи о яблоке в [px]
+        self.apple_graphical_y: int = 80  # Графическая координата y записи о яблоке в [px]
+        self.campfire_graphical_x: int = 490  # Графическая координата x записи о костре в [px]
+        self.campfire_graphical_y: int = 80  # Графическая координата y записи о косте в [px]
+        self.match_graphical_x: int = 30  # Графическая координата x записи о спичке в [px]
+        self.match_graphical_y: int = 150  # Графическая координата y записи о спичке в [px]
+        self.paper_graphical_x: int = 260  # Графическая координата x записи о бумаге в [px]
+        self.paper_graphical_y: int = 150  # Графическая координата y записи о бумаге в [px]
+        self.stick_graphical_x: int = 490  # Графическая коордиата x записи о палке в [px]
+        self.stick_graphical_y: int = 150  # Графическая координата y записи о палке в [px]
+        self.water_graphical_x: int = 260  # Графическая коордиата x записи о воде в [px]
         self.water_graphical_y: int = 80  # Графическая координата y записи о воде в [px]
+        self.temp_graphical_x: int = 700  # Графическая коордиата x записи о температуре воздуха в [px]
+        self.temp_graphical_y: int = 130  # Графическая координата y записи о температуре воздуха в [px]
 
         self.graphical_height: int = 40  # Графическая высота кнопки в [px]
         self.graphical_width: int = 100  # Графическая ширина кнопки в [px]
@@ -53,8 +54,9 @@ class Inventory(object):
         self.image_inventory = pygame.image.load('Sprites/inventory.bmp')  # Изображение заставки в формате bmp
 
         # Текст
-        self.font_size = 30  # Размер шрифта
-        self.text_space = 10  # Ширина пробела между изображением объекта и записью о количестве его копий в [px]
+        self.font_size = 32  # Размер шрифта
+        self.text_space_x = 30  # Ширина пробела между изображением объекта и записью о количестве его копий в [px]
+        self.text_space_y = 8
 
         # Объекты
         self.apple = None  # Объект яблока определяется в inventory.setup()
@@ -149,7 +151,7 @@ class Inventory(object):
         # Графика
         font = self.set_font()
         font_smoothing: bool = True  # Сглаживание шрифта
-        text_color: tuple = (192, 0, 64)  # Цвет текста
+        text_color: tuple = (20, 0, 30)  # Цвет текста
 
         text = font.render(text_str, font_smoothing, text_color)  # Текст в формате Pygame
         self.hero.game.graphic_engine.screen.blit(text, (graphical_x, graphical_y))
@@ -160,7 +162,7 @@ class Inventory(object):
         """
 
         # Графика
-        font_name = None  # Имя шрифта
+        font_name = "Fonts/GARABD.ttf"  # Имя шрифта
 
         font = Font(font_name, self.font_size)  # Шрифт
         return font
@@ -174,28 +176,28 @@ class Inventory(object):
 
         # Объекты
         apple_dict: dict = {'amount': self.apples_amount,  # Словарь яблока
-                            'graphical_x': self.apple_graphical_x,
-                            'graphical_y': self.apple_graphical_y,
+                            'graphical_x': self.apple_graphical_x - self.graphical_width // 8,
+                            'graphical_y': self.apple_graphical_y + self.graphical_height // 2,
                             'name': self.apple}
         campfire_dict: dict = {'amount': None,  # Словарь яблока
-                               'graphical_x': self.campfire_graphical_x,
-                               'graphical_y': self.campfire_graphical_y,
+                               'graphical_x': self.campfire_graphical_x - self.graphical_width // 8,
+                               'graphical_y': self.campfire_graphical_y + self.graphical_height // 2,
                                'name': self.campfire}
         match_dict: dict = {'amount': self.matches_amount,  # Словарь спички
-                            'graphical_x': self.match_graphical_x,
-                            'graphical_y': self.match_graphical_y,
+                            'graphical_x': self.match_graphical_x - self.graphical_width // 8,
+                            'graphical_y': self.match_graphical_y + self.graphical_height // 2,
                             'name': self.match}
         paper_dict: dict = {'amount': self.paper_amount,  # Словарь бумаги
-                            'graphical_x': self.paper_graphical_x,
-                            'graphical_y': self.paper_graphical_y,
+                            'graphical_x': self.paper_graphical_x - self.graphical_width // 8,
+                            'graphical_y': self.paper_graphical_y + self.graphical_height // 2,
                             'name': self.paper}
         stick_dict: dict = {'amount': self.sticks_amount,  # Словарь палки
-                            'graphical_x': self.stick_graphical_x,
-                            'graphical_y': self.stick_graphical_y,
+                            'graphical_x': self.stick_graphical_x - self.graphical_width // 8,
+                            'graphical_y': self.stick_graphical_y + self.graphical_height // 2,
                             'name': self.stick}
         water_dict: dict = {'amount': self.water_amount,  # Словарь воды
-                            'graphical_x': self.water_graphical_x,
-                            'graphical_y': self.water_graphical_y,
+                            'graphical_x': self.water_graphical_x - self.graphical_width // 8,
+                            'graphical_y': self.water_graphical_y + self.graphical_height // 2,
                             'name': self.water}
         objects_dict: dict = {'apple': apple_dict,  # Словарь объектов
                               'campfire': campfire_dict,
@@ -207,13 +209,14 @@ class Inventory(object):
         item_dict: dict = objects_dict[object_name]  # Словарь объекта, информацию о котором нужно показать
         item_dict['name'].draw(item_dict['graphical_x'], item_dict['graphical_y'])
 
-        # Графическая координата x текста в [px]
-        text_graphical_x = item_dict['graphical_x'] + item_dict['name'].graphical_width + self.text_space
+        # Графические координаты текста в [px]
+        text_graphical_x = item_dict['graphical_x'] + item_dict['name'].graphical_width + self.text_space_x
+        text_graphical_y = item_dict['graphical_y'] - item_dict['name'].graphical_width + self.text_space_y
 
         item_dict['name'].draw(item_dict['graphical_x'], item_dict['graphical_y'])
         if item_dict['amount'] is not None:  # Если у объекта определено количество
             amount_str: str = str(item_dict['amount'])  # Количество объектов
-            self.print_text(text_graphical_x, item_dict['graphical_y'], amount_str)
+            self.print_text(text_graphical_x, text_graphical_y, amount_str)
 
     # --- Обработка ---
     def manage_graphics(self):
@@ -238,7 +241,7 @@ class Inventory(object):
 
         temperature_round: int = round(temperature_celsius)  # Округлённая температура среды в [С*]
         temperature_str: str = str(temperature_round)  # Строка с температурой среды в [С*]
-        self.print_text(600, 40, 'Температура: ' + temperature_str + ' C*')
+        self.print_text(self.temp_graphical_x, self.temp_graphical_y, 'Температура: ' + temperature_str + ' C*')
 
     def process(self):
         """

@@ -48,6 +48,7 @@ class Forest(object):
         self.game = game
         self.houses_list: list = []  # Список домов
         self.trees_list: list = []  # Список деревьев
+        self.villages_amount: int = 1  # Количество деревень
         self.villages_list: list = []  # Список деревень
         self.sticks_list: list = []  # Список палок
 
@@ -59,17 +60,17 @@ class Forest(object):
                                               self.draw_campfires,
                                               self.draw_houses,
                                               self.draw_sticks,
+                                              self.draw_villages,
                                               game.hero.manage_graphics,
-                                              self.draw_trees,
-                                              self.draw_villages],
+                                              self.draw_trees],
                                      'act': [self.draw_borders,
                                              self.draw_apples,
                                              self.draw_campfires,
                                              self.draw_houses,
                                              self.draw_sticks,
+                                             self.draw_villages,
                                              game.hero.manage_graphics,
-                                             self.draw_trees,
-                                             self.draw_villages],
+                                             self.draw_trees],
                                      'crafts': [None],
                                      'inventory': [None]}
 
@@ -110,13 +111,13 @@ class Forest(object):
         """
 
         down_border_dict: dict = {'coordinate': 'y',
-                                  'value': 20}  # Словарь нижней границы леса
+                                  'value': 50}  # Словарь нижней границы леса
         left_border_dict: dict = {'coordinate': 'x',
-                                  'value': -20}  # Словаь левой границы леса
+                                  'value': -50}  # Словаь левой границы леса
         right_border_dict: dict = {'coordinate': 'x',
-                                   'value': 20}  # Словарь правой границы леса
+                                   'value': 50}  # Словарь правой границы леса
         up_border_dict: dict = {'coordinate': 'y',
-                                'value': -20}  # Словарь верхней границы леса
+                                'value': -50}  # Словарь верхней границы леса
         self.borders_dict: dict = {'down': down_border_dict,  # Словарь границ
                                    'left': left_border_dict,
                                    'right': right_border_dict,
@@ -175,7 +176,7 @@ class Forest(object):
         # Объекты
         physical_engine = self.game.physical_engine  # Объект физического движка
 
-        trees_amount: int = 125  # Максимальное количество деревьев
+        trees_amount: int = 1250  # Максимальное количество деревьев
         min_distance_from_center: float = 5  # Минимальное расстояние от дерева до спавна в [м]
 
         # draw_allowed: bool = True  # Флаг возможности рисования
@@ -210,21 +211,24 @@ class Forest(object):
                     self.trees_list.append(tree)
         self.trees_list.sort(key=lambda sort_tree: sort_tree.physical_y)
 
-    def generate_villages(self):
+    def generate_villages(self, villages_amount: int):
         """
         Создаёт деревни
+
+        villages_amount - количество деревень, которое надо сгенерировать
         """
 
-        villages_amount: int = 1  # Количество деревень
         for village_number in range(villages_amount):
             # Физическая координата x деревни в [м]
             village_physical_x: float = random() * self.borders_distance_x + self.borders_dict['left']['value']
 
             # Физическая координата y деревни в [м]
             village_physical_y: float = random() * self.borders_distance_y + self.borders_dict['up']['value']
-
-            village = Village(self, village_physical_x, village_physical_y)  # Объект деревни
-            self.villages_list.append(village)
+            if math.sqrt(village_physical_x ** 2 + village_physical_y ** 2) < 25:  # Если деревня близко к спавну
+                self.generate_villages(1)  # Генерировать 1 деревню заново
+            else:
+                village = Village(self, village_physical_x, village_physical_y)  # Объект деревни
+                self.villages_list.append(village)
 
     def generate_sticks(self):
         """
@@ -267,7 +271,7 @@ class Forest(object):
         self.count_draw_distance()
         self.generate_apples()
         self.generate_houses()
-        self.generate_villages()
+        self.generate_villages(self.villages_amount)
         self.generate_trees()
         self.generate_sticks()
 

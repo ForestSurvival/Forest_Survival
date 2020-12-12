@@ -18,8 +18,8 @@ class Match(object):
         """
 
         # Графика
-        self.graphical_height: int = 20  # Графическая высота спички в [px]
-        self.graphical_width: int = 20  # Графическая ширина спички в [px]
+        self.graphical_height: int = 25  # Графическая высота спички в [px]
+        self.graphical_width: int = 25  # Графическая ширина спички в [px]
 
         # Изображение палки в формате bmp
         self.image_match = pygame.image.load('Sprites/match.bmp')

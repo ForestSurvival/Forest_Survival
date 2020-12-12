@@ -33,8 +33,8 @@ class Campfire(object):
         self.cooling_speed = None  # Скорость изменения температуры в [К/с] определяется в campfire.setup()
 
         # Графика
-        self.graphical_height: int = 20  # Графическая высота костра в [px]
-        self.graphical_width: int = 20  # Графическая ширина костра в [px]
+        self.graphical_height: int = 25  # Графическая высота костра в [px]
+        self.graphical_width: int = 25  # Графическая ширина костра в [px]
 
         # Изображение костра в формате bmp
         self.image_campfire = pygame.image.load('Sprites/campfire.bmp')
