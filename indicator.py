@@ -4,7 +4,6 @@
 
 import pygame
 
-from pygame.draw import *
 from pygame.font import *
 
 pygame.font.init()
@@ -33,23 +32,23 @@ class Indicator(object):
         self.hero = hero
 
         # Графика
-        self.color_active: tuple = (27, 60, 24)  # Цвет активной части
-        self.color_passive: tuple = (0, 0, 0)  # Цвет пассивной части - чёрный
+        self.color_text_indicator: tuple = (0, 15, 0)  # Цвет текста индикатора
         self.height: int = 30  # Высота индикатора в [px]
         self.width_full: int = 100  # Полная длина индикатора в [px]
         self.x: int = x
         self.y: int = y
-        self.graphical_height: int = 30  # Графическая высота индикатора в [px]
         self.graphical_width: int = 0  # Графическая ширина индикатора в текущий момент в [px]
 
         # Изображение индикатора в формате bmp
         self.image_indicator = pygame.image.load('Sprites/indicator.bmp')
+        self.image_indicator_dark = pygame.image.load('Sprites/indicator_dark.bmp')
 
         # Текст
-        self.font_name = None  # Название шрифта
+        self.font_name = "Fonts/GARABD.ttf"  # Название шрифта
+        self.font_size: int = 28  # Размер шрифта
         self.font_smoothing: bool = True  # Сглаживание шрифта
         self.name: str = name
-        self.text_space: int = 10  # Ширина пробела между индикатором и его названием
+        self.text_space: int = 5  # Ширина пробела между индикатором и его названием
 
     # --- Графика ---
     def draw(self):
@@ -61,33 +60,23 @@ class Indicator(object):
         width_active_int: int = round(width_active)  # Округлённая длина активной части в [px]
 
         # Пассивная часть индикатора
-        rect(self.hero.game.graphic_engine.screen, self.color_passive, (self.x, self.y, self.width_full, self.height))
+        self.hero.game.graphic_engine.draw_image_corner(self.image_indicator_dark, self.x, self.y,
+                                                        self.width_full, self.height)
 
         # Активная часть индикатора
-        rect(self.hero.game.graphic_engine.screen, self.color_active, (self.x, self.y, width_active_int, self.height))
         self.hero.game.graphic_engine.draw_image_corner(self.image_indicator, self.x, self.y,
-                                                        width_active_int, self.graphical_height)
-        # rect(self.hero.game.graphic_engine.screen, self.color_active, (self.x, self.y, width_active_int, self.height))
+                                                        width_active_int, self.height)
 
     def print_name(self):
         """
         Выводит на экран название индикатора
         """
 
-        font = Font(self.font_name, self.height)  # Шрифт pygame
+        font = Font(self.font_name, self.font_size)  # Шрифт pygame
         text_x: int = self.x + self.width_full + self.text_space  # Координата x названия в [px]
-        text = font.render(self.name, self.font_smoothing, self.color_active)
+        text = font.render(self.name, self.font_smoothing, self.color_text_indicator)
 
         self.hero.game.graphic_engine.screen.blit(text, (text_x, self.y))
-
-    # --- Обработка ---
-    def log(self):
-        """
-        Выводит данные в консоль для отладки
-        """
-
-        print('Width active int:', self.width_full)
-        print('--- Game cycle ---')
 
     def process(self):
         """
@@ -96,6 +85,3 @@ class Indicator(object):
 
         self.draw()
         self.print_name()
-
-        # Отладка
-        # self.log()

@@ -21,9 +21,10 @@ class Menu(object):
         """
 
         # Графика
-        self.graphical_height: int = 40  # Графическая высота кнопки в [px]
+        self.graphical_height: int = 50  # Графическая высота кнопки в [px]
         self.graphical_width: int = 400  # Графическая ширина кнопки в [px]
         self.font = None  # Шрифт определяется в menu.setup()
+        self.font_title = None
         self.image_intro = pygame.image.load('Sprites/intro.bmp')  # Изображение заставки в формате bmp
 
         self.controls_graphical_x = None  # Координата x кнопки управления в [px]
@@ -52,7 +53,8 @@ class Menu(object):
         self.game = game
 
         # Текст
-        self.font_size = None
+        self.text_y = 2
+        self.text_x = 70
 
         # Физика
         self.screen_width = None  # Ширина экрана в [px]
@@ -64,9 +66,12 @@ class Menu(object):
         Создаёт шрифт
         """
 
-        font_name = None  # Имя шрифта
-        self.font_size: int = 36  # Размер шрифта
-        self.font = Font(font_name, self.font_size)
+        font_name = "Fonts/GARABD.ttf"  # Имя шрифта
+        font_name_title = "Fonts/VINERITC.ttf"  # Имя шрифта заголовка
+        font_size: int = 36  # Размер шрифта
+        font_size_title: int = 70
+        self.font = Font(font_name, font_size)
+        self.font_title = Font(font_name_title, font_size_title)
 
     def setup(self):
         """
@@ -119,14 +124,14 @@ class Menu(object):
         """
 
         self.controls_graphical_x: int = (self.screen_width - self.graphical_width) * 7 // 8
-        self.controls_graphical_y: int = 275
-        self.play_graphical_x: int = (self.screen_width - self.graphical_width) // 2
+        self.controls_graphical_y: int = 310
+        self.play_graphical_x: int = (self.screen_width - self.graphical_width) * 3 // 8
         self.play_graphical_y = 200
-        self.rules_graphical_x: int = (self.screen_width - self.graphical_width) // 4
-        self.rules_graphical_y = 350
+        self.rules_graphical_x: int = (self.screen_width - self.graphical_width) // 8
+        self.rules_graphical_y = 390
         self.rules_exit_graphical_x: int = (self.screen_width - self.graphical_width) // 2
-        self.rules_exit_graphical_y = 350
-        self.exit_graphical_x: int = (self.screen_width - self.graphical_width) * 3 // 4
+        self.rules_exit_graphical_y = 520
+        self.exit_graphical_x: int = (self.screen_width - self.graphical_width) * 5 // 8
         self.exit_graphical_y = 500
         self.setup_graphical_x: int = 0
         self.setup_graphical_y: int = 80
@@ -161,12 +166,23 @@ class Menu(object):
         graphical_y - графическая координата y текста в [px]
         """
 
-        graphical_x += (self.graphical_width // 2 - self.font_size)
-        graphical_y += (self.graphical_height - self.font_size // 2) // 2
-
-        color: tuple = (79, 70, 202)  # Цвет текста
+        color: tuple = (20, 20, 72)  # Цвет текста
         smoothing: bool = True  # Нужно ли сглаживать текст
         text = self.font.render(text_str, smoothing, color)  # Объект текста
+        self.game.graphic_engine.screen.blit(text, (graphical_x, graphical_y))
+
+    def print_text_title(self, text_str: str, graphical_x: int, graphical_y: int):
+        """
+        Печатает текст
+
+        text_str - текст, который нужно напечатать
+        graphical_x - графическая координата x текста в [px]
+        graphical_y - графическая координата y текста в [px]
+        """
+
+        color: tuple = (20, 20, 72)  # Цвет текста
+        smoothing: bool = True  # Нужно ли сглаживать текст
+        text = self.font_title.render(text_str, smoothing, color)  # Объект текста
         self.game.graphic_engine.screen.blit(text, (graphical_x, graphical_y))
 
     # --- Логика ---
@@ -198,7 +214,7 @@ class Menu(object):
         """
 
         self.draw_background()
-        self.print_text('Forest Survival', 0, 0)
+        self.print_text_title('Forest Survival', self.game.graphic_engine.screen_width * 3 // 8, 30)
 
     def manage_logic(self):
         """
@@ -207,31 +223,39 @@ class Menu(object):
         screen - экран Pygame
         """
 
+        # Переобозначения
+        control_gr_x = self.controls_graphical_x
+        control_gr_y = self.controls_graphical_y
+        rules_exit_gr_x = self.rules_exit_graphical_x
+        rules_exit_gr_y = self.rules_exit_graphical_y
+
         if self.status == 'main':  # Если игрок в главном меню
             self.button_controls.process()
             self.button_play.process()
             self.button_rules.process()
             self.button_exit.process()
-            self.print_text('Управление', self.controls_graphical_x, self.controls_graphical_y)
-            self.print_text('Играть', self.play_graphical_x, self.play_graphical_y)
-            self.print_text('Правила', self.rules_graphical_x, self.rules_graphical_y)
-            self.print_text('Выход', self.exit_graphical_x, self.exit_graphical_y)
+            self.print_text('Управление', control_gr_x + self.text_x, control_gr_y + self.text_y)
+            self.print_text('Играть', self.play_graphical_x + self.text_x, self.play_graphical_y + self.text_y)
+            self.print_text('Правила', self.rules_graphical_x + self.text_x, self.rules_graphical_y + self.text_y)
+            self.print_text('Выход', self.exit_graphical_x + self.text_x, self.exit_graphical_y + self.text_y)
         elif self.status == 'controls':  # Если игрок смотрит управление
             self.button_rules_exit.process()
-            self.print_text('Меню', self.rules_exit_graphical_x, self.rules_exit_graphical_y)
-            self.print_text('W, A, S, D - перемещение', 0, 40)
-            self.print_text('E - действие. Подобрать предмет, обыскать дом, растопить снег', 0, 80)
-            self.print_text('I - открыть инвентарь', 0, 120)
-            self.print_text('Esc - выйти в меню', 0, 160)
+            self.print_text('Меню', rules_exit_gr_x + self.text_x, rules_exit_gr_y + self.text_y)
+            self.print_text('W, A, S, D, WA, SA, WD, SD - перемещение', 20, 140)
+            self.print_text('E - действие: подобрать предмет, обыскать дом, растопить снег', 20, 200)
+            self.print_text('I - открыть инвентарь', 20, 260)
+            self.print_text('Esc - выйти в меню, выйти из инвентаря', 20, 320)
         elif self.status == 'rules':  # Если игрок читает правила
-            self.print_text('Правила', 0, 40)
-            self.print_text('1) Вы можете емереть от голода. Находите еду в лесу и ешьте её', 0, 80)
-            self.print_text('2) Вы можете умереть от жажды. Разводите костры, топите снег и пейте воду', 0, 120)
-            self.print_text('3) Чтобы развести костёр, вам нужно найти 5 палок в лесу, одну спичку и один лист бумаги '
-                            ' в домах', 0, 160)
-            self.print_text('4) Для победы вам нужно найти деревню и зайти в неё', 0, 200)
+            self.print_text('Правила', 20, 60)
+            self.print_text('1) Чтобы не погибнуть от голода, найдите еду в лесу и съешьте её.', 20, 120)
+            self.print_text('2) Чтобы не погибнуть от жажды разведите кострёр, растопите снег', 20, 180)
+            self.print_text('и выпейте воду.', 20, 220)
+            self.print_text('3) Чтобы развести костёр, вам нужно найти 5 палок в лесу, одну спичку', 20, 280)
+            self.print_text('и один лист бумагив доме. Помните, спички и бумага в домах ', 20, 320)
+            self.print_text('генерируются случайным образом.', 20, 360)
+            self.print_text('4) Для победы вам нужно найти деревню и зайти в неё.', 20, 420)
             self.button_rules_exit.process()
-            self.print_text('Меню', self.rules_exit_graphical_x, self.rules_exit_graphical_y)
+            self.print_text('Меню', rules_exit_gr_x + self.text_x, rules_exit_gr_y + self.text_y)
         elif self.status == 'frost':  # Если герой погиб от переохлаждения
             self.button_setup.process()
             self.print_text('Вы погибли от переохлаждения', 0, 40)
