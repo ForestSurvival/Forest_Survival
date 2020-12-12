@@ -110,13 +110,13 @@ class Forest(object):
         """
 
         down_border_dict: dict = {'coordinate': 'y',
-                                  'value': 50}  # Словарь нижней границы леса
+                                  'value': 20}  # Словарь нижней границы леса
         left_border_dict: dict = {'coordinate': 'x',
-                                  'value': -50}  # Словаь левой границы леса
+                                  'value': -20}  # Словаь левой границы леса
         right_border_dict: dict = {'coordinate': 'x',
-                                   'value': 50}  # Словарь правой границы леса
+                                   'value': 20}  # Словарь правой границы леса
         up_border_dict: dict = {'coordinate': 'y',
-                                'value': -50}  # Словарь верхней границы леса
+                                'value': -20}  # Словарь верхней границы леса
         self.borders_dict: dict = {'down': down_border_dict,  # Словарь границ
                                    'left': left_border_dict,
                                    'right': right_border_dict,
@@ -175,7 +175,7 @@ class Forest(object):
         # Объекты
         physical_engine = self.game.physical_engine  # Объект физического движка
 
-        trees_amount: int = 1250  # Максимальное количество деревьев
+        trees_amount: int = 125  # Максимальное количество деревьев
         min_distance_from_center: float = 5  # Минимальное расстояние от дерева до спавна в [м]
 
         # draw_allowed: bool = True  # Флаг возможности рисования
@@ -195,6 +195,14 @@ class Forest(object):
                                                                             house.physical_x, house.physical_y)
 
                     if distance < house.safe_radius:
+                        generation_allowed: bool = False  # Генерация завершена
+                for village in self.villages_list:
+
+                    # Расстояние от дерева до дома в [м]
+                    distance: float = physical_engine.get_physical_distance(tree_physical_x, tree_physical_y,
+                                                                            village.physical_x, village.physical_y)
+
+                    if distance < village.safe_radius:
                         generation_allowed: bool = False  # Генерация завершена
                 if generation_allowed:
                     tree = Tree(self, tree_physical_x, tree_physical_y)  # Объект дерева
@@ -259,8 +267,8 @@ class Forest(object):
         self.count_draw_distance()
         self.generate_apples()
         self.generate_houses()
-        self.generate_trees()
         self.generate_villages()
+        self.generate_trees()
         self.generate_sticks()
 
     # --- Логика ---

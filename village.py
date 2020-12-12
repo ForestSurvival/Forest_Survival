@@ -37,6 +37,7 @@ class Village(object):
         # Физика
         self.physical_x: float = physical_x
         self.physical_y: float = physical_y
+        self.safe_radius: float = 5  # Радиус в [м], внутри которого не генерируются деревья
 
     # --- Графика ---
     def draw(self, graphical_x: int, graphical_y: int):
@@ -56,7 +57,8 @@ class Village(object):
         Герой нашёл деревню
         """
 
-        self.forest.game.status: str = 'exit'  # Игра завершена
+        self.forest.game.status = 'menu'  # Перейти в меню
+        self.forest.game.menu.status: str = 'village'  # Сообщение о победе
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
