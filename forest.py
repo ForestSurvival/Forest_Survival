@@ -110,13 +110,13 @@ class Forest(object):
         """
 
         down_border_dict: dict = {'coordinate': 'y',
-                                  'value': 20}  # Словарь нижней границы леса
+                                  'value': 50}  # Словарь нижней границы леса
         left_border_dict: dict = {'coordinate': 'x',
-                                  'value': -20}  # Словаь левой границы леса
+                                  'value': -50}  # Словаь левой границы леса
         right_border_dict: dict = {'coordinate': 'x',
-                                   'value': 20}  # Словарь правой границы леса
+                                   'value': 50}  # Словарь правой границы леса
         up_border_dict: dict = {'coordinate': 'y',
-                                'value': -20}  # Словарь верхней границы леса
+                                'value': -50}  # Словарь верхней границы леса
         self.borders_dict: dict = {'down': down_border_dict,  # Словарь границ
                                    'left': left_border_dict,
                                    'right': right_border_dict,
@@ -175,7 +175,7 @@ class Forest(object):
         # Объекты
         physical_engine = self.game.physical_engine  # Объект физического движка
 
-        trees_amount: int = 125  # Максимальное количество деревьев
+        trees_amount: int = 1250  # Максимальное количество деревьев
         min_distance_from_center: float = 5  # Минимальное расстояние от дерева до спавна в [м]
 
         # draw_allowed: bool = True  # Флаг возможности рисования
