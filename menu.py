@@ -66,8 +66,8 @@ class Menu(object):
         Создаёт шрифт
         """
 
-        font_name = "Fonts/GARABD.ttf"  # Имя шрифта
-        font_name_title = "Fonts/VINERITC.ttf"  # Имя шрифта заголовка
+        font_name = "Fonts/GARABD.TTF"  # Имя шрифта
+        font_name_title = "Fonts/VINERITC.TTF"  # Имя шрифта заголовка
         font_size: int = 36  # Размер шрифта
         font_size_title: int = 70
         self.font = Font(font_name, font_size)
@@ -253,7 +253,7 @@ class Menu(object):
             self.print_text('2) Чтобы не погибнуть от жажды разведите кострёр, растопите снег', 20, 180)
             self.print_text('и выпейте воду.', 20, 220)
             self.print_text('3) Чтобы развести костёр, вам нужно найти 5 палок в лесу, одну спичку', 20, 280)
-            self.print_text('и один лист бумагив доме. Помните, спички и бумага в домах ', 20, 320)
+            self.print_text('и один лист бумаги в доме. Помните, спички и бумага в домах ', 20, 320)
             self.print_text('генерируются случайным образом.', 20, 360)
             self.print_text('4) Для победы вам нужно найти деревню и зайти в неё.', 20, 420)
             self.button_rules_exit.process()

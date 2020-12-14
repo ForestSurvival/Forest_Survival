@@ -47,6 +47,9 @@ class Button(object):
         self.image_button_pressed = pygame.image.load('Sprites/blue_button_pressed.bmp')
         self.image = self.image_button
 
+        # Звуки
+        self.sound_button = pygame.mixer.Sound('Soundtrack/button.wav')
+
     # --- Инициализация ---
     def setup(self):
         """
@@ -63,6 +66,8 @@ class Button(object):
 
         mouse_pos: list = self.logic_engine.mouse_pos_list  # Список координат мыши
         if mouse_pos != [None]:  # Если кнопка мыши нажата
+            self.sound_button.play()
+            self.sound_button.set_volume(0.5)
             mouse_x: int = mouse_pos[0]  # Координата x мыши в [px]
             mouse_y: int = mouse_pos[1]  # Координата y мыши в [px]
             if self.graphical_x <= mouse_x <= self.graphical_x + self.graphical_width:

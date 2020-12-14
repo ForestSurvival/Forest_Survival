@@ -34,12 +34,17 @@ class Apple(object):
         self.physical_x: float = physical_x
         self.physical_y: float = physical_y
 
+        # Звуки
+        self.sound_inventory = pygame.mixer.Sound('Soundtrack/inventory.wav')
+
     # --- Логика ---
     def get_collected(self):
         """
         Яблоко собрано героем
         """
 
+        self.sound_inventory.play()
+        self.sound_inventory.set_volume(0.3)
         self.forest.game.hero.inventory.apples_amount += 1  # Добавить яблоко в инвентарь героя
         self.forest.apples_list.remove(self)
 
@@ -52,8 +57,8 @@ class Apple(object):
         graphical_y - Графическая координата y яблока в [px]
         """
 
-        self.forest.game.graphic_engine.draw_image_center(self.image_apple, graphical_x, graphical_y, self.graphical_width,
-                                                          self.graphical_height)
+        self.forest.game.graphic_engine.draw_image_center(self.image_apple, graphical_x, graphical_y,
+                                                          self.graphical_width, self.graphical_height)
 
     # --- Обработка ---
     def manage_graphics(self, graphical_x: int, graphical_y: int):
