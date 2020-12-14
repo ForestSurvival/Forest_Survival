@@ -17,8 +17,8 @@ class GraphicEngine(object):
         game - объект игры
         """
 
-        self.screen_height: int = 700  # Высота экрана в [px]
-        self.screen_width: int = 1300  # Ширина экрана в [px]
+        self.screen_height: int = 750  # Высота экрана в [px]
+        self.screen_width: int = 1350  # Ширина экрана в [px]
         self.screen = None  # Определяется в game.setup()
 
         # Объекты
@@ -38,7 +38,7 @@ class GraphicEngine(object):
         """
 
         # Объект экрана pygame
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
 
     # --- Графика ---
     def draw_image_center(self, image_load, graphical_x: int, graphical_y: int, width: int, height: int):

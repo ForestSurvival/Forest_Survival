@@ -81,6 +81,10 @@ class Hero(object):
                                       'SD': [pygame.image.load('Sprites/Heroes/hero_down_right_1.bmp'),
                                              pygame.image.load('Sprites/Heroes/hero_down_right_2.bmp')]}
 
+        # Звуки
+        self.sound_apple = pygame.mixer.Sound('Soundtrack/apple.wav')
+        self.sound_water = pygame.mixer.Sound('Soundtrack/water.wav')
+
     # --- Инициализация ---
     def set_indicator_heat(self):
         """
@@ -167,6 +171,8 @@ class Hero(object):
         satiety_comfort: float = 0.9  # Если сытость больше 90 %, герой не хочет есть
 
         if self.inventory.apples_amount > 0:  # Если есть яблоки
+            self.sound_apple.play()
+            self.sound_apple.set_volume(0.5)
             if self.satiety < self.satiety_max * satiety_comfort:  # Если герой хочет есть
                 apple = Apple(self.game.graphic_engine.screen, 0, 0)  # Тестовое яблоко
                 self.inventory.apples_amount -= 1  # Уменьшить количество яблок в инвентаре
@@ -279,6 +285,8 @@ class Hero(object):
         thirst_comfort: float = 10  # Если жажда составляет 1/10 от максимальной, герой не хочет пить
 
         if self.inventory.water_amount > 0:  # Если в инвентаре есть вода
+            self.sound_water.play()
+            self.sound_water.set_volume(5.3)
             if self.thirst > self.thirst_max / thirst_comfort:  # Если герой хочет пить
                 self.thirst: float = max(self.thirst - self.inventory.water.volume, 0)  # Жажда героя уменьшается
                 self.inventory.water_amount -= 1  # Вода тратится

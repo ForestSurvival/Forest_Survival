@@ -42,6 +42,9 @@ class Campfire(object):
         # Объекты
         self.inventory = inventory  # Объект инвентаря
 
+        # Звуки
+        self.sound_campfire = pygame.mixer.Sound('Soundtrack/campfire.wav')
+
     # --- Инициализация ---
     def count_cooling_speed(self):
         """
@@ -80,7 +83,14 @@ class Campfire(object):
         # Физика
         game_time_delta: float = physical_engine.time_step * physical_engine.time_scale  # Шаг игрового времени в [с]
 
+        # Звуки
+        if self.burn_time_left == 10800:
+            self.sound_campfire.play()
+        elif self.burn_time_left <= 1000:
+            self.sound_campfire.set_volume(0.5)
+
         self.burn_time_left -= game_time_delta  # Оставшееся игровое время горения костра в [с]
+
         self.temperature -= self.cooling_speed * game_time_delta  # Костёр остывает
         if self.burn_time_left <= 0:  # Если костёр сгорел
             self.burn_out()
@@ -91,6 +101,7 @@ class Campfire(object):
         """
 
         self.inventory.hero.game.forest.campfires_list.remove(self)
+        self.sound_campfire.stop()
 
     # --- Графика ---
     def draw(self, graphical_x: int, graphical_y: int):

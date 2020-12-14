@@ -162,7 +162,7 @@ class Inventory(object):
         """
 
         # Графика
-        font_name = "Fonts/GARABD.ttf"  # Имя шрифта
+        font_name = "Fonts/GARABD.TTF"  # Имя шрифта
 
         font = Font(font_name, self.font_size)  # Шрифт
         return font
