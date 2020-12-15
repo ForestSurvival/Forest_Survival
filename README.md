@@ -11,7 +11,6 @@ ___
 ```Python
     pip install pygame
     pip install random
-    pip install math
 ```
 - Склонируйте репозиторий к себе на компьютор. Для этого в терминале наберите:
 ```Python
