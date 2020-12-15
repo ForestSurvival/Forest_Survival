@@ -7,7 +7,7 @@ ___
 ## 2. Инструкция по установке 
 ___
 - Установите Python с сайта [python.org](https://www.python.org/downloads/)
-- Проверьте наличие библиотек pygame, random и math. В случае их отсутствия в терминале наберите:
+- Проверьте наличие библиотек pygame и random. В случае их отсутствия в терминале наберите:
 ```Python
     pip install pygame
     pip install random
