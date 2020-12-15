@@ -44,7 +44,7 @@ class Indicator(object):
         self.image_indicator_dark = pygame.image.load('Sprites/indicator_dark.bmp')
 
         # Текст
-        self.font_name = "Fonts/GARABD.ttf"  # Название шрифта
+        self.font_name = "Fonts/GARABD.TTF"  # Название шрифта
         self.font_size: int = 28  # Размер шрифта
         self.font_smoothing: bool = True  # Сглаживание шрифта
         self.name: str = name

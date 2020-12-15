@@ -33,12 +33,17 @@ class Stick(object):
         # Объекты
         self.forest = forest
 
+        # Звуки
+        self.sound_inventory = pygame.mixer.Sound('Soundtrack/inventory.wav')
+
     # --- Логика ---
     def get_collected(self):
         """
         Палка собрана героем
         """
 
+        self.sound_inventory.play()
+        self.sound_inventory.set_volume(0.3)
         self.forest.game.hero.inventory.sticks_amount += 1  # Увеличить количество палок в инвентаре
         self.forest.sticks_list.remove(self)
 

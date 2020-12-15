@@ -49,6 +49,9 @@ class House(object):
         self.match = Match(self)  # Объект спички
         self.paper = Paper(self)  # Объект бумаги
 
+        # Звуки
+        self.sound_inventory = pygame.mixer.Sound('Soundtrack/inventory.wav')
+
     # --- Инициализация ---
     @staticmethod
     def generation_needed(generation_chance: float):
@@ -94,6 +97,10 @@ class House(object):
         Герой забирает спички
         """
 
+        if self.matches_amount >= 1:
+            self.sound_inventory.play()
+            self.sound_inventory.set_volume(0.3)
+
         self.forest.game.hero.inventory.matches_amount += self.matches_amount  # Герой забирает все спички
         self.matches_amount: int = 0  # Спичек не осталось
 
@@ -101,6 +108,10 @@ class House(object):
         """
         Герой забирает бумагу
         """
+
+        if self.matches_amount >= 1:
+            self.sound_inventory.play()
+            self.sound_inventory.set_volume(0.3)
 
         self.forest.game.hero.inventory.paper_amount += self.paper_amount  # Герой забирает всю бумагу
         self.paper_amount: int = 0  # Бумаги не осталось

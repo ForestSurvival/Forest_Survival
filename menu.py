@@ -22,7 +22,7 @@ class Menu(object):
 
         # Графика
         self.graphical_height: int = 50  # Графическая высота кнопки в [px]
-        self.graphical_width: int = 400  # Графическая ширина кнопки в [px]
+        self.graphical_width: int = 450  # Графическая ширина кнопки в [px]
         self.font = None  # Шрифт определяется в menu.setup()
         self.font_title = None
         self.image_intro = pygame.image.load('Sprites/intro.bmp')  # Изображение заставки в формате bmp
@@ -66,8 +66,8 @@ class Menu(object):
         Создаёт шрифт
         """
 
-        font_name = "Fonts/GARABD.ttf"  # Имя шрифта
-        font_name_title = "Fonts/VINERITC.ttf"  # Имя шрифта заголовка
+        font_name = "Fonts/GARABD.TTF"  # Имя шрифта
+        font_name_title = "Fonts/VINERITC.TTF"  # Имя шрифта заголовка
         font_size: int = 36  # Размер шрифта
         font_size_title: int = 70
         self.font = Font(font_name, font_size)
@@ -133,8 +133,8 @@ class Menu(object):
         self.rules_exit_graphical_y = 520
         self.exit_graphical_x: int = (self.screen_width - self.graphical_width) * 5 // 8
         self.exit_graphical_y = 500
-        self.setup_graphical_x: int = 0
-        self.setup_graphical_y: int = 80
+        self.setup_graphical_x: int = (self.screen_width - self.graphical_width) // 2
+        self.setup_graphical_y: int = 320
 
     def set_screen(self):
         """
@@ -228,6 +228,8 @@ class Menu(object):
         control_gr_y = self.controls_graphical_y
         rules_exit_gr_x = self.rules_exit_graphical_x
         rules_exit_gr_y = self.rules_exit_graphical_y
+        setup_gr_x = self.setup_graphical_x
+        setup_gr_y = self.setup_graphical_y
 
         if self.status == 'main':  # Если игрок в главном меню
             self.button_controls.process()
@@ -241,7 +243,7 @@ class Menu(object):
         elif self.status == 'controls':  # Если игрок смотрит управление
             self.button_rules_exit.process()
             self.print_text('Меню', rules_exit_gr_x + self.text_x, rules_exit_gr_y + self.text_y)
-            self.print_text('W, A, S, D, WA, SA, WD, SD - перемещение', 20, 140)
+            self.print_text('W, A, S, D - перемещение', 20, 140)
             self.print_text('E - действие: подобрать предмет, обыскать дом, растопить снег', 20, 200)
             self.print_text('I - открыть инвентарь', 20, 260)
             self.print_text('Esc - выйти в меню, выйти из инвентаря', 20, 320)
@@ -251,24 +253,28 @@ class Menu(object):
             self.print_text('2) Чтобы не погибнуть от жажды разведите кострёр, растопите снег', 20, 180)
             self.print_text('и выпейте воду.', 20, 220)
             self.print_text('3) Чтобы развести костёр, вам нужно найти 5 палок в лесу, одну спичку', 20, 280)
-            self.print_text('и один лист бумагив доме. Помните, спички и бумага в домах ', 20, 320)
+            self.print_text('и один лист бумаги в доме. Помните, спички и бумага в домах ', 20, 320)
             self.print_text('генерируются случайным образом.', 20, 360)
             self.print_text('4) Для победы вам нужно найти деревню и зайти в неё.', 20, 420)
             self.button_rules_exit.process()
             self.print_text('Меню', rules_exit_gr_x + self.text_x, rules_exit_gr_y + self.text_y)
         elif self.status == 'frost':  # Если герой погиб от переохлаждения
             self.button_setup.process()
-            self.print_text('Вы погибли от переохлаждения', 0, 40)
-            self.print_text('Вернуться в меню', 0, 80)
+            self.print_text('Вы погибли от переохлаждения', 20, 200)
+            self.print_text('Лучше бы матан ботали!', 20, 250)
+            self.print_text('Вернуться в меню', setup_gr_x + self.text_x, setup_gr_y + self.text_y)
         elif self.status == 'thirst':  # Если герой погиб от жажды
             self.button_setup.process()
-            self.print_text('Вы погибли от жажды', 0, 40)
-            self.print_text('Вернуться в меню', 0, 80)
+            self.print_text('Вы погибли от жажды', 20, 200)
+            self.print_text('Лучше бы матан ботали!', 20, 250)
+            self.print_text('Вернуться в меню', setup_gr_x + self.text_x, setup_gr_y + self.text_y)
         elif self.status == 'starvation':  # Если герой погиб от голода
             self.button_setup.process()
-            self.print_text('Вы погибли от голода', 0, 40)
-            self.print_text('Вернуться в меню', 0, 80)
+            self.print_text('Вы погибли от голода', 20, 200)
+            self.print_text('Лучше бы матан ботали!', 20, 250)
+            self.print_text('Вернуться в меню', setup_gr_x + self.text_x, setup_gr_y + self.text_y)
         elif self.status == 'village':  # Если герой нашёл деревню
             self.button_setup.process()
-            self.print_text('Вы нашли деревню, поздравляем с победой!', 0, 40)
-            self.print_text('Вернуться в меню', 0, 80)
+            self.print_text('Вы нашли деревню, поздравляем с победой!', 20, 200)
+            self.print_text('А теперь пора ботать матан!', 20, 250)
+            self.print_text('Вернуться в меню', setup_gr_x + self.text_x, setup_gr_y + self.text_y)

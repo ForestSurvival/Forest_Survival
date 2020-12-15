@@ -38,7 +38,7 @@ class Game(object):
         self.fps: int = 60  # Частота обновления экарана в [Гц]
 
         # Физика
-        self.day_length: int = 600  # Длинна дня в [с]
+        self.day_length: int = 600  # Длина дня в [с]
         self.tick_count: int = 0  # Количесто циклов, прошедших с начала игры
 
         # Объекты
@@ -46,11 +46,19 @@ class Game(object):
         self.hero = None  # Объект героя определяется в game.setup()
         self.menu = Menu(self)  # Объект меню
 
+        # Мелодии и звуки
+        self.main_theme_music = 'Soundtrack/you_see_things_others_would_miss.wav'
+
     # --- Инициализация ---
     def setup(self):
         """
         Инициализация игры
         """
+
+        pygame.init()  # Инициализация pygame
+
+        # Музыка
+        self.music_setup()  # Фоновая музыка
 
         # Движки
         self.graphic_engine = GraphicEngine(self)  # Объект графического движка
@@ -97,6 +105,15 @@ class Game(object):
         else:
             self.actions_moment_dict: dict = {None: None}  # Словарь мгновенных действий
             self.actions_long_dict: dict = {None: None}  # Словарь продолжительных действий
+
+    # --- Музыка ---
+    def music_setup(self):
+        """
+        Запускает фоновую музыку
+        """
+
+        pygame.mixer.music.load(self.main_theme_music)
+        pygame.mixer.music.play(-1)
 
     # --- Физика ---
     def increase_tick_count(self):

@@ -17,8 +17,8 @@ class GraphicEngine(object):
         game - объект игры
         """
 
-        self.screen_height: int = 700  # Высота экрана в [px]
-        self.screen_width: int = 1300  # Ширина экрана в [px]
+        self.screen_height: int = 750  # Высота экрана в [px]
+        self.screen_width: int = 1350  # Ширина экрана в [px]
         self.screen = None  # Определяется в game.setup()
 
         # Объекты
