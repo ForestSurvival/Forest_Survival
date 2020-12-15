@@ -183,6 +183,8 @@ class Hero(object):
         Убивает героя от переохлаждения
         """
 
+        for campfire in self.game.forest.campfires_list:
+            campfire.burn_out()
         self.status_current: str = 'dead'  # Герой мёртв
         self.game.status = 'menu'  # Перевести игру в меню
         self.game.menu.status = 'frost'  # Сообщение о смерти
@@ -192,6 +194,8 @@ class Hero(object):
         Убивает героя от голода
         """
 
+        for campfire in self.game.forest.campfires_list:
+            campfire.burn_out()
         self.status_current: str = 'dead'  # Герой мёртв
         self.game.status = 'menu'  # Перевести игру в меню
         self.game.menu.status = 'starvation'  # Сообщение о смерти
@@ -201,6 +205,8 @@ class Hero(object):
         Убивает героя от жажды
         """
 
+        for campfire in self.game.forest.campfires_list:
+            campfire.burn_out()
         self.status_current: str = 'dead'  # Герой мёртв
         self.game.status = 'menu'  # Перевести игру в меню
         self.game.menu.status = 'thirst'  # Сообщение о смерти
